@@ -155,8 +155,8 @@ export default {
     // eslint-disable-next-line block-scoped-var
     return arr;
   },
-  dateFormater(date, format) {
-    const f = format || "YYYY-MM-DD";
+  dateFormater(date: Date, format: string = 'YYYY-MM-DD'): Date | string {
+    const f = format;
 
     if (date) {
       return fecha.format(date, f);

@@ -177,7 +177,7 @@
                     :key="`${datepickerDayKey}-${monthIndex}-${dayIndex}`"
                   >
                     <Day
-                      v-if="day.belongsToThisMonth"
+                      v-show="day.belongsToThisMonth"
                       :activeMonthIndex="activeMonthIndex"
                       :bookings="sortBookings"
                       :checkIn="checkIn"
@@ -228,50 +228,94 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+  import { defineComponent, PropType } from 'vue'
 
-import fecha from "fecha";
-import Day from "./Day.vue";
-import DateInput from "./DateInput.vue";
-import DatePickerWeekRow from "./DatePickerWeekRow.vue";
-import Helpers from "./helpers";
+  import fecha from "fecha";
+  import Day from "./Day.vue";
+  import DateInput from "./DateInput.vue";
+  import DatePickerWeekRow from "./DatePickerWeekRow.vue";
+  import Helpers from "./helpers";
 
-interface I18nTooltip {
-  halfDayCheckIn: string;
-  halfDayCheckOut: string;
-  saturdayToSaturday: string;
-  sundayToSunday: string;
-  minimumRequiredPeriod: string;
-}
-interface I18n {
-  night: string;
-  nights: string;
-  "day-names": string[];
-  "check-in": string;
-  "check-out": string;
-  "month-names": string[];
-  tooltip: I18nTooltip;
-  week: string;
-  weeks: string;
-}
+  interface I18nTooltip {
+    halfDayCheckIn: string
+    halfDayCheckOut: string
+    saturdayToSaturday: string
+    sundayToSunday: string
+    minimumRequiredPeriod: string
+  }
+  interface I18n {
+    night: string
+    nights: string
+    "day-names": string[]
+    "check-in": string
+    "check-out": string
+    "month-names": string[]
+    tooltip: I18nTooltip
+    week: string
+    weeks: string
+  }
+  interface FirstDayOfLastMonth {
+    belongsToThisMonth: boolean
+    date: Date
+  }
+  interface CheckInCheckOutHalfDay {
+    checkIn?: boolean
+    checkOut?: boolean
+  }
+  interface CheckIncheckOutHalfDay {
+    [key: string]: CheckInCheckOutHalfDay
+  }
+  interface Style {
+    [key: string]: string
+  }
+  interface Period {
+    endAt: Date
+    minimumDuration: number
+    periodType: string
+    startAt: string
+  }
+  interface HoveringPeriod {
+    endAt: Date | null
+    minimumDuration: number
+    periodType: string
+    startAt: Date | null
+  }
+  interface Booking {
+    checkInDate: string;
+    checkOutDate: string;
+    id: string;
+    style: Style;
+  }
+  interface Day {
+    date: Date,
+    belongsToThisMonth: boolean
+  }
+  interface Month {
+    monthName: string
+    days: Day[],
+  }
 
 export default defineComponent({
-  name: "DatePicker",
+  name: 'DatePicker',
   components: {
     DateInput,
     DatePickerWeekRow,
     Day,
   },
   props: {
+    modelValue: {
+      type: [Number, String],
+      required: true,
+    },
     alwaysVisible: {
       type: Boolean,
       default: false,
     },
     bookings: {
-      type: Array,
-      default() {
-        return [];
-      },
+      type: Array as PropType<Booking[]>,
+      default: (): Booking[] => {
+        return []
+      }
     },
     clickOutsideElementId: {
       type: String,
@@ -294,14 +338,14 @@ export default defineComponent({
       default: 12,
     },
     disabledDates: {
-      type: Array,
-      default() {
+      type: Array as PropType<string[]>,
+      default: (): string[] => {
         return [];
       },
     },
     disabledDaysOfWeek: {
-      type: Array,
-      default() {
+      type: Array as PropType<string[]>,
+      default: (): string[] => {
         return [];
       },
     },
@@ -342,7 +386,7 @@ export default defineComponent({
       type: [Boolean, Function],
     },
     i18n: {
-      type: Object,
+      type: Object as PropType<I18n>,
       default: (): I18n => ({
         night: "Night",
         nights: "Nights",
@@ -387,8 +431,8 @@ export default defineComponent({
       default: 1,
     },
     periodDates: {
-      type: Array,
-      default() {
+      type: Array as PropType<Period[]>,
+      default: (): Period[] => {
         return [];
       },
     },
@@ -410,7 +454,7 @@ export default defineComponent({
     },
     startDate: {
       type: [Date, String],
-      default() {
+      default: () => {
         return new Date();
       },
     },
@@ -440,22 +484,22 @@ export default defineComponent({
   data() {
     return {
       activeMonthIndex: 0 as number,
-      checkIn: this.startingDateValue,
+      checkIn: this.startingDateValue as Date | null,
       checkIncheckOutHalfDay: {},
       checkInPeriod: {},
-      checkOut: this.endingDateValue,
+      checkOut: this.endingDateValue as Date | null,
       customTooltip: "" as string,
       customTooltipHalfday: "" as string,
       datepickerDayKey: 0 as number,
       datepickerMonthKey: 0 as number,
-      dynamicNightCounts: null,
+      dynamicNightCounts: null as number | null,
       hash: Date.now(),
-      hoveringDate: null,
-      hoveringPeriod: {},
+      hoveringDate: null as Date | null,
+      hoveringPeriod: {} as HoveringPeriod,
       isOpen: false as boolean,
-      months: [],
-      nextDisabledDate: null,
-      nextPeriodDisableDates: [],
+      months: [] as Month[],
+      nextDisabledDate: null as Date | number | null,
+      nextPeriodDisableDates: [] as Date[],
       screenSize: "" as string,
       show: true as boolean,
       showCustomTooltip: false as boolean,
@@ -469,7 +513,7 @@ export default defineComponent({
     isDesktop(): boolean {
       return this.screenSize === "desktop";
     },
-    sortBookings() {
+    sortBookings(): Booking[] {
       if (this.bookings.length > 0) {
         const bookings = [...this.bookings];
 
@@ -484,12 +528,12 @@ export default defineComponent({
 
       return [];
     },
-    duplicateBookingDates() {
+    duplicateBookingDates(): string[] {
       return this.baseHalfDayDates.filter(
-        ((newArr) => (date) => newArr.has(date) || !newArr.add(date))(new Set())
+        ((newArr) => (date: string) => newArr.has(date) || !newArr.add(date))(new Set())
       );
     },
-    baseHalfDayDates() {
+    baseHalfDayDates(): string[] {
       if (this.sortBookings.length > 0) {
         const bookings = this.sortBookings.map((x) => [
           x.checkInDate,
@@ -503,30 +547,30 @@ export default defineComponent({
 
       return this.disabledDates;
     },
-    paginate() {
+    paginate(): number[] {
       if (this.isDesktop) {
         return this.paginateDesktop;
       }
 
       return this.paginateMobile;
     },
-    paginateDesktop() {
+    paginateDesktop(): number[] {
       if (this.showSingleMonth) {
         return [0];
       }
 
       return this.numberToArr(this.countOfDesktopMonth);
     },
-    paginateMobile() {
+    paginateMobile(): number[] {
       if (this.showSingleMonth || this.alwaysVisible) {
         return [0];
       }
 
       return this.numberToArr(this.countOfMobileMonth);
     },
-    customTooltipMessage() {
+    customTooltipMessage(): string {
       let tooltip = "";
-      const currentDate = this.isDesktop ? this.hoveringDate : this.checkIn;
+      const currentDate = this.hoveringDate || this.checkIn;
 
       if (currentDate && (this.customTooltip || this.customTooltipHalfday)) {
         if (this.customTooltip && this.customTooltipHalfday) {
@@ -542,22 +586,21 @@ export default defineComponent({
 
       return this.tooltipMessage;
     },
-    sortedPeriodDates() {
+    sortedPeriodDates(): Period[] {
       if (this.periodDates) {
         const periodDates = [...this.periodDates];
 
-        return periodDates.sort((a, b) => {
+        return periodDates.sort((a: Period, b: Period) => {
           const aa = a.startAt.split("/").reverse().join();
           const bb = b.startAt.split("/").reverse().join();
 
-          // eslint-disable-next-line no-nested-ternary
           return aa < bb ? -1 : aa > bb ? 1 : 0;
         });
       }
 
       return this.periodDates;
     },
-    isPreventedMaxMonth() {
+    isPreventedMaxMonth(): boolean {
       const lastIndexMonthAvailable = this.getMonthDiff(
         this.startDate,
         this.lastDateAvailable
@@ -572,10 +615,10 @@ export default defineComponent({
         lastIndexMonthAvailable + 1
       );
     },
-    minNightCount() {
+    minNightCount(): number {
       return this.dynamicNightCounts || this.minNights;
     },
-    showClearSelectionButton() {
+    showClearSelectionButton(): boolean {
       return Boolean(
         (this.checkIn || this.checkOut) && this.displayClearButton
       );
@@ -587,7 +630,6 @@ export default defineComponent({
     },
     disabledDates(newVal) {
       this.createHalfDayDates(newVal);
-      this.reRender();
     },
     isOpen(value) {
       if (this.isMobile && !this.alwaysVisible) {
@@ -684,9 +726,6 @@ export default defineComponent({
   },
   methods: {
     ...Helpers,
-    currentMonth(month) {
-      return this.months[this.activeMonthIndex + month]?.days;
-    },
     constructMonth() {
       const startDate = new Date(this.startDate);
       const diffMonthBetweenStarDateAndCheckOut = this.getMonthDiff(
@@ -725,16 +764,17 @@ export default defineComponent({
         );
       }
     },
-    numberToArr(number) {
+    numberToArr(count: number): number[] {
       const arr = [];
 
-      for (let i = 0; i <= number - 1; i++) {
+      for (let i = 0; i <= count - 1; i++) {
         arr.push(i);
       }
 
+      // return [0, 1, 2...]
       return arr;
     },
-    renderMultipleMonth(date, max) {
+    renderMultipleMonth(date: string, max: number) {
       let nextMonth = new Date(date);
       const dates = [];
 
@@ -747,19 +787,19 @@ export default defineComponent({
 
       this.createMultipleMonth(dates);
     },
-    getMonthName(day) {
+    getMonthName(day: Date) {
       const currentMonth = this.i18n["month-names"][fecha.format(day, "M") - 1];
       const currentYear = this.showYear ? fecha.format(day, " YYYY") : "";
 
       return `${currentMonth} ${currentYear}`;
     },
-    createMonth(date) {
+    createMonth(date: Date) {
       const firstDayOfMonth = this.getFirstDayOfMonth(date);
       const firstDay = this.getFirstDay(date, this.firstDayOfWeek);
       const month = {
         monthName: this.getMonthName(firstDayOfMonth),
         days: [],
-      };
+      } as Month;
 
       for (let i = 0; i < 42; i++) {
         const day = this.addDays(firstDay, i);
@@ -772,17 +812,17 @@ export default defineComponent({
 
       this.months.push(month);
     },
-    createMultipleMonth(dates) {
+    createMultipleMonth(dates: Date[]) {
       const months = [];
 
       for (let d = 0; d < dates.length; d++) {
-        const currentDate = dates[d];
+        const currentDate = dates[d] as Date;
         const firstDayOfMonth = this.getFirstDayOfMonth(currentDate);
         const firstDay = this.getFirstDay(currentDate, this.firstDayOfWeek);
         const month = {
           monthName: this.getMonthName(firstDayOfMonth),
           days: [],
-        };
+        } as Month;
 
         for (let i = 0; i < 42; i++) {
           const day = this.addDays(firstDay, i);
@@ -798,28 +838,27 @@ export default defineComponent({
 
       this.months.push(...months);
     },
-    handleBookingClicked(event, date, currentBooking) {
+    handleBookingClicked(event: Event, date: Date, currentBooking: Booking) {
       this.$emit("booking-clicked", event, date, currentBooking);
     },
-    escFunction(e) {
+    escFunction(e: KeyboardEvent) {
       const escTouch = 27;
 
       if (e.keyCode === escTouch && this.isOpen && this.checkIn) {
         this.clearSelection();
       }
     },
-    formatDate(date) {
+    formatDate(date: Date): Date | string {
       return this.dateFormater(date, this.format);
     },
-    cleanString(string) {
-      // eslint-disable-next-line no-useless-escape
-      return string.replace(/\<br\/>/g, "");
+    cleanString(str: string): string {
+      return str.replace(/\<br\/>/g, "");
     },
-    dateIsInCheckInCheckOut(date) {
+    dateIsInCheckInCheckOut(date: Date): Period | null {
       const compareDate = this.dateFormater(date);
       let currentPeriod = null;
 
-      this.sortedPeriodDates.forEach((d) => {
+      this.sortedPeriodDates.forEach((d: Period) => {
         if (
           d.endAt !== compareDate &&
           (d.startAt === compareDate ||
@@ -831,7 +870,7 @@ export default defineComponent({
 
       return currentPeriod;
     },
-    dayIsDisabled(date) {
+    dayIsDisabled(date: Date): boolean {
       if (
         this.checkIn &&
         !this.checkOut &&
@@ -851,23 +890,35 @@ export default defineComponent({
 
       return false;
     },
-    mouseEnterDay(day) {
-      const formatDate = this.dateFormater(day.date);
-      const halfDays = Object.keys(this.checkIncheckOutHalfDay);
-      const disableDays = this.disabledDates
-        .filter((disableDate) => !halfDays.includes(disableDate))
-        .includes(formatDate);
+    mouseEnterDay(day: Day) {
+      if (day.belongsToThisMonth) {
+        const formatDate = this.dateFormater(day.date) as string;
+        const halfDays = Object.keys(this.checkIncheckOutHalfDay);
+        const disableDays = this.disabledDates
+          .filter(disableDate => !halfDays.includes(disableDate))
+          .includes(formatDate);
 
-      if (
-        !this.dayIsDisabled(day.date) &&
-        day.belongsToThisMonth &&
-        !disableDays
-      ) {
-        this.setCustomTooltipOnHover(day);
+        if (!this.dayIsDisabled(day.date) && !disableDays && this.isDesktop) {
+          this.setCustomTooltipOnHover(day);
+        }
       }
     },
-    setCurrentPeriod(date, eventType) {
-      let currentPeriod = {};
+    setCustomTooltipOnHover(day: Day) {
+      const { date } = day;
+      this.hoveringDate = date;
+      if (this.showCustomTooltip) this.showCustomTooltip = false;
+      this.setCurrentPeriod(date, "hover");
+
+      if (Object.keys(this.hoveringPeriod).length > 0) {
+        // Create tooltip
+        this.createTooltip(date);
+      } else {
+        this.hoveringPeriod = {};
+      }
+      if (this.halfDay) this.createHalfDayTooltip(day.date);
+    },
+    setCurrentPeriod(date: Date, eventType: string) {
+      let currentPeriod = {} as HoveringPeriod;
 
       if (this.sortedPeriodDates.length > 0) {
         this.sortedPeriodDates.forEach((d) => {
@@ -913,42 +964,24 @@ export default defineComponent({
         };
       }
     },
-    setCustomTooltipOnHover(day) {
-      const { date } = day;
-
-      this.hoveringDate = date;
-      if (this.showCustomTooltip) this.showCustomTooltip = false;
-
-      this.setCurrentPeriod(date, "hover");
-
-      if (Object.keys(this.hoveringPeriod).length > 0) {
-        // Create tooltip
-        if (this.hoveringPeriod.periodType === "weekly_by_saturday") {
-          const dayCode = 6;
-          const text = this.i18n.tooltip.saturdayToSaturday;
-
-          this.showTooltipWeeklyOnHover(date, dayCode, text);
-        } else if (this.hoveringPeriod.periodType === "weekly_by_sunday") {
-          const dayCode = 0;
-          const text = this.i18n.tooltip.sundayToSunday;
-
-          this.showTooltipWeeklyOnHover(date, dayCode, text);
-        } else if (this.hoveringPeriod.periodType === "nightly") {
-          this.showTooltipNightlyOnHover(date);
-        } else {
-          // Clean tooltip
-          this.showCustomTooltip = false;
-          this.customTooltip = "";
-        }
+    createTooltip(date) {
+      if (this.hoveringPeriod.periodType === "weekly_by_saturday") {
+        const dayCode = 6;
+        const text = this.i18n.tooltip.saturdayToSaturday;
+        this.createTooltipWeekly(date, dayCode, text);
+      } else if (this.hoveringPeriod.periodType === "weekly_by_sunday") {
+        const dayCode = 0;
+        const text = this.i18n.tooltip.sundayToSunday;
+        this.createTooltipWeekly(date, dayCode, text);
+      } else if (this.hoveringPeriod.periodType === "nightly") {
+        this.createTooltipNightly(date);
       } else {
-        this.hoveringPeriod = {};
-      }
-
-      if (this.halfDay) {
-        this.createHalfDayTooltip(day.date);
+        // Clean tooltip
+        this.showCustomTooltip = false;
+        this.customTooltip = "";
       }
     },
-    handleDayClick(event, date, formatDate, resetCheckin) {
+    handleDayClick(event: Event, date: Date, formatDate: string, resetCheckin: boolean) {
       this.nextPeriodDisableDates = [];
 
       if (resetCheckin) {
@@ -965,7 +998,7 @@ export default defineComponent({
         this.getNextDate(this.sortedDisabledDates, date) ||
         this.nextDateByDayOfWeekArray(this.disabledDaysOfWeek, date) ||
         this.nextBookingDate(date) ||
-        Infinity;
+        Infinity as Date | number | null;
 
       this.dynamicNightCounts = null;
 
@@ -990,15 +1023,18 @@ export default defineComponent({
 
       if (this.checkIn && !this.checkOut) {
         this.setCurrentPeriod(date, "click");
+        // Create tooltip + half day tooltip
+        this.createTooltip(date);
+        if (this.halfDay) this.createHalfDayTooltip(date);
+
         this.checkInPeriod = this.hoveringPeriod;
-        this.setCustomTooltipOnClick();
       }
 
       this.nextDisabledDate = nextDisabledDate;
       this.$emit("day-clicked", date, formatDate, nextDisabledDate);
     },
-    nextBookingDate(date) {
-      let closest = Infinity;
+    nextBookingDate(date: Date) {
+      let closest = Infinity as string | number;
 
       if (this.sortBookings.length > 0) {
         const nextDateFormated = this.dateFormater(this.addDays(date, 1));
@@ -1020,25 +1056,12 @@ export default defineComponent({
 
       return closest;
     },
-    setCustomTooltipOnClick() {
-      if (
-        Object.keys(this.checkInPeriod).length > 0 &&
-        this.checkInPeriod.periodType.includes("weekly")
-      ) {
-        const nextValidDate = this.addDays(this.checkIn, this.minNightCount);
-
-        this.checkInPeriod.nextValidDate = nextValidDate;
-        this.showTooltipWeeklyOnClick();
-      } else if (this.checkInPeriod.periodType === "nightly") {
-        this.showTooltipNightlyOnClick();
-      }
-    },
-    showTooltipWeeklyOnHover(date, periodDayType, text) {
+    createTooltipWeekly(date: Date, dayCode: number, text: string) {
       const countDaysBetweenCheckInCurrentDay = this.countDays(
         this.checkIn,
         date
       );
-      const notOnPeriodDayType = date.getDay() !== periodDayType;
+      const notOnPeriodDayType = date.getDay() !== dayCode;
       const isCheckInCheckOut = this.checkIn && this.checkOut;
       const notCheckInNotPeriodDayType = !this.checkIn && notOnPeriodDayType;
       const isCheckInNotCheckOut = this.checkIn && !this.checkOut;
@@ -1129,16 +1152,7 @@ export default defineComponent({
         this.customTooltip = text;
       }
     },
-    showTooltipWeeklyOnClick() {
-      const night = this.pluralize(this.minNightCount, "week");
-
-      this.showCustomTooltip = true;
-      this.customTooltip = this.completeTrad(
-        this.i18n.tooltip.minimumRequiredPeriod,
-        { minNightInPeriod: this.minNightCount / 7, night }
-      );
-    },
-    showTooltipNightlyOnHover(date) {
+    createTooltipNightly(date: Date) {
       if (this.checkIn && !this.checkOut) {
         const nextDayValid = this.addDays(this.checkIn, this.minNightCount);
         const isDateAfterMinimumDuration =
@@ -1161,17 +1175,7 @@ export default defineComponent({
         this.customTooltip = "";
       }
     },
-    showTooltipNightlyOnClick() {
-      const minNightInPeriod = this.hoveringPeriod.minimumDuration;
-      const night = this.pluralize(this.minNightCount);
-
-      this.showCustomTooltip = true;
-      this.customTooltip = this.completeTrad(
-        this.i18n.tooltip.minimumRequiredPeriod,
-        { minNightInPeriod, night }
-      );
-    },
-    createHalfDayTooltip(date) {
+    createHalfDayTooltip(date: Date) {
       this.customTooltipHalfday = "";
       const formatedHoveringDate = this.dateFormater(date);
 
@@ -1185,7 +1189,7 @@ export default defineComponent({
         }
       }
     },
-    completeTrad(translation, keys) {
+    completeTrad(translation: any, keys: any) {
       let newT = translation;
       const keysTranslations = Object.keys(keys);
 
@@ -1195,18 +1199,19 @@ export default defineComponent({
 
       return newT;
     },
-    handleClickOutside(event) {
-      const ignoredElement = this.$refs[`DatePicker-${this.hash}`];
+    handleClickOutside(event: Event) {
+      const ignoredElement = this.$refs[`DatePicker-${this.hash}`] as HTMLElement;
       const ignoredOutsideElement =
         document.getElementById(this.clickOutsideElementId) || false;
 
       if (ignoredElement) {
-        const isIgnoredElementClicked = ignoredElement.contains(event.target);
+        const target = event.target as HTMLInputElement
+        const isIgnoredElementClicked = ignoredElement.contains(target);
         let isIgnoredOutsideElementClicked = false;
 
         if (ignoredOutsideElement) {
           isIgnoredOutsideElementClicked = ignoredOutsideElement.contains(
-            event.target
+            target
           );
         }
 
@@ -1224,7 +1229,7 @@ export default defineComponent({
 
       return this.screenSize;
     },
-    onElementHeightChange(el, callback) {
+    onElementHeightChange(el: HTMLElement, callback) {
       let lastHeight = el.clientHeight;
       let newHeight = lastHeight;
       const newEl = el;
@@ -1291,10 +1296,10 @@ export default defineComponent({
         this.hideDatepicker();
       }
     },
-    setMinimumDuration(date) {
+    setMinimumDuration(date: Date) {
       if (this.sortedPeriodDates) {
-        let nextPeriod = null;
-        let currentPeriod = null;
+        let nextPeriod = {} as Period;
+        let currentPeriod = {} as Period;
         const compareDate = this.dateFormater(date);
 
         this.sortedPeriodDates.forEach((d) => {
@@ -1307,8 +1312,8 @@ export default defineComponent({
           }
         });
 
-        if (currentPeriod) {
-          this.sortedPeriodDates.forEach((period) => {
+        if (Object.keys(currentPeriod).length > 0) {
+          this.sortedPeriodDates.forEach((period: Period) => {
             if (period.startAt === currentPeriod.endAt) {
               nextPeriod = period;
             }
@@ -1355,6 +1360,7 @@ export default defineComponent({
     },
     renderNextMonth() {
       this.$emit("render-next-month");
+
       const countOfDesktopMonth = this.isDesktop
         ? this.countOfDesktopMonth
         : this.countOfMobileMonth;
@@ -1365,21 +1371,21 @@ export default defineComponent({
         return;
       }
 
-      let firstDayOfLastMonth;
+      let firstDayOfLastMonth = {} as FirstDayOfLastMonth;
 
       if (this.isMobile && !this.alwaysVisible) {
         firstDayOfLastMonth = this.months[this.months.length - 1].days.find(
           (day) => day.belongsToThisMonth === true
-        );
+        ) as FirstDayOfLastMonth;
       } else {
         firstDayOfLastMonth = this.months[this.activeMonthIndex + 1].days.find(
           (day) => day.belongsToThisMonth === true
-        );
+        ) as FirstDayOfLastMonth;
       }
 
       if (this.endDate !== Infinity) {
         if (
-          fecha.format(firstDayOfLastMonth[0].date, "YYYYMM") ===
+          fecha.format(firstDayOfLastMonth.date, "YYYYMM") ===
           fecha.format(new Date(this.endDate), "YYYYMM")
         ) {
           return;
@@ -1389,20 +1395,20 @@ export default defineComponent({
       this.createMonth(this.getNextMonth(firstDayOfLastMonth.date));
       this.activeMonthIndex++;
     },
-    setCheckIn(date) {
+    setCheckIn(date: Date) {
       this.checkIn = date;
     },
-    setCheckOut(date) {
+    setCheckOut(date: Date) {
       this.checkOut = date;
     },
-    createHalfDayDates(baseHalfDayDates) {
+    createHalfDayDates(baseHalfDayDates: string[]) {
       // Copy of baseHalfDayDates
-      let sortedDates = [];
+      let sortedDates = [] as Date[];
       const newBaseHalfDayDates = JSON.parse(JSON.stringify(baseHalfDayDates));
-      const checkIncheckOutHalfDay = {};
+      const checkIncheckOutHalfDay = {} as CheckIncheckOutHalfDay;
 
       // Sorted disabledDates
-      newBaseHalfDayDates.sort((a, b) => {
+      newBaseHalfDayDates.sort((a: string, b: string) => {
         const aa = a.split("/").reverse().join();
         const bb = b.split("/").reverse().join();
 
@@ -1461,11 +1467,11 @@ export default defineComponent({
       if (this.halfDay) {
         const halfDays = Object.keys(checkIncheckOutHalfDay);
 
-        sortedDates = sortedDates.filter((date) => !halfDays.includes(date));
+        sortedDates = sortedDates.filter((date: any) => !halfDays.includes(date));
       }
 
-      sortedDates = sortedDates.map((date) => new Date(date));
-      this.sortedDisabledDates = sortedDates.sort((a, b) => a - b);
+      sortedDates = sortedDates.map((date: any) => new Date(date));
+      this.sortedDisabledDates = sortedDates.sort((a: Date, b: Date) => a - b);
       this.checkIncheckOutHalfDay = checkIncheckOutHalfDay;
       this.$emit(
         "handle-check-incheck-out-half-day",
@@ -1475,3 +1481,7 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.datepicker__header{position:absolute;top:0;right:0;left:0;display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem}@media screen and (max-width:767px){.datepicker__header{padding:1rem}}.container-square{display:grid;grid-template-columns:repeat(7,1fr)}.square{position:relative;font-family:Helvetica Neue}.datepicker__button-paginate--mobile{width:100%;border:0;height:50px;line-height:50px;border-top:1px solid #f5f7f8;background:#fff;margin-top:2rem;position:relative}.datepicker__button-paginate--mobile[disabled=disabled]{opacity:.5}.datepicker__button-paginate--mobile--top{margin:0;transform:rotate(180deg)}.datepicker__button-paginate--mobile .arrow{width:4vmin;height:4vmin;box-sizing:border-box;position:absolute;left:50%;top:50%;transform:rotate(135deg) translateY(100%)}.datepicker__button-paginate--mobile .arrow:before{border-width:.8vmin .8vmin 0 0;display:block}.datepicker__button-paginate--mobile .arrow:after,.datepicker__button-paginate--mobile .arrow:before{content:"";width:100%;height:100%;border-style:solid;border-color:#195252;transition:.2s ease;transform-origin:100% 0}.datepicker__button-paginate--mobile .arrow:after{float:left;position:relative;top:-100%;border-width:0 .8vmin 0 0}.datepicker__wrapper *,.datepicker__wrapper :after,.datepicker__wrapper :before{box-sizing:border-box}.datepicker{transition:all .2s ease-in-out;background-color:#fff;font-size:16px;line-height:14px;overflow:hidden;top:50px;position:absolute;z-index:999}.datepicker--right{right:0}.datepicker button.next--mobile{background:none;border:1px solid #eaeaea;float:none;height:50px;width:100%;position:relative;background-position:50%;-webkit-appearance:none;-moz-appearance:none;appearance:none;overflow:hidden;position:fixed;bottom:0;left:0;outline:none;box-shadow:0 5px 30px 10px rgba(0,0,0,.08);background:#fff}.datepicker button.next--mobile:after{background:transparent url(img/ic-arrow-right-green.regular.83ed3b6c.svg) no-repeat 50%/8px;transform:rotate(90deg);content:"";position:absolute;width:200%;height:200%;top:-50%;left:-50%}.datepicker--closed{box-shadow:0 15px 30px 10px transparent;max-height:0}.datepicker--open{box-shadow:0 15px 30px 10px rgba(0,0,0,.08);max-height:900px}@media screen and (max-width:767px){.datepicker--open{box-shadow:none;height:100%;left:0;right:0;bottom:0;-webkit-overflow-scrolling:touch!important;position:fixed;top:0;width:100%}}.datepicker__dummy-wrapper{background:#fff url(img/calendar_icon.regular.98f9a773.svg) no-repeat 17px/16px}.datepicker__wrapper{position:relative}.datepicker__wrapper .square .datepicker__month-day{border:1px solid #eaeaea;margin:-1px 0 0 -1px}.datepicker__wrapper--booking .datepicker__month-day-wrapper span{text-align:right;padding-top:10px;padding-right:10px;right:0;top:0;transform:none}.datepicker__wrapper--booking .datepicker__month-day:before{display:none}.datepicker__fullview{background:none;height:auto}.datepicker__fullview .datepicker{position:relative;top:0}.datepicker__fullview .square.not-in-the-month{height:0;padding-bottom:100%}.datepicker__fullview .datepicker__month-button{display:inline-block}.datepicker__fullview .datepicker__months{position:static;margin:0}.datepicker__fullview .datepicker__months:before{display:none}.datepicker__input{background:transparent;height:48px;display:flex;align-items:center;font-size:12px;outline:none;word-spacing:5px;border:0}.datepicker__input--first{padding-left:50px}.datepicker__input--first:after{position:relative;content:"→";font-family:arial;font-size:1.2rem;padding:0 .75rem}.datepicker__input:focus{outline:none}.datepicker__input:-moz-placeholder,.datepicker__input:-ms-input-placeholder,.datepicker__input::-moz-placeholder,.datepicker__input::-webkit-input-placeholder{color:#35343d}.datepicker__dummy-wrapper{border:1px solid #eaeaea;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;width:100%;height:100%}@media screen and (max-width:767px){.datepicker__dummy-wrapper{height:50px}}.datepicker__dummy-wrapper--no-border.datepicker__dummy-wrapper{border:0;border-bottom:1px solid #f5f7f8}.datepicker__dummy-wrapper--is-active{border:1px solid #195252}.datepicker__input{color:#35343d;font-size:14px}@media screen and (max-width:479px){.datepicker__input{text-align:center}}.datepicker__input--is-active{color:#195252}.datepicker__input--is-active::placeholder{color:#195252}.datepicker__input--is-active::-moz-placeholder{color:#195252}.datepicker__input--is-active:-ms-input-placeholder{color:#195252}.datepicker__input--is-active:-moz-placeholder{color:#195252}.datepicker__input--single-date:first-child{width:100%;background:none;text-align:left}.datepicker__month-day-wrapper{height:0;padding-top:calc(100% - 1px)}.datepicker__month-day-wrapper span{z-index:1;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}.datepicker__month-day{visibility:visible;text-align:center;color:#195252;cursor:pointer}.datepicker__month-day:focus{outline:none}.datepicker__month-day--today{border:0}.datepicker__month-day--today .datepicker__month-day-wrapper{border:2px solid #195252;padding-top:calc(100% - 5px)}.datepicker__month-day--invalid-range{background-color:rgba(25,82,82,.3);color:#f3f5f8;cursor:not-allowed;position:relative}.datepicker__month-day--invalid{cursor:not-allowed;pointer-events:none}.datepicker__month-day--allowed-checkout:hover,.datepicker__month-day--valid:hover{background-color:#195252;color:#fff}.datepicker__month-day--disabled{opacity:1;background:#f5f7f8;color:#d8d8d8;cursor:not-allowed;pointer-events:none;font-weight:400;position:relative}.datepicker__month-day--disabled span{text-decoration:line-through}.datepicker__month-day--not-allowed.currentDay,.datepicker__month-day--valid.datepicker__month-day--not-allowed,.datepicker__month-day--valid.datepicker__month-day--not-allowed:hover{color:#195252;font-weight:400;cursor:default;background:transparent}.datepicker__month-day--not-allowed.currentDay span,.datepicker__month-day--valid.datepicker__month-day--not-allowed:hover span,.datepicker__month-day--valid.datepicker__month-day--not-allowed span{text-decoration:none}.datepicker__month-day--hovering.datepicker__month-day--not-allowed:hover{cursor:pointer}.datepicker__month-day--halfCheckIn,.datepicker__month-day--halfCheckOut{position:relative;overflow:hidden}.datepicker__month-day--halfCheckIn:before,.datepicker__month-day--halfCheckOut:before{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);content:"";z-index:-1;height:0;width:0;border-bottom:120px solid #f5f7f8;border-left:120px solid transparent}.datepicker__month-day--halfCheckOut:before{border-top:120px solid #f5f7f8;border-bottom:0;border-left:0;border-right:120px solid transparent}.datepicker__month-day--selected{background-color:rgba(25,82,82,.7);color:#fff}.datepicker__month-day--selected span{text-decoration:none}.datepicker__month-day--selected:hover{font-weight:700;background-color:#195252;color:#fff;z-index:1}.datepicker__month-day--hovering{background-color:rgba(25,82,82,.7);color:#fff;font-weight:700;cursor:pointer}.datepicker__month-day--hovering span{text-decoration:none}.datepicker__month-day--first-day-selected,.datepicker__month-day--last-day-selected{background:#195252;color:#fff;cursor:pointer;font-weight:700;pointer-events:auto}.datepicker__month-day--first-day-selected span,.datepicker__month-day--last-day-selected span{text-decoration:none}.datepicker__month-day--allowed-checkout{color:#424b53}.datepicker__month-day--out-of-range{color:#f3f5f8;cursor:not-allowed;font-weight:400;position:relative;pointer-events:none}.datepicker__month-day--out-of-range span{text-decoration:none}.datepicker__month-day--valid{cursor:pointer;font-weight:700}.datepicker__month-day--valid.datepicker__month-day--halfCheckIn.datepicker__month-day--last-day-selected{color:#fff}.datepicker__month-day--hidden{opacity:0;pointer-events:none}.datepicker__month-button{background:transparent url(img/ic-arrow-right-green.regular.83ed3b6c.svg) no-repeat 50%/8px;width:40px;height:40px;border:1px solid #00ca9d;outline:none;text-align:center;cursor:pointer;opacity:1;transition:opacity .5s ease}.datepicker__month-button:hover{opacity:.65}.datepicker__month-button:focus{outline:none}.datepicker__month-button--prev{transform:rotateY(180deg)}.datepicker__month-button[disabled]{opacity:.2;cursor:not-allowed;pointer-events:none}.datepicker__inner{padding:1.5rem 2.5rem}@media screen and (max-width:767px){.datepicker__inner{padding:0;height:100%}}.datepicker.show-tooltip .datepicker__months{height:calc(100% - 140px)}.datepicker.show-tooltip .datepicker__tooltip--mobile{height:auto;opacity:1;padding:15px;visibility:visible}@media screen and (min-width:768px){.datepicker__months{display:flex;flex-wrap:wrap;width:650px;justify-content:space-between}}@media screen and (max-width:767px){.datepicker__months{height:calc(100% - 90px);overflow-y:scroll;overflow-x:hidden;transition:all .2s ease}}.datepicker__months:before{content:"";background:#eaeaea;bottom:0;display:block;left:50%;position:absolute;top:0;width:1px}@media screen and (max-width:767px){.datepicker__months:before{display:none}}.datepicker__months--full,.datepicker__months--full .datepicker__months{width:100%}@media screen and (max-width:767px){.datepicker__months--full .datepicker__month{width:100%}}.datepicker__months--full:before{display:none}.datepicker__month{font-size:12px;width:50%;padding-right:1rem}@media screen and (max-width:767px){.datepicker__month{width:100%;padding:0 1rem}}@media screen and (min-width:768px){.datepicker__month:last-of-type{padding-right:0;padding-left:1rem}}.datepicker__month-caption{height:2.5em;vertical-align:middle}.datepicker__month-name{font-size:16px;font-weight:700;pointer-events:none;text-align:center}@media screen and (max-width:767px){.datepicker__month-name{padding:0 0 3rem;margin:0 auto;width:100%}.datepicker__month-name:last-of-type{padding:2rem 0 2.5rem}}.datepicker__week-days{height:2em;vertical-align:middle}.datepicker__week-row{display:grid;grid-template-columns:repeat(7,1fr);align-items:center;margin:2rem auto 1.5rem}@media screen and (max-width:767px){.datepicker__week-row{height:40px;align-items:center;margin:0;border-bottom:1px solid #f5f7f8}}@media screen and (max-width:767px){.datepicker__week-row--always-visible{border:0}}.datepicker__week-name{font-size:12px;font-weight:400;color:#424b53;text-align:center}.datepicker__close-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;background:transparent;border:0;color:#195252;cursor:pointer;font-size:21px;font-weight:700;margin-top:0;outline:0;z-index:10000;position:fixed;right:15px;top:0;height:48px;line-height:48px}.datepicker__close-button i{display:block;font-style:inherit;transform:rotate(45deg)}.datepicker__clear-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;background:transparent;border:0;cursor:pointer;font-size:25px;font-weight:700;height:100%;margin:0;padding:0;position:absolute;right:0;top:0;width:40px}.datepicker__clear-button svg{fill:none;stroke-linecap:round;stroke-width:8px;stroke:#424b53;width:20px;width:14px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}.datepicker__clear-button:focus{outline:none}.datepicker__tooltip{background-color:#2d3047;border-radius:2px;color:#fff;font-size:11px;padding:5px 10px;position:absolute;z-index:50;left:50%;bottom:100%;white-space:nowrap;transform:translateX(-50%);text-align:center}.datepicker__tooltip--mobile{height:0;opacity:0;visibility:hidden;padding:0 1rem;border-bottom:1px solid #d7d9e2;border-top:1px solid #d7d9e2;font-size:14px;line-height:1.4;transition:all .2s ease}.datepicker__tooltip:after{border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid #2d3047;bottom:-4px;content:"";left:50%;margin-left:-4px;position:absolute}.-is-hidden{display:none}.parent-bullet{top:50%;height:100%;display:block;z-index:-1}.parent-bullet,.parent-bullet .bullet{position:absolute;left:50%;transform:translate(-50%,-50%);width:100%}.parent-bullet .bullet{top:60%;height:4px;transition:opacity .3s ease}@media screen and (min-width:768px){.parent-bullet .bullet{top:50%}}.parent-bullet .bullet.checkIn,.parent-bullet .bullet.checkInCheckOut,.parent-bullet .bullet.checkOut{width:8px;height:18px;border-radius:10px}.parent-bullet .bullet.checkIn.bullet--small,.parent-bullet .bullet.checkInCheckOut.bullet--small,.parent-bullet .bullet.checkOut.bullet--small{height:6px;width:14px}.parent-bullet .bullet.checkInCheckOut{left:calc(50% - 15px)}.parent-bullet .pipe{display:block;width:100%;height:4px;position:absolute;top:60%;transform:translateY(-50%);transition:opacity .3s ease}@media screen and (min-width:768px){.parent-bullet .pipe{top:50%}}.parent-bullet .pipe.pipe--small{height:3px}.parent-bullet .pipe.checkIn{left:calc(50% + 4px);width:calc(50% - 4px)}.parent-bullet .pipe.checkOut{left:0;width:calc(50% - 4px)}.parent-bullet .pipe.checkInCheckOut{width:calc(50% - 19px)}
+</style>
