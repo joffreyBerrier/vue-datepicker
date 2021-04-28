@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'datepicker__wrapper datepicker__wrapper',
+      'datepicker__wrapper',
       {
         'datepicker__wrapper--booking': bookings.length > 0,
         datepicker__fullview: alwaysVisible,
@@ -25,22 +25,13 @@
         { 'datepicker__dummy-wrapper--is-active': isOpen },
       ]"
     >
-      <date-input
-        class="datepicker__input--first"
+      <date-group-input
+        :checkIn="checkIn"
+        :checkOut="checkOut"
+        :format="format"
         :i18n="i18n"
-        :input-date="formatDate(checkIn)"
-        input-date-type="check-in"
-        :is-open="isOpen"
-        :single-day-selection="singleDaySelection"
-      />
-
-      <date-input
-        v-if="!singleDaySelection"
-        :i18n="i18n"
-        :input-date="formatDate(checkOut)"
-        input-date-type="check-out"
-        :is-open="isOpen"
-        :single-day-selection="singleDaySelection"
+        :isOpen="isOpen"
+        :singleDaySelection="singleDaySelection"
       />
     </div>
     <div
@@ -49,44 +40,36 @@
       @click="clearSelection"
       v-if="showClearSelectionButton"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 68">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 68 68"
+      >
         <path d="M6.5 6.5l55 55M61.5 6.5l-55 55"></path>
       </svg>
     </div>
-    <div
-      :class="[
+    <div :class="[
         'datepicker',
         {
           'datepicker--open': isOpen && !alwaysVisible,
           'datepicker--closed': !isOpen && !alwaysVisible,
           'datepicker--right': positionRight,
         },
-      ]"
-    >
+      ]">
       <div v-if="isOpen && isMobile">
         <div
           @click="toggleDatepicker"
           :class="[
-            'datepicker__dummy-wrapper datepicker__dummy-wrapper--no-border',
+            'datepicker__dummy-wrapper',
             { 'datepicker__dummy-wrapper--is-active': isOpen },
           ]"
         >
-          <date-input
-            class="datepicker__input--first"
+          <date-group-input
+            :checkIn="checkIn"
+            :checkOut="checkOut"
+            :format="format"
             :i18n="i18n"
-            :input-date="formatDate(checkIn)"
-            input-date-type="check-in"
-            :is-open="isOpen"
-            :single-day-selection="singleDaySelection"
-          />
-
-          <date-input
-            v-if="!singleDaySelection"
-            :i18n="i18n"
-            :input-date="formatDate(checkOut)"
-            input-date-type="check-out"
-            :is-open="isOpen"
-            :single-day-selection="singleDaySelection"
+            :isOpen="isOpen"
+            :singleDaySelection="singleDaySelection"
           />
         </div>
 
@@ -96,22 +79,46 @@
         />
       </div>
 
-      <div v-if="isOpen || alwaysVisible" class="datepicker__inner">
-        <div class="datepicker__header" v-if="isDesktop || alwaysVisible">
+      <div
+        v-if="isOpen || alwaysVisible"
+        class="datepicker__inner"
+      >
+        <div
+          class="datepicker__header"
+          v-if="isDesktop || alwaysVisible"
+        >
           <button
             type="button"
-            class="datepicker__month-button datepicker__month-button--prev"
+            class="datepicker__month-button"
             @click="renderPreviousMonth"
             :tabindex="isOpen ? 0 : -1"
             :disabled="activeMonthIndex === 0"
-          />
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon-arrow-left" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <div class="wrap_datepicker__month">
+            <p class="datepicker__month-name" v-if="months[activeMonthIndex + 0]">
+              {{ months[activeMonthIndex + 0].monthName }}
+            </p>
+            <p class="datepicker__month-name" v-if="months[activeMonthIndex + 1]">
+              {{ months[activeMonthIndex + 1].monthName }}
+            </p>
+          </div>
+
           <button
             type="button"
-            class="datepicker__month-button datepicker__month-button--next"
+            class="datepicker__month-button"
             @click="renderNextMonth"
             :disabled="isPreventedMaxMonth"
             :tabindex="isOpen ? 0 : -1"
-          />
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon-arrow-right" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
 
         <div
@@ -128,7 +135,10 @@
           "
         >
           <template v-if="isMobile">
-            <div class="datepicker__tooltip--mobile" v-if="hoveringTooltip">
+            <div
+              class="datepicker__tooltip--mobile"
+              v-if="hoveringTooltip"
+            >
               <template v-if="customTooltipMessage">
                 {{ cleanString(customTooltipMessage) }}
               </template>
@@ -139,7 +149,20 @@
               class="datepicker__button-paginate--mobile datepicker__button-paginate--mobile--top"
               @click="renderPreviousMonth"
             >
-              <i class="arrow"></i>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon-arrow"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 15l7-7 7 7"
+                />
+              </svg>
             </button>
           </template>
 
@@ -153,7 +176,7 @@
               :key="`${datepickerMonthKey}-${month}`"
             >
               <template v-if="months[activeMonthIndex + month]">
-                <p class="datepicker__month-name">
+                <p class="datepicker__month-name" v-if="!isDesktop">
                   {{ months[activeMonthIndex + month].monthName }}
                 </p>
 
@@ -217,7 +240,20 @@
             :disabled="isPreventedMaxMonth"
             @click="renderNextMonth"
           >
-            <i class="arrow"></i>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon-arrow"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
           </button>
         </div>
 
@@ -228,85 +264,81 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType } from "vue";
 
-  import fecha from "fecha";
-  import Day from "./Day.vue";
-  import DateInput from "./DateInput.vue";
-  import DatePickerWeekRow from "./DatePickerWeekRow.vue";
-  import Helpers from "./helpers";
+import fecha from "fecha";
+import Day from "./Day.vue";
+import DateGroupInput from "./DateGroupInput.vue";
+import DatePickerWeekRow from "./DatePickerWeekRow.vue";
+import Helpers from "./helpers";
 
-  interface I18nTooltip {
-    halfDayCheckIn: string
-    halfDayCheckOut: string
-    saturdayToSaturday: string
-    sundayToSunday: string
-    minimumRequiredPeriod: string
-  }
-  interface I18n {
-    night: string
-    nights: string
-    "day-names": string[]
-    "check-in": string
-    "check-out": string
-    "month-names": string[]
-    tooltip: I18nTooltip
-    week: string
-    weeks: string
-  }
-  interface FirstDayOfLastMonth {
-    belongsToThisMonth: boolean
-    date: Date
-  }
-  interface CheckInCheckOutHalfDay {
-    checkIn?: boolean
-    checkOut?: boolean
-  }
-  interface CheckIncheckOutHalfDay {
-    [key: string]: CheckInCheckOutHalfDay
-  }
-  interface Style {
-    [key: string]: string
-  }
-  interface Period {
-    endAt: Date
-    minimumDuration: number
-    periodType: string
-    startAt: string
-  }
-  interface HoveringPeriod {
-    endAt: Date | null
-    minimumDuration: number
-    periodType: string
-    startAt: Date | null
-  }
-  interface Booking {
-    checkInDate: string;
-    checkOutDate: string;
-    id: string;
-    style: Style;
-  }
-  interface Day {
-    date: Date,
-    belongsToThisMonth: boolean
-  }
-  interface Month {
-    monthName: string
-    days: Day[],
-  }
+interface I18nTooltip {
+  halfDayCheckIn: string;
+  halfDayCheckOut: string;
+  saturdayToSaturday: string;
+  sundayToSunday: string;
+  minimumRequiredPeriod: string;
+}
+interface I18n {
+  night: string;
+  nights: string;
+  "day-names": string[];
+  "check-in": string;
+  "check-out": string;
+  "month-names": string[];
+  tooltip: I18nTooltip;
+  week: string;
+  weeks: string;
+}
+interface FirstDayOfLastMonth {
+  belongsToThisMonth: boolean;
+  date: Date;
+}
+interface CheckInCheckOutHalfDay {
+  checkIn?: boolean;
+  checkOut?: boolean;
+}
+interface CheckIncheckOutHalfDay {
+  [key: string]: CheckInCheckOutHalfDay;
+}
+interface Style {
+  [key: string]: string;
+}
+interface Period {
+  endAt: Date;
+  minimumDuration: number;
+  periodType: string;
+  startAt: string;
+}
+interface HoveringPeriod {
+  endAt: Date | null;
+  minimumDuration: number;
+  periodType: string;
+  startAt: Date | null;
+}
+interface Booking {
+  checkInDate: string;
+  checkOutDate: string;
+  id: string;
+  style: Style;
+}
+interface Day {
+  date: Date;
+  belongsToThisMonth: boolean;
+}
+interface Month {
+  monthName: string;
+  days: Day[];
+}
 
 export default defineComponent({
-  name: 'DatePicker',
+  name: "DatePicker",
   components: {
-    DateInput,
+    DateGroupInput,
     DatePickerWeekRow,
     Day,
   },
   props: {
-    modelValue: {
-      type: [Number, String],
-      required: true,
-    },
     alwaysVisible: {
       type: Boolean,
       default: false,
@@ -314,8 +346,8 @@ export default defineComponent({
     bookings: {
       type: Array as PropType<Booking[]>,
       default: (): Booking[] => {
-        return []
-      }
+        return [];
+      },
     },
     clickOutsideElementId: {
       type: String,
@@ -530,7 +562,9 @@ export default defineComponent({
     },
     duplicateBookingDates(): string[] {
       return this.baseHalfDayDates.filter(
-        ((newArr) => (date: string) => newArr.has(date) || !newArr.add(date))(new Set())
+        ((newArr) => (date: string) => newArr.has(date) || !newArr.add(date))(
+          new Set()
+        )
       );
     },
     baseHalfDayDates(): string[] {
@@ -895,7 +929,7 @@ export default defineComponent({
         const formatDate = this.dateFormater(day.date) as string;
         const halfDays = Object.keys(this.checkIncheckOutHalfDay);
         const disableDays = this.disabledDates
-          .filter(disableDate => !halfDays.includes(disableDate))
+          .filter((disableDate) => !halfDays.includes(disableDate))
           .includes(formatDate);
 
         if (!this.dayIsDisabled(day.date) && !disableDays && this.isDesktop) {
@@ -981,7 +1015,12 @@ export default defineComponent({
         this.customTooltip = "";
       }
     },
-    handleDayClick(event: Event, date: Date, formatDate: string, resetCheckin: boolean) {
+    handleDayClick(
+      event: Event,
+      date: Date,
+      formatDate: string,
+      resetCheckin: boolean
+    ) {
       this.nextPeriodDisableDates = [];
 
       if (resetCheckin) {
@@ -998,7 +1037,7 @@ export default defineComponent({
         this.getNextDate(this.sortedDisabledDates, date) ||
         this.nextDateByDayOfWeekArray(this.disabledDaysOfWeek, date) ||
         this.nextBookingDate(date) ||
-        Infinity as Date | number | null;
+        (Infinity as Date | number | null);
 
       this.dynamicNightCounts = null;
 
@@ -1200,12 +1239,14 @@ export default defineComponent({
       return newT;
     },
     handleClickOutside(event: Event) {
-      const ignoredElement = this.$refs[`DatePicker-${this.hash}`] as HTMLElement;
+      const ignoredElement = this.$refs[
+        `DatePicker-${this.hash}`
+      ] as HTMLElement;
       const ignoredOutsideElement =
         document.getElementById(this.clickOutsideElementId) || false;
 
       if (ignoredElement) {
-        const target = event.target as HTMLInputElement
+        const target = event.target as HTMLInputElement;
         const isIgnoredElementClicked = ignoredElement.contains(target);
         let isIgnoredOutsideElementClicked = false;
 
@@ -1467,7 +1508,9 @@ export default defineComponent({
       if (this.halfDay) {
         const halfDays = Object.keys(checkIncheckOutHalfDay);
 
-        sortedDates = sortedDates.filter((date: any) => !halfDays.includes(date));
+        sortedDates = sortedDates.filter(
+          (date: any) => !halfDays.includes(date)
+        );
       }
 
       sortedDates = sortedDates.map((date: any) => new Date(date));
@@ -1483,5 +1526,679 @@ export default defineComponent({
 </script>
 
 <style>
-.datepicker__header{position:absolute;top:0;right:0;left:0;display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem}@media screen and (max-width:767px){.datepicker__header{padding:1rem}}.container-square{display:grid;grid-template-columns:repeat(7,1fr)}.square{position:relative;font-family:Helvetica Neue}.datepicker__button-paginate--mobile{width:100%;border:0;height:50px;line-height:50px;border-top:1px solid #f5f7f8;background:#fff;margin-top:2rem;position:relative}.datepicker__button-paginate--mobile[disabled=disabled]{opacity:.5}.datepicker__button-paginate--mobile--top{margin:0;transform:rotate(180deg)}.datepicker__button-paginate--mobile .arrow{width:4vmin;height:4vmin;box-sizing:border-box;position:absolute;left:50%;top:50%;transform:rotate(135deg) translateY(100%)}.datepicker__button-paginate--mobile .arrow:before{border-width:.8vmin .8vmin 0 0;display:block}.datepicker__button-paginate--mobile .arrow:after,.datepicker__button-paginate--mobile .arrow:before{content:"";width:100%;height:100%;border-style:solid;border-color:#195252;transition:.2s ease;transform-origin:100% 0}.datepicker__button-paginate--mobile .arrow:after{float:left;position:relative;top:-100%;border-width:0 .8vmin 0 0}.datepicker__wrapper *,.datepicker__wrapper :after,.datepicker__wrapper :before{box-sizing:border-box}.datepicker{transition:all .2s ease-in-out;background-color:#fff;font-size:16px;line-height:14px;overflow:hidden;top:50px;position:absolute;z-index:999}.datepicker--right{right:0}.datepicker button.next--mobile{background:none;border:1px solid #eaeaea;float:none;height:50px;width:100%;position:relative;background-position:50%;-webkit-appearance:none;-moz-appearance:none;appearance:none;overflow:hidden;position:fixed;bottom:0;left:0;outline:none;box-shadow:0 5px 30px 10px rgba(0,0,0,.08);background:#fff}.datepicker button.next--mobile:after{background:transparent url(img/ic-arrow-right-green.regular.83ed3b6c.svg) no-repeat 50%/8px;transform:rotate(90deg);content:"";position:absolute;width:200%;height:200%;top:-50%;left:-50%}.datepicker--closed{box-shadow:0 15px 30px 10px transparent;max-height:0}.datepicker--open{box-shadow:0 15px 30px 10px rgba(0,0,0,.08);max-height:900px}@media screen and (max-width:767px){.datepicker--open{box-shadow:none;height:100%;left:0;right:0;bottom:0;-webkit-overflow-scrolling:touch!important;position:fixed;top:0;width:100%}}.datepicker__dummy-wrapper{background:#fff url(img/calendar_icon.regular.98f9a773.svg) no-repeat 17px/16px}.datepicker__wrapper{position:relative}.datepicker__wrapper .square .datepicker__month-day{border:1px solid #eaeaea;margin:-1px 0 0 -1px}.datepicker__wrapper--booking .datepicker__month-day-wrapper span{text-align:right;padding-top:10px;padding-right:10px;right:0;top:0;transform:none}.datepicker__wrapper--booking .datepicker__month-day:before{display:none}.datepicker__fullview{background:none;height:auto}.datepicker__fullview .datepicker{position:relative;top:0}.datepicker__fullview .square.not-in-the-month{height:0;padding-bottom:100%}.datepicker__fullview .datepicker__month-button{display:inline-block}.datepicker__fullview .datepicker__months{position:static;margin:0}.datepicker__fullview .datepicker__months:before{display:none}.datepicker__input{background:transparent;height:48px;display:flex;align-items:center;font-size:12px;outline:none;word-spacing:5px;border:0}.datepicker__input--first{padding-left:50px}.datepicker__input--first:after{position:relative;content:"→";font-family:arial;font-size:1.2rem;padding:0 .75rem}.datepicker__input:focus{outline:none}.datepicker__input:-moz-placeholder,.datepicker__input:-ms-input-placeholder,.datepicker__input::-moz-placeholder,.datepicker__input::-webkit-input-placeholder{color:#35343d}.datepicker__dummy-wrapper{border:1px solid #eaeaea;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;width:100%;height:100%}@media screen and (max-width:767px){.datepicker__dummy-wrapper{height:50px}}.datepicker__dummy-wrapper--no-border.datepicker__dummy-wrapper{border:0;border-bottom:1px solid #f5f7f8}.datepicker__dummy-wrapper--is-active{border:1px solid #195252}.datepicker__input{color:#35343d;font-size:14px}@media screen and (max-width:479px){.datepicker__input{text-align:center}}.datepicker__input--is-active{color:#195252}.datepicker__input--is-active::placeholder{color:#195252}.datepicker__input--is-active::-moz-placeholder{color:#195252}.datepicker__input--is-active:-ms-input-placeholder{color:#195252}.datepicker__input--is-active:-moz-placeholder{color:#195252}.datepicker__input--single-date:first-child{width:100%;background:none;text-align:left}.datepicker__month-day-wrapper{height:0;padding-top:calc(100% - 1px)}.datepicker__month-day-wrapper span{z-index:1;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}.datepicker__month-day{visibility:visible;text-align:center;color:#195252;cursor:pointer}.datepicker__month-day:focus{outline:none}.datepicker__month-day--today{border:0}.datepicker__month-day--today .datepicker__month-day-wrapper{border:2px solid #195252;padding-top:calc(100% - 5px)}.datepicker__month-day--invalid-range{background-color:rgba(25,82,82,.3);color:#f3f5f8;cursor:not-allowed;position:relative}.datepicker__month-day--invalid{cursor:not-allowed;pointer-events:none}.datepicker__month-day--allowed-checkout:hover,.datepicker__month-day--valid:hover{background-color:#195252;color:#fff}.datepicker__month-day--disabled{opacity:1;background:#f5f7f8;color:#d8d8d8;cursor:not-allowed;pointer-events:none;font-weight:400;position:relative}.datepicker__month-day--disabled span{text-decoration:line-through}.datepicker__month-day--not-allowed.currentDay,.datepicker__month-day--valid.datepicker__month-day--not-allowed,.datepicker__month-day--valid.datepicker__month-day--not-allowed:hover{color:#195252;font-weight:400;cursor:default;background:transparent}.datepicker__month-day--not-allowed.currentDay span,.datepicker__month-day--valid.datepicker__month-day--not-allowed:hover span,.datepicker__month-day--valid.datepicker__month-day--not-allowed span{text-decoration:none}.datepicker__month-day--hovering.datepicker__month-day--not-allowed:hover{cursor:pointer}.datepicker__month-day--halfCheckIn,.datepicker__month-day--halfCheckOut{position:relative;overflow:hidden}.datepicker__month-day--halfCheckIn:before,.datepicker__month-day--halfCheckOut:before{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);content:"";z-index:-1;height:0;width:0;border-bottom:120px solid #f5f7f8;border-left:120px solid transparent}.datepicker__month-day--halfCheckOut:before{border-top:120px solid #f5f7f8;border-bottom:0;border-left:0;border-right:120px solid transparent}.datepicker__month-day--selected{background-color:rgba(25,82,82,.7);color:#fff}.datepicker__month-day--selected span{text-decoration:none}.datepicker__month-day--selected:hover{font-weight:700;background-color:#195252;color:#fff;z-index:1}.datepicker__month-day--hovering{background-color:rgba(25,82,82,.7);color:#fff;font-weight:700;cursor:pointer}.datepicker__month-day--hovering span{text-decoration:none}.datepicker__month-day--first-day-selected,.datepicker__month-day--last-day-selected{background:#195252;color:#fff;cursor:pointer;font-weight:700;pointer-events:auto}.datepicker__month-day--first-day-selected span,.datepicker__month-day--last-day-selected span{text-decoration:none}.datepicker__month-day--allowed-checkout{color:#424b53}.datepicker__month-day--out-of-range{color:#f3f5f8;cursor:not-allowed;font-weight:400;position:relative;pointer-events:none}.datepicker__month-day--out-of-range span{text-decoration:none}.datepicker__month-day--valid{cursor:pointer;font-weight:700}.datepicker__month-day--valid.datepicker__month-day--halfCheckIn.datepicker__month-day--last-day-selected{color:#fff}.datepicker__month-day--hidden{opacity:0;pointer-events:none}.datepicker__month-button{background:transparent url(img/ic-arrow-right-green.regular.83ed3b6c.svg) no-repeat 50%/8px;width:40px;height:40px;border:1px solid #00ca9d;outline:none;text-align:center;cursor:pointer;opacity:1;transition:opacity .5s ease}.datepicker__month-button:hover{opacity:.65}.datepicker__month-button:focus{outline:none}.datepicker__month-button--prev{transform:rotateY(180deg)}.datepicker__month-button[disabled]{opacity:.2;cursor:not-allowed;pointer-events:none}.datepicker__inner{padding:1.5rem 2.5rem}@media screen and (max-width:767px){.datepicker__inner{padding:0;height:100%}}.datepicker.show-tooltip .datepicker__months{height:calc(100% - 140px)}.datepicker.show-tooltip .datepicker__tooltip--mobile{height:auto;opacity:1;padding:15px;visibility:visible}@media screen and (min-width:768px){.datepicker__months{display:flex;flex-wrap:wrap;width:650px;justify-content:space-between}}@media screen and (max-width:767px){.datepicker__months{height:calc(100% - 90px);overflow-y:scroll;overflow-x:hidden;transition:all .2s ease}}.datepicker__months:before{content:"";background:#eaeaea;bottom:0;display:block;left:50%;position:absolute;top:0;width:1px}@media screen and (max-width:767px){.datepicker__months:before{display:none}}.datepicker__months--full,.datepicker__months--full .datepicker__months{width:100%}@media screen and (max-width:767px){.datepicker__months--full .datepicker__month{width:100%}}.datepicker__months--full:before{display:none}.datepicker__month{font-size:12px;width:50%;padding-right:1rem}@media screen and (max-width:767px){.datepicker__month{width:100%;padding:0 1rem}}@media screen and (min-width:768px){.datepicker__month:last-of-type{padding-right:0;padding-left:1rem}}.datepicker__month-caption{height:2.5em;vertical-align:middle}.datepicker__month-name{font-size:16px;font-weight:700;pointer-events:none;text-align:center}@media screen and (max-width:767px){.datepicker__month-name{padding:0 0 3rem;margin:0 auto;width:100%}.datepicker__month-name:last-of-type{padding:2rem 0 2.5rem}}.datepicker__week-days{height:2em;vertical-align:middle}.datepicker__week-row{display:grid;grid-template-columns:repeat(7,1fr);align-items:center;margin:2rem auto 1.5rem}@media screen and (max-width:767px){.datepicker__week-row{height:40px;align-items:center;margin:0;border-bottom:1px solid #f5f7f8}}@media screen and (max-width:767px){.datepicker__week-row--always-visible{border:0}}.datepicker__week-name{font-size:12px;font-weight:400;color:#424b53;text-align:center}.datepicker__close-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;background:transparent;border:0;color:#195252;cursor:pointer;font-size:21px;font-weight:700;margin-top:0;outline:0;z-index:10000;position:fixed;right:15px;top:0;height:48px;line-height:48px}.datepicker__close-button i{display:block;font-style:inherit;transform:rotate(45deg)}.datepicker__clear-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;background:transparent;border:0;cursor:pointer;font-size:25px;font-weight:700;height:100%;margin:0;padding:0;position:absolute;right:0;top:0;width:40px}.datepicker__clear-button svg{fill:none;stroke-linecap:round;stroke-width:8px;stroke:#424b53;width:20px;width:14px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}.datepicker__clear-button:focus{outline:none}.datepicker__tooltip{background-color:#2d3047;border-radius:2px;color:#fff;font-size:11px;padding:5px 10px;position:absolute;z-index:50;left:50%;bottom:100%;white-space:nowrap;transform:translateX(-50%);text-align:center}.datepicker__tooltip--mobile{height:0;opacity:0;visibility:hidden;padding:0 1rem;border-bottom:1px solid #d7d9e2;border-top:1px solid #d7d9e2;font-size:14px;line-height:1.4;transition:all .2s ease}.datepicker__tooltip:after{border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid #2d3047;bottom:-4px;content:"";left:50%;margin-left:-4px;position:absolute}.-is-hidden{display:none}.parent-bullet{top:50%;height:100%;display:block;z-index:-1}.parent-bullet,.parent-bullet .bullet{position:absolute;left:50%;transform:translate(-50%,-50%);width:100%}.parent-bullet .bullet{top:60%;height:4px;transition:opacity .3s ease}@media screen and (min-width:768px){.parent-bullet .bullet{top:50%}}.parent-bullet .bullet.checkIn,.parent-bullet .bullet.checkInCheckOut,.parent-bullet .bullet.checkOut{width:8px;height:18px;border-radius:10px}.parent-bullet .bullet.checkIn.bullet--small,.parent-bullet .bullet.checkInCheckOut.bullet--small,.parent-bullet .bullet.checkOut.bullet--small{height:6px;width:14px}.parent-bullet .bullet.checkInCheckOut{left:calc(50% - 15px)}.parent-bullet .pipe{display:block;width:100%;height:4px;position:absolute;top:60%;transform:translateY(-50%);transition:opacity .3s ease}@media screen and (min-width:768px){.parent-bullet .pipe{top:50%}}.parent-bullet .pipe.pipe--small{height:3px}.parent-bullet .pipe.checkIn{left:calc(50% + 4px);width:calc(50% - 4px)}.parent-bullet .pipe.checkOut{left:0;width:calc(50% - 4px)}.parent-bullet .pipe.checkInCheckOut{width:calc(50% - 19px)}
+/* NEW STYLE */
+.datepicker__dummy-wrapper {
+  @apply border border-solid border-gray-200 cursor-pointer flex flex-wrap items-center w-full h-full lg:h-[50px] transition-all;
+  user-select:none;
+  -moz-user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+}
+.datepicker__dummy-wrapper--is-active {
+  @apply border-gray-300;
+}
+.datepicker__header {
+  @apply flex items-center justify-between;
+}
+.container-square {
+  @apply grid grid-cols-7;
+}
+.square {
+  @apply relative;
+}
+.datepicker__button-paginate--mobile {
+  @apply w-full border-0 h-[50px] border-t border-gray-100 bg-white mt-8 relative;
+}
+.icon-arrow {
+  @apply w-[50px] h-[50px];
+}
+.datepicker__button-paginate--mobile[disabled="disabled"] {
+  @apply opacity-50;
+}
+.datepicker__button-paginate--mobile--top {
+  @apply m-0 border-t-0 border-b border-gray-100;
+}
+.icon-arrow-left,
+.icon-arrow-right {
+  @apply w-5 h-5 stroke-current text-gray-800;
+}
+.datepicker__months {
+  @apply w-full flex flex-wrap h-[calc(100%-90px)] overflow-y-scroll overflow-x-hidden lg:h-auto lg:overflow-y-hidden lg:grid lg:w-[650px] lg:grid-cols-2 lg:gap-4;
+}
+.wrap_datepicker__month {
+  @apply w-full grid grid-cols-2 items-center -mx-10;
+}
+.datepicker__month-button {
+  @apply w-10 h-10 bg-transparent relative z-10 shadow-none outline-none border border-solid border-gray-100 focus:outline-none cursor-pointer flex items-center justify-center hover:opacity-40 transition-opacity;
+}
+.datepicker__months--full {
+  @apply w-full;
+}
+.datepicker__month {
+  @apply box-border w-full;
+}
+.datepicker__month-day {
+  @apply text-xs;
+}
+/* NEW STYLE */
+
+.datepicker {
+  transition: all 0.2s ease-in-out;
+  background-color: #fff;
+  font-size: 16px;
+  line-height: 14px;
+  overflow: hidden;
+  top: 50px;
+  position: absolute;
+  z-index: 999;
+}
+
+.datepicker--right {
+  right: 0;
+}
+
+.datepicker button.next--mobile {
+  background: none;
+  border: 1px solid #eaeaea;
+  float: none;
+  height: 50px;
+  width: 100%;
+  position: relative;
+  background-position: 50%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  outline: none;
+  box-shadow: 0 5px 30px 10px rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.datepicker button.next--mobile:after {
+  background: transparent url(img/ic-arrow-right-green.regular.83ed3b6c.svg)
+    no-repeat 50%/8px;
+  transform: rotate(90deg);
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+}
+
+.datepicker--closed {
+  box-shadow: 0 15px 30px 10px transparent;
+  max-height: 0;
+}
+
+.datepicker--open {
+  box-shadow: 0 15px 30px 10px rgba(0, 0, 0, 0.08);
+  max-height: 900px;
+}
+
+@media screen and (max-width: 767px) {
+  .datepicker--open {
+    box-shadow: none;
+    height: 100%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-overflow-scrolling: touch !important;
+    position: fixed;
+    top: 0;
+    width: 100%;
+  }
+}
+.datepicker__wrapper {
+  position: relative;
+}
+
+.datepicker__wrapper .square .datepicker__month-day {
+  border: 1px solid #eaeaea;
+  margin: -1px 0 0 -1px;
+}
+
+.datepicker__wrapper--booking .datepicker__month-day-wrapper span {
+  text-align: right;
+  padding-top: 10px;
+  padding-right: 10px;
+  right: 0;
+  top: 0;
+  transform: none;
+}
+
+.datepicker__wrapper--booking .datepicker__month-day:before {
+  display: none;
+}
+
+.datepicker__fullview {
+  background: none;
+  height: auto;
+}
+
+.datepicker__fullview .datepicker {
+  position: relative;
+  top: 0;
+}
+
+.datepicker__fullview .square.not-in-the-month {
+  height: 0;
+  padding-bottom: 100%;
+}
+
+.datepicker__input {
+  background: transparent;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  outline: none;
+  word-spacing: 5px;
+  border: 0;
+}
+
+.datepicker__input--first {
+  @apply pl-4;
+}
+
+.datepicker__input:focus {
+  outline: none;
+}
+
+.datepicker__input:-moz-placeholder,
+.datepicker__input:-ms-input-placeholder,
+.datepicker__input::-moz-placeholder,
+.datepicker__input::-webkit-input-placeholder {
+  color: #35343d;
+}
+
+.datepicker__input {
+  color: #35343d;
+  font-size: 14px;
+}
+
+@media screen and (max-width: 479px) {
+  .datepicker__input {
+    text-align: center;
+  }
+}
+
+.datepicker__input--is-active {
+  color: #195252;
+}
+
+.datepicker__input--is-active::placeholder {
+  color: #195252;
+}
+
+.datepicker__input--is-active::-moz-placeholder {
+  color: #195252;
+}
+
+.datepicker__input--is-active:-ms-input-placeholder {
+  color: #195252;
+}
+
+.datepicker__input--is-active:-moz-placeholder {
+  color: #195252;
+}
+
+.datepicker__input--single-date:first-child {
+  width: 100%;
+  background: none;
+  text-align: left;
+}
+
+.datepicker__month-day-wrapper {
+  height: 0;
+  padding-top: calc(100% - 1px);
+}
+
+.datepicker__month-day-wrapper span {
+  z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.datepicker__month-day {
+  visibility: visible;
+  text-align: center;
+  color: #195252;
+  cursor: pointer;
+}
+
+.datepicker__month-day:focus {
+  outline: none;
+}
+
+.datepicker__month-day--today {
+  border: 0;
+}
+
+.datepicker__month-day--today .datepicker__month-day-wrapper {
+  border: 2px solid #195252;
+  padding-top: calc(100% - 5px);
+}
+
+.datepicker__month-day--invalid-range {
+  background-color: rgba(25, 82, 82, 0.3);
+  color: #f3f5f8;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.datepicker__month-day--invalid {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.datepicker__month-day--allowed-checkout:hover,
+.datepicker__month-day--valid:hover {
+  background-color: #195252;
+  color: #fff;
+}
+
+.datepicker__month-day--disabled {
+  opacity: 1;
+  background: #f5f7f8;
+  color: #d8d8d8;
+  cursor: not-allowed;
+  pointer-events: none;
+  font-weight: 400;
+  position: relative;
+}
+
+.datepicker__month-day--disabled span {
+  text-decoration: line-through;
+}
+
+.datepicker__month-day--not-allowed.currentDay,
+.datepicker__month-day--valid.datepicker__month-day--not-allowed,
+.datepicker__month-day--valid.datepicker__month-day--not-allowed:hover {
+  color: #195252;
+  font-weight: 400;
+  cursor: default;
+  background: transparent;
+}
+
+.datepicker__month-day--not-allowed.currentDay span,
+.datepicker__month-day--valid.datepicker__month-day--not-allowed:hover span,
+.datepicker__month-day--valid.datepicker__month-day--not-allowed span {
+  text-decoration: none;
+}
+
+.datepicker__month-day--hovering.datepicker__month-day--not-allowed:hover {
+  cursor: pointer;
+}
+
+.datepicker__month-day--halfCheckIn,
+.datepicker__month-day--halfCheckOut {
+  position: relative;
+  overflow: hidden;
+}
+
+.datepicker__month-day--halfCheckIn:before,
+.datepicker__month-day--halfCheckOut:before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  content: "";
+  z-index: -1;
+  height: 0;
+  width: 0;
+  border-bottom: 120px solid #f5f7f8;
+  border-left: 120px solid transparent;
+}
+
+.datepicker__month-day--halfCheckOut:before {
+  border-top: 120px solid #f5f7f8;
+  border-bottom: 0;
+  border-left: 0;
+  border-right: 120px solid transparent;
+}
+
+.datepicker__month-day--selected {
+  background-color: rgba(25, 82, 82, 0.7);
+  color: #fff;
+}
+
+.datepicker__month-day--selected span {
+  text-decoration: none;
+}
+
+.datepicker__month-day--selected:hover {
+  font-weight: 700;
+  background-color: #195252;
+  color: #fff;
+  z-index: 1;
+}
+
+.datepicker__month-day--hovering {
+  background-color: rgba(25, 82, 82, 0.7);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.datepicker__month-day--hovering span {
+  text-decoration: none;
+}
+
+.datepicker__month-day--first-day-selected,
+.datepicker__month-day--last-day-selected {
+  background: #195252;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  pointer-events: auto;
+}
+
+.datepicker__month-day--first-day-selected span,
+.datepicker__month-day--last-day-selected span {
+  text-decoration: none;
+}
+
+.datepicker__month-day--allowed-checkout {
+  color: #424b53;
+}
+
+.datepicker__month-day--out-of-range {
+  color: #f3f5f8;
+  cursor: not-allowed;
+  font-weight: 400;
+  position: relative;
+  pointer-events: none;
+}
+
+.datepicker__month-day--out-of-range span {
+  text-decoration: none;
+}
+
+.datepicker__month-day--valid {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.datepicker__month-day--valid.datepicker__month-day--halfCheckIn.datepicker__month-day--last-day-selected {
+  color: #fff;
+}
+
+.datepicker__month-day--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.datepicker__month-button[disabled] {
+  opacity: 0.2;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.datepicker__inner {
+  padding: 1.5rem 2.5rem;
+}
+
+@media screen and (max-width: 767px) {
+  .datepicker__inner {
+    padding: 0;
+    height: 100%;
+  }
+}
+
+.datepicker.show-tooltip .datepicker__months {
+  height: calc(100% - 140px);
+}
+
+.datepicker.show-tooltip .datepicker__tooltip--mobile {
+  height: auto;
+  opacity: 1;
+  padding: 15px;
+  visibility: visible;
+}
+
+.datepicker__month-caption {
+  height: 2.5em;
+  vertical-align: middle;
+}
+
+.datepicker__month-name {
+  font-size: 16px;
+  font-weight: 700;
+  pointer-events: none;
+  text-align: center;
+}
+
+@media screen and (max-width: 767px) {
+  .datepicker__month-name {
+    padding: 0 0 3rem;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .datepicker__month-name:last-of-type {
+    padding: 2rem 0 2.5rem;
+  }
+}
+
+.datepicker__week-days {
+  height: 2em;
+  vertical-align: middle;
+}
+
+.datepicker__week-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;
+  margin: 2rem auto 1.5rem;
+}
+
+@media screen and (max-width: 767px) {
+  .datepicker__week-row {
+    height: 40px;
+    align-items: center;
+    margin: 0;
+    border-bottom: 1px solid #f5f7f8;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .datepicker__week-row--always-visible {
+    border: 0;
+  }
+}
+
+.datepicker__week-name {
+  font-size: 12px;
+  font-weight: 400;
+  color: #424b53;
+  text-align: center;
+}
+
+.datepicker__close-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: #195252;
+  cursor: pointer;
+  font-size: 21px;
+  font-weight: 700;
+  margin-top: 0;
+  outline: 0;
+  z-index: 10000;
+  position: fixed;
+  right: 15px;
+  top: 0;
+  height: 48px;
+  line-height: 48px;
+}
+
+.datepicker__close-button i {
+  display: block;
+  font-style: inherit;
+  transform: rotate(45deg);
+}
+
+.datepicker__clear-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 25px;
+  font-weight: 700;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+}
+
+.datepicker__clear-button svg {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 8px;
+  stroke: #424b53;
+  width: 20px;
+  width: 14px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.datepicker__clear-button:focus {
+  outline: none;
+}
+
+.datepicker__tooltip {
+  background-color: #2d3047;
+  border-radius: 2px;
+  color: #fff;
+  font-size: 11px;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 50;
+  left: 50%;
+  bottom: 100%;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.datepicker__tooltip--mobile {
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+  padding: 0 1rem;
+  border-bottom: 1px solid #d7d9e2;
+  border-top: 1px solid #d7d9e2;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: all 0.2s ease;
+}
+
+.datepicker__tooltip:after {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #2d3047;
+  bottom: -4px;
+  content: "";
+  left: 50%;
+  margin-left: -4px;
+  position: absolute;
+}
+
+.-is-hidden {
+  display: none;
+}
+
+.parent-bullet {
+  top: 50%;
+  height: 100%;
+  display: block;
+  z-index: -1;
+}
+
+.parent-bullet,
+.parent-bullet .bullet {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+.parent-bullet .bullet {
+  top: 60%;
+  height: 4px;
+  transition: opacity 0.3s ease;
+}
+
+@media screen and (min-width: 768px) {
+  .parent-bullet .bullet {
+    top: 50%;
+  }
+}
+
+.parent-bullet .bullet.checkIn,
+.parent-bullet .bullet.checkInCheckOut,
+.parent-bullet .bullet.checkOut {
+  width: 8px;
+  height: 18px;
+  border-radius: 10px;
+}
+
+.parent-bullet .bullet.checkIn.bullet--small,
+.parent-bullet .bullet.checkInCheckOut.bullet--small,
+.parent-bullet .bullet.checkOut.bullet--small {
+  height: 6px;
+  width: 14px;
+}
+
+.parent-bullet .bullet.checkInCheckOut {
+  left: calc(50% - 15px);
+}
+
+.parent-bullet .pipe {
+  display: block;
+  width: 100%;
+  height: 4px;
+  position: absolute;
+  top: 60%;
+  transform: translateY(-50%);
+  transition: opacity 0.3s ease;
+}
+
+@media screen and (min-width: 768px) {
+  .parent-bullet .pipe {
+    top: 50%;
+  }
+}
+
+.parent-bullet .pipe.pipe--small {
+  height: 3px;
+}
+
+.parent-bullet .pipe.checkIn {
+  left: calc(50% + 4px);
+  width: calc(50% - 4px);
+}
+
+.parent-bullet .pipe.checkOut {
+  left: 0;
+  width: calc(50% - 4px);
+}
+
+.parent-bullet .pipe.checkInCheckOut {
+  width: calc(50% - 19px);
+}
 </style>
