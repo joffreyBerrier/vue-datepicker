@@ -1,5 +1,5 @@
 /* eslint-disable vars-on-top */
-import fecha from "fecha";
+import { format } from 'fecha';
 
 export default {
   getNextDate(datesArray, referenceDate) {
@@ -159,7 +159,7 @@ export default {
     const f = format;
 
     if (date) {
-      return fecha.format(date, f);
+      return format(date, f);
     }
 
     return "";
@@ -175,8 +175,8 @@ export default {
     return new Date(time1) < new Date(time2);
   },
   compareDay(day1, day2) {
-    const date1 = fecha.format(new Date(day1), "YYYYMMDD");
-    const date2 = fecha.format(new Date(day2), "YYYYMMDD");
+    const date1 = format(new Date(day1), "YYYYMMDD");
+    const date2 = format(new Date(day2), "YYYYMMDD");
 
     if (date1 > date2) {
       return 1;
