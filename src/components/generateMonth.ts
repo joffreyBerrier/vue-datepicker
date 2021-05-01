@@ -62,7 +62,7 @@ const createMonth = (date: Date): Month => {
       belongsToThisMonth: day.getMonth() === date.getMonth(),
       date: day,
       dayNumber: format(day, "D"),
-      formatDay: format(day, "DD/MM/YYYY"),
+      formatDay: format(day, "YYYY-MM-DD"),
     });
   }
 

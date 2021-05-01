@@ -1,5 +1,10 @@
 <template>
-  <Calendar v-model:checkIn="checkIn" v-model:checkOut="checkOut"/>
+  <Calendar
+    v-model:checkIn="checkIn"
+    v-model:checkOut="checkOut"
+    :has-day-checkIn="true"
+    :booking-dates="bookingDates"
+  />
 </template>
 
 <script lang="ts">
@@ -13,8 +18,22 @@ export default defineComponent({
   },
   data() {
     return {
-      checkIn: null,
-      checkOut: null
+      bookingDates: [{
+        checkInDate: "2021-05-01",
+        checkInTime: 17,
+        checkOutDate: "2021-05-10",
+        checkOutTime: 10,
+        type: "admin"
+      },
+      {
+        checkInDate: "2021-06-10",
+        checkInTime: 17,
+        checkOutDate: "2021-06-20",
+        checkOutTime: 10,
+        type: "contract"
+      }],
+      checkIn: new Date(),
+      checkOut: new Date()
     }
   }
 })

@@ -44,18 +44,22 @@
         </ul>
         <div class="grid grid-cols-7">
           <button
+            v-for="day in month.days"
+            :key="day.formatDay"
             type="button"
             :class="[
-              'focus:outline-none relative pb-[100%] border border-gray-200',
+              'focus:outline-none relative pb-[100%] border border-gray-200 overflow-hidden',
               { 'pointer-events-none text-gray-300 line-through': !day.belongsToThisMonth },
               { 'border-2 border-green-500' : formatToday === day.formatDay },
               { 'bg-green-500' : checkIn === day.date },
               { 'bg-green-500' : checkOut === day.date },
               { 'bg-green-300' : hoveringDay === day.date },
-              { 'bg-gray-300' : disabledDates.includes(day.formatDay) },
-              { 'bg-green-300' : hoveringDates.includes(day.formatDay) }
+              { 'bg-gray-100 pointer-events-none' : disabledDates.includes(day.formatDay) },
+              { 'bg-gray-100 pointer-events-none': disabledDatesBetweenBookings.includes(day.formatDay) },
+              { 'bg-green-300' : hoveringDates.includes(day.formatDay) },
+              { 'halfDayCheckIn pointer-events-none' : checkIncheckOutHalfDay[day.formatDay] && checkIncheckOutHalfDay[day.formatDay].checkIn },
+              { 'halfDayCheckOut' : checkIncheckOutHalfDay[day.formatDay] && checkIncheckOutHalfDay[day.formatDay].checkOut },
             ]"
-            v-for="day in month.days"
             @mouseenter="dayMouseOver(day)"
             @mouseleave="dayMouseLeave"
             @click="dayClicked(day)"
@@ -78,6 +82,14 @@ import { format } from "fecha";
 import { isDateBefore } from "./newHelpers";
 import { createMonth, renderMultipleMonth } from './generateMonth'
 
+interface CheckInOrCheckOut {
+  checkIn?: boolean;
+  checkOut?: boolean;
+  dates: string[];
+}
+interface CheckIncheckOutHalfDay {
+  [key: string]: CheckInOrCheckOut;
+}
 interface Day {
   belongsToThisMonth: boolean;
   date: Date;
@@ -90,25 +102,49 @@ interface Month {
   monthName: string;
   yearKey: number;
 }
+interface Booking {
+  checkInDate: string
+  checkInTime: number
+  checkOutDate: string
+  checkOutTime: number
+  type: string
+}
 
 export default defineComponent({
   name: "Calendar",
   props: {
+    bookedDates: {
+      type: Array,
+      default: (): string[] => [],
+    },
+    bookingDates: {
+      type: Array,
+      default: (): Booking[] => [],
+    },
     checkIn: {
       type: Date,
+      default: new Date()
     },
     checkOut: {
       type: Date,
+      default: new Date()
     },
+    hasDayCheckIn: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
       activeIndex: 0 as number,
-      today: new Date as Date,
+      checkIncheckOutHalfDay: {} as CheckIncheckOutHalfDay,
       disabledDates: [] as string[],
       hoveringDates: [] as string[],
       hoveringDay: new Date() as Date,
       months: [] as Month[],
+      sortedDisabledDates: [] as Date[],
+      disabledDatesBetweenBookings: [] as string[],
+      today: new Date as Date,
     };
   },
   beforeMount() {
@@ -118,22 +154,75 @@ export default defineComponent({
     // Next 12 month after the current day
     const months = renderMultipleMonth(this.today, 12)
     this.months.push(...months)
+
+    if (this.hasDayCheckIn) {
+      this.createHalfDayDates()
+    }
   },
   emits: ["update:checkIn", "update:checkOut"],
   computed: {
     formatToday(): string {
-      return format(this.today, "DD/MM/YYYY")
+      return format(this.today, "YYYY-MM-DD")
     },
     paginate(): Month[] {
       return this.months.slice(this.activeIndex, 2 + this.activeIndex)
     },
   },
   methods: {
-    // Return an array of date between two date with DD/MM/YYYY format
-    getDatesBetweenTwoDates(start: Date, end: Date): string[] {
+    getDayDiff(d1: string, d2: string) {
+      const t2 = new Date(d2).getTime();
+      const t1 = new Date(d1).getTime();
+
+      return parseInt((t2 - t1) / (24 * 3600 * 1000), 10);
+    },
+    // Create halfDayDates
+    createHalfDayDates() {
+      const bookingDates = this.bookingDates.map((booking) => [
+        booking.checkInDate,
+        booking.checkOutDate,
+      ]).reduce((a, b) => {
+        return a.concat(b);
+      });
+
+      let sortedDates = [] as Date[];
+      const checkIncheckOutHalfDay = {} as CheckIncheckOutHalfDay;
+
+      this.bookingDates.forEach((booking: Booking) => {
+        checkIncheckOutHalfDay[booking.checkInDate] = {
+          checkIn: true,
+        };
+        checkIncheckOutHalfDay[booking.checkOutDate] = {
+          checkOut: true,
+        };
+
+        this.disabledDatesBetweenBookings.push(...this.getDatesBetweenTwoDates(new Date(booking.checkInDate), new Date(booking.checkOutDate)))
+      });
+
+      const halfDays = Object.keys(checkIncheckOutHalfDay);
+      sortedDates = bookingDates.filter(
+        (date: any) => !halfDays.includes(date)
+      );
+
+      sortedDates = bookingDates.map((date: any) => new Date(date));
+
+      this.sortedDisabledDates = sortedDates.sort((a: Date, b: Date) => a - b);
+      this.checkIncheckOutHalfDay = checkIncheckOutHalfDay;
+    },
+    // Return an array of date between two date with YYYY-MM-DD format
+    getDatesBetweenTwoDates(startDate: Date, endDate: Date): string[] {
       let arr = [];
-      for (let dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
-        arr.push(format(new Date(dt), "DD/MM/YYYY"));
+
+      for (let dt = new Date(startDate); dt <= endDate; dt.setDate(dt.getDate() + 1)) {
+        const formatDay = format(new Date(dt), "YYYY-MM-DD")
+        const formatStartDate = format(new Date(startDate), "YYYY-MM-DD")
+        const formatEndDate = format(new Date(endDate), "YYYY-MM-DD")
+
+        if (
+          formatDay != formatStartDate &&
+          formatDay != formatEndDate
+        ) {
+          arr.push(formatDay);
+        }
       }
 
       return arr;
@@ -172,7 +261,7 @@ export default defineComponent({
         this.hoveringDates = [];
       }
     },
-    // Create an array of disabledTime with DD/MM/YYYY format
+    // Create an array of disabledTime with YYYY-MM-DD format
     createDisabledDates(date: Date) {
       const checkIn = date;
       const actualMonth = date.getMonth() as number;
@@ -184,7 +273,7 @@ export default defineComponent({
       monthsIncludeAndBeforeCheckin.forEach((month) => {
         month.days.forEach((day) => {
           if (isDateBefore(day.date, checkIn)) {
-            const formatDay = format(new Date(day.date), "DD/MM/YYYY");
+            const formatDay = format(new Date(day.date), "YYYY-MM-DD");
 
             this.disabledDates.push(formatDay);
           }
@@ -194,3 +283,19 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.halfDayCheckIn:before,
+.halfDayCheckOut:before {
+  content: "";
+  z-index: -1;
+  border-bottom: 120px solid rgba(243, 244, 246, 1);
+  border-left: 120px solid transparent;
+  @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-0 w-0 border-b-[120px] border-l-[120px];
+}
+.halfDayCheckOut:before {
+  border-top-color: rgba(243, 244, 246, 1);
+  border-right-color: transparent;
+  @apply border-t-[120px] border-r-[120px] border-b-0 border-l-0;
+}
+</style>
