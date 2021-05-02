@@ -2,7 +2,7 @@
   <Calendar
     v-model:checkIn="checkIn"
     v-model:checkOut="checkOut"
-    :has-day-checkIn="true"
+    :bookedDates="bookedDates"
     :booking-dates="bookingDates"
   />
 </template>
@@ -18,6 +18,7 @@ export default defineComponent({
   },
   data() {
     return {
+      bookedDates: ['2021-06-01', '2021-06-02', '2021-06-03', '2021-06-23', '2021-06-24', '2021-06-25'],
       bookingDates: [{
         checkInDate: "2021-05-01",
         checkInTime: 17,
@@ -32,8 +33,8 @@ export default defineComponent({
         checkOutTime: 10,
         type: "contract"
       }],
-      checkIn: new Date(),
-      checkOut: new Date()
+      checkIn: null,
+      checkOut: null
     }
   }
 })

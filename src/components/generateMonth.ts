@@ -1,4 +1,5 @@
 import { format } from 'fecha';
+import { addDays } from './newHelpers';
 
 interface Day {
   belongsToThisMonth: boolean;
@@ -35,14 +36,6 @@ const getFirstDay = (date: Date, firstDayOfWeek: number) => {
   return new Date(
     firstDay.setDate(firstDay.getDate() - (firstDay.getDay() - offset))
   );
-}
-
-const addDays = (date: Date, quantity: number) => {
-  const result = new Date(date);
-
-  result.setDate(result.getDate() + quantity);
-
-  return result;
 }
 
 const createMonth = (date: Date): Month => {
@@ -108,5 +101,6 @@ const createMultipleMonth = (dates: Date[]): Month[] => {
 }
 
 export {
-  createMonth, renderMultipleMonth
+  createMonth,
+  renderMultipleMonth
 }

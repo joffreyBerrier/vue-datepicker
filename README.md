@@ -1,5 +1,31 @@
 # vue-datepicker
 👊 An easier datePicker in Vue.js 👊
+
+# End
+[x] Show dates + month + year
+[x] Manage HoveringDate
+[x] Manage Checkin / CheckOut halfday
+[x] Manage BookingDates
+Type:
+```json
+[{
+  checkInDate: "2021-05-01",
+  checkInTime: 17,
+  checkOutDate: "2021-05-10",
+  checkOutTime: 10,
+  type: "admin"
+}]
+```
+[x] Manage BookedDates
+Type:
+```json
+['2021-05-01', '2021-05-02', '2021-05-03']
+```
+
+# To Do
+[] Manage periods (weekly / nightly)
+[] Manage minimum duration
+
 # Vue 3 + Typescript + Vite
 
 This template should help get you started developing with Vue 3 and Typescript in Vite.

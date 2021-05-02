@@ -174,6 +174,9 @@ export default {
   isDateBefore(time1, time2) {
     return new Date(time1) < new Date(time2);
   },
+  isDateAfter(time1, time2) {
+    return new Date(time1) > new Date(time2);
+  },
   compareDay(day1, day2) {
     const date1 = format(new Date(day1), "YYYYMMDD");
     const date2 = format(new Date(day2), "YYYYMMDD");
