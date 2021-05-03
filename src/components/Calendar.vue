@@ -1,82 +1,116 @@
 <template>
-  <div class="px-4">
-    <div class="relative grid grid-cols-2 items-center gap-4">
-      <button
-        :disabled="activeIndex === 0"
-        @click="activeIndex--"
-        class="absolute left-0 w-10 h-10 flex items-center justify-center border border-gray-200 focus:outline-none disabled:opacity-50"
+  <div class="w-full relative disable-select" ref="Calendar">
+    <div @click="openCalendar" class="flex items-center h-[50px] cursor-pointer px-4 border border-gray-200">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        :class="['w-5 h-5 stroke-current mr-4', { 'text-gray-300': !checkIn, 'text-gray-700': checkIn }]"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current text-gray-800" fill="none" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+        />
+      </svg>
 
-      <p class="text-center py-2">{{ months[activeIndex].monthName }}</p>
-      <p class="text-center py-2">{{ months[activeIndex + 1].monthName }}</p>
+      <p class="flex items-center m-0">
+        <span :class="[{ 'text-gray-300': !checkIn, 'text-gray-700': checkIn }]">
+          <template v-if="checkIn">{{ checkIn }}</template>
+          <template v-else>{{ placeholder.checkIn }}</template>
+        </span>
 
-      <button
-        :disabled="activeIndex >= months.length - 2"
-        @click="activeIndex++"
-        class="absolute right-0 w-10 h-10 flex items-center justify-center border border-gray-200 focus:outline-none disabled:opacity-50"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current text-gray-800" fill="none" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        <svg xmlns="http://www.w3.org/2000/svg" :class="['mx-4 w-5 h-5 stroke-current', { 'text-gray-300': !checkIn, 'text-gray-700': checkIn }]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>
-      </button>
+
+        <span :class="[{ 'text-gray-300': !checkIn, 'text-gray-700': checkIn }]">
+          <template v-if="checkOut">{{ checkOut }}</template>
+          <template v-else>{{ placeholder.checkOut }}</template>
+        </span>
+      </p>
     </div>
+    <div v-if="showCalendar" class="p-4 bg-white shadow-md absolute w-full md:w-[600px] top-[100%]">
+      <div class="relative grid grid-cols-2 items-center gap-4">
+        <button
+          :disabled="activeIndex === 0"
+          @click="activeIndex--"
+          class="absolute left-0 w-10 h-10 flex items-center justify-center border border-gray-200 focus:outline-none disabled:opacity-50"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
 
-    <div class="grid grid-cols-2 gap-4">
-      <div v-for="month in paginate">
-        <ul class="grid grid-cols-7 text-center py-6 text-sm">
-          <li>Mon</li>
-          <li>Tue</li>
-          <li>Wed</li>
-          <li>Thu</li>
-          <li>Fri</li>
-          <li>Sat</li>
-          <li>Sun</li>
-        </ul>
+        <p class="text-center py-2">{{ months[activeIndex].monthName }}</p>
+        <p class="text-center py-2">{{ months[activeIndex + 1].monthName }}</p>
 
-        <div class="grid grid-cols-7">
-          <template v-for="day in month.days" :key="day.formatDay">
-            <button
-              v-if="day.belongsToThisMonth"
-              type="button"
-              :class="[
-                // Basic style
-                'focus:outline-none relative pb-[100%] border border-gray-200 overflow-hidden',
-                // Today
-                { 'border-2 border-green-500' : formatToday === day.formatDay },
-                // CheckIn or CheckOut
-                { 'bg-green-500' : checkIn === day.date || checkOut === day.date },
-                // Disabled date
-                {
-                  'bg-gray-100 pointer-events-none' :
-                  isDateBefore(day.date, checkIn) ||
-                  bookedDates.includes(day.formatDay) ||
-                  disabledDatesBetweenBookings.includes(day.formatDay) ||
-                  checkIn && nextDisableBookingDate && isDateAfter(day.date, nextDisableBookingDate) ||
-                  checkIn && nextDisabledBookedDate && isDateAfter(day.date, nextDisabledBookedDate)
-                },
-                // Hovering date
-                { 'bg-green-300' : hoveringDay === day.date || hoveringDates.includes(day.formatDay) },
-                // Half day checkIn + checkIn
-                { 'halfDayCheckIn' : checkIncheckOutHalfDay[day.formatDay] && checkIncheckOutHalfDay[day.formatDay].checkIn && checkIn },
-                // Half day checkIn + !checkIn
-                { 'halfDayCheckIn pointer-events-none' : checkIncheckOutHalfDay[day.formatDay] && checkIncheckOutHalfDay[day.formatDay].checkIn && !checkIn },
-                // Half day checkOut
-                { 'halfDayCheckOut' : checkIncheckOutHalfDay[day.formatDay] && checkIncheckOutHalfDay[day.formatDay].checkOut },
-              ]"
-              @mouseenter="dayMouseOver(day)"
-              @mouseleave="dayMouseLeave"
-              @click="dayClicked(day)"
-            >
-              <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                {{ day.dayNumber }}
-              </span>
-            </button>
-            <span v-else></span>
-          </template>
+        <button
+          :disabled="activeIndex >= months.length - 2"
+          @click="activeIndex++"
+          class="absolute right-0 w-10 h-10 flex items-center justify-center border border-gray-200 focus:outline-none disabled:opacity-50"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current text-gray-800" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div v-for="month in paginate">
+          <ul class="grid grid-cols-7 text-center py-6 text-sm">
+            <li>Mo</li>
+            <li>Tu</li>
+            <li>We</li>
+            <li>Th</li>
+            <li>Fr</li>
+            <li>Sa</li>
+            <li>Su</li>
+          </ul>
+
+          <div class="grid grid-cols-7">
+            <template v-for="day in month.days" :key="day.formatDay">
+              <button
+                v-if="day.belongsToThisMonth"
+                type="button"
+                :class="[
+                  // Basic style
+                  'focus:outline-none relative pb-[100%] border border-gray-200 overflow-hidden',
+                  // Today
+                  { 'border-2 border-green-500' : formatToday === day.formatDay },
+                  // CheckIn or CheckOut
+                  { 'bg-green-500' : checkIn === day.date || checkOut === day.date },
+                  // Disabled date
+                  {
+                    'bg-gray-100 pointer-events-none' :
+                    isDateBefore(day.date, checkIn) ||
+                    bookedDates.includes(day.formatDay) ||
+                    disabledDatesBetweenBookings.includes(day.formatDay) ||
+                    checkIn && nextDisableBookingDate && isDateAfter(day.date, nextDisableBookingDate) ||
+                    checkIn && nextDisabledBookedDate && isDateAfter(day.date, nextDisabledBookedDate)
+                  },
+                  // Hovering date
+                  { 'bg-green-300' : hoveringDay === day.date || hoveringDates.includes(day.formatDay) },
+                  // Half day checkIn + checkIn
+                  { 'halfDayCheckIn' : checkIncheckOutHalfDay[day.formatDay] && checkIncheckOutHalfDay[day.formatDay].checkIn && checkIn },
+                  // Half day checkIn + !checkIn
+                  { 'halfDayCheckIn pointer-events-none' : checkIncheckOutHalfDay[day.formatDay] && checkIncheckOutHalfDay[day.formatDay].checkIn && !checkIn },
+                  // Half day checkOut
+                  { 'halfDayCheckOut' : checkIncheckOutHalfDay[day.formatDay] && checkIncheckOutHalfDay[day.formatDay].checkOut },
+                ]"
+                @mouseenter="dayMouseOver(day)"
+                @mouseleave="dayMouseLeave"
+                @click="dayClicked(day)"
+              >
+                <span class="absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                  {{ day.dayNumber }}
+                </span>
+              </button>
+              <span v-else></span>
+            </template>
+          </div>
         </div>
       </div>
     </div>
@@ -118,6 +152,10 @@ interface Booking {
   checkOutTime: number
   type: string
 }
+interface Placeholder {
+  checkIn: string,
+  checkOut: string
+}
 
 export default defineComponent({
   name: "Calendar",
@@ -137,6 +175,13 @@ export default defineComponent({
     checkOut: {
       type: Date,
       default: new Date()
+    },
+    placeholder: {
+      type: Object as PropType<Placeholder>,
+      default: (): Placeholder => ({
+        checkIn: "Arrivée",
+        checkOut: "Départ",
+      }),
     }
   },
   data() {
@@ -151,6 +196,7 @@ export default defineComponent({
       months: [] as Month[],
       nextDisableBookingDate: null as Date | null,
       nextDisabledBookedDate: null as Date | null,
+      showCalendar: false as boolean,
       sortedDisabledDates: [] as Date[],
       today: new Date as Date,
     };
@@ -166,6 +212,11 @@ export default defineComponent({
     if (this.bookingDates.length > 0) {
       this.createHalfDayDates()
     }
+
+    document.addEventListener('click', this.handleClickOutside, false)
+  },
+  destroyed() {
+    document.removeEventListener('click', this.handleClickOutside)
   },
   emits: ["update:checkIn", "update:checkOut"],
   computed: {
@@ -179,6 +230,20 @@ export default defineComponent({
   methods: {
     isDateAfter,
     isDateBefore,
+    handleClickOutside(event: Event) {
+      const ignoredElement = this.$refs.Calendar
+
+      if (ignoredElement && this.showCalendar) {
+        const isIgnoredElementClicked = ignoredElement.contains(event.target)
+
+        if (!isIgnoredElementClicked) {
+          this.showCalendar = false
+        }
+      }
+    },
+    openCalendar() {
+      this.showCalendar = !this.showCalendar
+    },
     // Create halfDayDates
     createHalfDayDates() {
       const bookingDates = this.bookingDates.map((booking) => [
@@ -281,10 +346,17 @@ export default defineComponent({
 </script>
 
 <style>
+.disable-select {
+  user-select: none; /* supported by Chrome and Opera */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
 .halfDayCheckIn:before,
 .halfDayCheckOut:before {
   content: "";
-  z-index: -1;
+  z-index: 1;
   border-bottom: 120px solid rgba(243, 244, 246, 1);
   border-left: 120px solid transparent;
   @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-0 w-0 border-b-[120px] border-l-[120px];

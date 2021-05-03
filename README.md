@@ -21,9 +21,12 @@ Type:
 ```json
 ['2021-05-01', '2021-05-02', '2021-05-03']
 ```
+[x] Show checkIn checkOut date
+[x] When click on checkIn checkOut date open calendar
 
 # To Do
 [] Manage periods (weekly / nightly)
+[] Manage tooltip (weekly / nightly)
 [] Manage minimum duration
 
 # Vue 3 + Typescript + Vite

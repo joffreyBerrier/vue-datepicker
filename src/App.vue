@@ -1,10 +1,12 @@
 <template>
-  <Calendar
-    v-model:checkIn="checkIn"
-    v-model:checkOut="checkOut"
-    :bookedDates="bookedDates"
-    :booking-dates="bookingDates"
-  />
+  <div class="w-full h-full flex items-center justify-center">
+    <Calendar
+      v-model:checkIn="checkIn"
+      v-model:checkOut="checkOut"
+      :bookedDates="bookedDates"
+      :booking-dates="bookingDates"
+    />
+  </div>
 </template>
 
 <script lang="ts">
