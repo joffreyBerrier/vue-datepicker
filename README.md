@@ -1,11 +1,11 @@
 # vue-datepicker
 👊 An easier datePicker in Vue.js 👊
 
-# End
-[x] Show dates + month + year
-[x] Manage HoveringDate
-[x] Manage Checkin / CheckOut halfday
-[x] Manage BookingDates
+# 👊 Done 👊
+* Show dates + month + year 👊
+* Manage HoveringDate 👊
+* Manage Checkin / CheckOut halfday 👊
+* Manage BookingDates 👊
 Type:
 ```json
 [{
@@ -16,19 +16,19 @@ Type:
   type: "admin"
 }]
 ```
-[x] Manage BookedDates
+* Manage BookedDates 👊
 Type:
 ```json
 ['2021-05-01', '2021-05-02', '2021-05-03']
 ```
-[x] Show checkIn checkOut date
-[x] When click on checkIn checkOut date open calendar
+* Show checkIn checkOut date 👊
+* When click on checkIn checkOut date open calendar 👊
 
 # To Do
-[] Manage periods (weekly / nightly)
-[] Manage tooltip (weekly / nightly)
-[] Manage minimum duration
-[] Manage translations
+* Manage periods (weekly / nightly)
+* Manage tooltip
+* Manage minimum duration
+* Manage translations
 
 # Vue 3 + Typescript + Vite
 
