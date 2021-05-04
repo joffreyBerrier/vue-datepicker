@@ -28,6 +28,7 @@ Type:
 [] Manage periods (weekly / nightly)
 [] Manage tooltip (weekly / nightly)
 [] Manage minimum duration
+[] Manage translations
 
 # Vue 3 + Typescript + Vite
 
