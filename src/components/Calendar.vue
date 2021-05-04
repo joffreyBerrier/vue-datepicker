@@ -161,36 +161,14 @@ import { createMonth, renderMultipleMonth } from "./generateMonth";
 import { isDateAfter, isDateBefore } from "./newHelpers";
 import { nextBookingDate, nextDisabledDate } from "./getNextBookingDate";
 
-interface CheckInOrCheckOut {
-  checkIn?: boolean;
-  checkOut?: boolean;
-}
-interface CheckIncheckOutHalfDay {
-  [key: string]: CheckInOrCheckOut;
-}
-interface Day {
-  belongsToThisMonth: boolean;
-  date: Date;
-  dayNumber: number;
-  formatDay: string;
-}
-interface Month {
-  days: Day[];
-  monthKey: number;
-  monthName: string;
-  yearKey: number;
-}
-interface Booking {
-  checkInDate: string;
-  checkInTime: number;
-  checkOutDate: string;
-  checkOutTime: number;
-  type: string;
-}
-interface Placeholder {
-  checkIn: string;
-  checkOut: string;
-}
+import {
+  Booking,
+  CheckIncheckOutHalfDay,
+  Day,
+  Month,
+  Placeholder,
+} from '../types/index'
+
 
 export default defineComponent({
   name: "Calendar",

@@ -1,13 +1,9 @@
 import { format } from 'fecha';
 import { addDays, isDateAfter } from './newHelpers';
 
-interface Booking {
-  checkInDate: string
-  checkInTime: number
-  checkOutDate: string
-  checkOutTime: number
-  type: string
-}
+import {
+  Booking,
+} from '../types/index'
 
 const getvalidDate = (d: string) => {
   const formatDateAt00 = new Date(d).setHours(0, 0, 0, 0);

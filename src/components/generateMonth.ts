@@ -1,18 +1,9 @@
 import { format } from 'fecha';
 import { addDays } from './newHelpers';
 
-interface Day {
-  belongsToThisMonth: boolean;
-  date: Date;
-  dayNumber: number;
-  formatDay: string;
-}
-interface Month {
-  days: Day[];
-  monthKey: number;
-  monthName: string;
-  yearKey: number;
-}
+import {
+  Month,
+} from '../types/index'
 
 const getMonthName = (day: Date) => {
   const currentMonth = format(day, "MMMM");
