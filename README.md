@@ -29,6 +29,7 @@ Type:
 * Manage tooltip
 * Manage minimum duration
 * Manage translations
+* Manage export library with **Library Mode** of #vite
 
 # Vue 3 + Typescript + Vite
 

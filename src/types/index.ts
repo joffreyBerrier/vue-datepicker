@@ -3,13 +3,13 @@ interface CheckInOrCheckOut {
   checkIn?: boolean;
   checkOut?: boolean;
 }
-interface CheckIncheckOutHalfDay {
+interface CheckInCheckOutHalfDay {
   [key: string]: CheckInOrCheckOut;
 }
 interface Day {
   belongsToThisMonth: boolean;
   date: Date;
-  dayNumber: number;
+  dayNumber: string;
   formatDay: string;
 }
 interface Month {
@@ -37,7 +37,7 @@ interface Icon {
 
 export {
   Booking,
-  CheckIncheckOutHalfDay,
+  CheckInCheckOutHalfDay,
   Day,
   Icon,
   Month,

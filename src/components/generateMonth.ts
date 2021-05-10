@@ -1,49 +1,47 @@
-import { format } from 'fecha';
-import { addDays } from './newHelpers';
+import { format } from "fecha";
+import { addDays } from "./helpers";
 
-import {
-  Month,
-} from '../types/index'
+import { Month } from "../types/index";
 
-const getMonthName = (day: Date) => {
+const getMonthName = (day: Date): string => {
   const currentMonth = format(day, "MMMM");
   const currentYear = format(day, " YYYY");
 
   return `${currentMonth} ${currentYear}`;
-}
+};
 
-const getFirstDayOfMonth = (date: Date) => {
+const getFirstDayOfMonth = (date: Date): Date => {
   return new Date(date.getFullYear(), date.getMonth(), 1);
-}
+};
 
-const getFirstDay = (date: Date, firstDayOfWeek: number) => {
+const getFirstDayOfFirstWeekOfMonth = (date: Date, firstDayOfWeek: number) => {
   const firstDay = getFirstDayOfMonth(date);
-  let offset = 0;
+  let offset = firstDayOfWeek - firstDay.getDay();
 
-  if (firstDayOfWeek > 0) {
-    offset = firstDay.getDay() === 0 ? -7 + firstDayOfWeek : firstDayOfWeek;
+  if (offset > 0) {
+    offset -= 7;
   }
 
-  return new Date(
-    firstDay.setDate(firstDay.getDate() - (firstDay.getDay() - offset))
-  );
-}
+  return new Date(firstDay.setDate(firstDay.getDate() + offset));
+};
 
 const createMonth = (date: Date): Month => {
-  const firstDayOfMonth = getFirstDayOfMonth(date);
-  const firstDay = getFirstDay(date, 1);
+  const firstDayOfWeek = 1 as number;
+  const maxDaysInMonth = 42 as number; // a month is covered by 6 weeks max
+  const firstDayOfMonth = getFirstDayOfMonth(date) as Date;
+  const firstDay = getFirstDayOfFirstWeekOfMonth(date, firstDayOfWeek) as Date;
   const month = {
     days: [],
     monthKey: date.getMonth(),
     monthName: getMonthName(firstDayOfMonth),
     yearKey: date.getFullYear(),
-  } as any;
+  } as Month;
 
-  for (let i = 0; i < 42; i++) {
-    const day = addDays(firstDay, i);
+  for (let i = 0; i < maxDaysInMonth; i++) {
+    const day = addDays(firstDay, i) as Date;
 
     month.days.push({
-      belongsToThisMonth: day.getMonth() === date.getMonth(),
+      belongsToThisMonth: day.getMonth() === month.monthKey,
       date: day,
       dayNumber: format(day, "D"),
       formatDay: format(day, "YYYY-MM-DD"),
@@ -51,9 +49,9 @@ const createMonth = (date: Date): Month => {
   }
 
   return month;
-}
+};
 
-const getNextMonth = (date: Date) => {
+const getNextMonth = (date: Date): Date => {
   let nextMonth;
 
   if (date.getMonth() === 11) {
@@ -63,9 +61,9 @@ const getNextMonth = (date: Date) => {
   }
 
   return nextMonth;
-}
+};
 
-const renderMultipleMonth = (date: Date, max: number) => {
+const renderMultipleMonths = (date: Date, max: number): Month[] => {
   let nextMonth = new Date(date);
   const dates = [];
 
@@ -77,7 +75,7 @@ const renderMultipleMonth = (date: Date, max: number) => {
   }
 
   return createMultipleMonth(dates);
-}
+};
 
 const createMultipleMonth = (dates: Date[]): Month[] => {
   const months = [] as Month[];
@@ -88,10 +86,7 @@ const createMultipleMonth = (dates: Date[]): Month[] => {
     months.push(createMonth(currentDate));
   }
 
-  return months
-}
+  return months;
+};
 
-export {
-  createMonth,
-  renderMultipleMonth
-}
+export { createMonth, renderMultipleMonths };

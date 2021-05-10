@@ -1,11 +1,11 @@
 <template>
-  <div class="w-full relative disable-select" ref="Calendar">
+  <div class="w-full relative select-none" ref="Calendar">
     <div
       @click="openCalendar"
       class="flex items-center h-[50px] cursor-pointer px-4 border border-gray-200"
     >
       <base-icon
-        icon="calendar"
+        name="calendar"
         :color="[
           'mr-4',
           { 'text-gray-300': !checkIn, 'text-gray-700': checkIn },
@@ -21,7 +21,7 @@
         </span>
 
         <base-icon
-          icon="arrowNarrowRight"
+          name="arrowNarrowRight"
           :color="[
             'mx-4',
             { 'text-gray-300': !checkIn, 'text-gray-700': checkIn },
@@ -47,7 +47,7 @@
           @click="activeIndex--"
           class="absolute left-0 w-10 h-10 flex items-center justify-center border border-gray-200 focus:outline-none disabled:opacity-50"
         >
-          <base-icon icon="chevronLeft" />
+          <base-icon name="chevronLeft" />
         </button>
 
         <p class="text-center py-2">{{ months[activeIndex].monthName }}</p>
@@ -58,7 +58,7 @@
           @click="activeIndex++"
           class="absolute right-0 w-10 h-10 flex items-center justify-center border border-gray-200 focus:outline-none disabled:opacity-50"
         >
-          <base-icon icon="chevronRight" />
+          <base-icon name="chevronRight" />
         </button>
       </div>
 
@@ -157,13 +157,13 @@ import { format } from "fecha";
 
 import BaseIcon from "./BaseIcon.vue";
 
-import { createMonth, renderMultipleMonth } from "./generateMonth";
-import { isDateAfter, isDateBefore } from "./newHelpers";
+import { createMonth, renderMultipleMonths } from "./generateMonth";
+import { isDateAfter, isDateBefore } from "./helpers";
 import { nextBookingDate, nextDisabledDate } from "./getNextBookingDate";
 
 import {
   Booking,
-  CheckIncheckOutHalfDay,
+  CheckInCheckOutHalfDay,
   Day,
   Month,
   Placeholder,
@@ -203,7 +203,7 @@ export default defineComponent({
   data() {
     return {
       activeIndex: 0 as number,
-      checkIncheckOutHalfDay: {} as CheckIncheckOutHalfDay,
+      checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
       disabledDates: [] as string[],
       disabledDatesBetweenBookings: [] as string[],
       formatDay: "YYYY-MM-DD",
@@ -222,7 +222,7 @@ export default defineComponent({
     this.months.push(createMonth(this.today));
 
     // Next 12 month after the current day
-    const months = renderMultipleMonth(this.today, 12);
+    const months = renderMultipleMonths(this.today, 12);
     this.months.push(...months);
 
     if (this.bookingDates.length > 0) {
@@ -247,7 +247,7 @@ export default defineComponent({
     isDateAfter,
     isDateBefore,
     handleClickOutside(event: Event) {
-      const ignoredElement = this.$refs.Calendar;
+      const ignoredElement = this.$refs.Calendar as HTMLElement;
 
       if (ignoredElement && this.showCalendar) {
         const isIgnoredElementClicked = ignoredElement.contains(event.target);
@@ -269,7 +269,7 @@ export default defineComponent({
         });
 
       let sortedDates = [] as Date[];
-      const checkIncheckOutHalfDay = {} as CheckIncheckOutHalfDay;
+      const checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay;
 
       this.bookingDates.forEach((booking: Booking) => {
         checkIncheckOutHalfDay[booking.checkInDate] = {
@@ -367,13 +367,6 @@ export default defineComponent({
 </script>
 
 <style>
-.disable-select {
-  user-select: none; /* supported by Chrome and Opera */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-}
 .halfDayCheckIn:before,
 .halfDayCheckOut:before {
   content: "";

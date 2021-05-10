@@ -25,7 +25,7 @@ interface Icon {
 export default defineComponent({
   name: "Calendar",
   props: {
-    icon: {
+    name: {
       type: String,
       default: "",
     },
@@ -52,7 +52,7 @@ export default defineComponent({
   },
   computed: {
     path(): string {
-      return this.paths[this.icon];
+      return this.paths[this.name];
     },
   },
 });
