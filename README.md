@@ -9,18 +9,16 @@
 * Manage Checkin / CheckOut halfday 👊
 * Manage BookingDates 👊
 Type:
-```json
+```javascript
 [{
   checkInDate: "2021-05-01",
-  checkInTime: 17,
   checkOutDate: "2021-05-10",
-  checkOutTime: 10,
   type: "admin"
 }]
 ```
 * Manage BookedDates 👊
 Type:
-```json
+```javascript
 ['2021-05-01', '2021-05-02', '2021-05-03']
 ```
 * Show checkIn checkOut date 👊
