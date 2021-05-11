@@ -1,8 +1,10 @@
 # vue-datepicker
 👊 An easier datePicker in Vue.js 👊
 
+🔥 Vue3 + Typescript + Tailwind + HeroIcon 🔥
+
 # 👊 Done 👊
-* Show dates + month + year 👊
+* Show dates + month + year 👊 
 * Manage HoveringDate 👊
 * Manage Checkin / CheckOut halfday 👊
 * Manage BookingDates 👊
