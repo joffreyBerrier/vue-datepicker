@@ -84,11 +84,11 @@
                   'focus:outline-none relative pb-[100%] border border-gray-200 overflow-hidden',
                   // Today
                   {
-                    'border-2 border-green-500': formatToday === day.formatDay,
+                    'border-2 border-blue-500': formatToday === day.formatDay,
                   },
                   // CheckIn or CheckOut
                   {
-                    'bg-green-500':
+                    'bg-blue-500':
                       checkIn === day.date || checkOut === day.date,
                   },
                   // Disabled date
@@ -106,7 +106,7 @@
                   },
                   // Hovering date
                   {
-                    'bg-green-300':
+                    'bg-blue-300':
                       hoveringDay === day.date ||
                       hoveringDates.includes(day.formatDay),
                   },
