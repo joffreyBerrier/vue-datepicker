@@ -8,7 +8,8 @@
 * Manage HoveringDate 👊
 * Manage Checkin / CheckOut halfday 👊
 * Manage BookingDates 👊
-Type:
+
+Example:
 ```javascript
 [{
   checkInDate: "2021-05-01",
@@ -17,7 +18,8 @@ Type:
 }]
 ```
 * Manage BookedDates 👊
-Type:
+
+Example:
 ```javascript
 ['2021-05-01', '2021-05-02', '2021-05-03']
 ```
