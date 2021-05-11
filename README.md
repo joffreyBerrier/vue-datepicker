@@ -1,6 +1,8 @@
 # vue-datepicker
 👊 An easier datePicker in Vue.js 👊
 
+https://github.com/joffreyBerrier/vue-datepicker/projects/1
+
 🔥 Vue3 + Typescript + Tailwind + HeroIcon 🔥
 
 # 👊 Done 👊
