@@ -95,14 +95,10 @@
                   {
                     'bg-gray-100 pointer-events-none':
                       isDateBefore(day.date, checkIn) ||
-                      bookedDates.includes(day.formatDay) ||
-                      disabledDatesBetweenBookings.includes(day.formatDay) ||
+                      disabledDates.includes(day.formatDay) && !checkIncheckOutHalfDay[day.formatDay] ||
                       (checkIn &&
                         nextDisableBookingDate &&
-                        isDateAfter(day.date, nextDisableBookingDate)) ||
-                      (checkIn &&
-                        nextDisabledBookedDate &&
-                        isDateAfter(day.date, nextDisabledBookedDate)),
+                        isDateAfter(day.date, nextDisableBookingDate))
                   },
                   // Hovering date
                   {
@@ -158,14 +154,15 @@ import { format } from "fecha";
 import BaseIcon from "./BaseIcon.vue";
 
 import { createMonth, renderMultipleMonths } from "./generateMonth";
-import { isDateAfter, isDateBefore } from "./helpers";
-import { nextBookingDate, nextDisabledDate } from "./getNextBookingDate";
+import { isDateAfter, getDayDiff, isDateBefore, addDays } from "./helpers";
+import { nextBookingDate } from "./getNextBookingDate";
 
 import {
   Booking,
   CheckInCheckOutHalfDay,
   Day,
   Month,
+  Period,
   Placeholder,
 } from '../types/index'
 
@@ -192,6 +189,10 @@ export default defineComponent({
       type: Date,
       default: new Date(),
     },
+    periodDates: {
+      type: Array as PropType<Period[]>,
+      default: (): Period[] => [],
+    },
     placeholder: {
       type: Object as PropType<Placeholder>,
       default: (): Placeholder => ({
@@ -205,15 +206,13 @@ export default defineComponent({
       activeIndex: 0 as number,
       checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
       disabledDates: [] as string[],
-      disabledDatesBetweenBookings: [] as string[],
       formatDay: "YYYY-MM-DD",
       hoveringDates: [] as string[],
       hoveringDay: new Date() as Date,
       months: [] as Month[],
       nextDisableBookingDate: null as Date | null,
-      nextDisabledBookedDate: null as Date | null,
-      showCalendar: false as boolean,
-      sortedDisabledDates: [] as Date[],
+      newBookingDates: [] as Booking[],
+      showCalendar: true as boolean,
       today: new Date() as Date,
     };
   },
@@ -225,9 +224,7 @@ export default defineComponent({
     const months = renderMultipleMonths(this.today, 12);
     this.months.push(...months);
 
-    if (this.bookingDates.length > 0) {
-      this.createHalfDayDates();
-    }
+    if (this.bookingDates.length > 0 || this.bookedDates.length > 0) this.createHalfDayDates();
 
     document.addEventListener("click", this.handleClickOutside, false);
   },
@@ -262,14 +259,41 @@ export default defineComponent({
     },
     // Create halfDayDates
     createHalfDayDates() {
-      const bookingDates = this.bookingDates
-        .map((booking) => [booking.checkInDate, booking.checkOutDate])
-        .reduce((a, b) => {
-          return a.concat(b);
-        });
-
-      let sortedDates = [] as Date[];
       const checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay;
+
+      const disabledDates = [...this.bookedDates]
+
+      for (let i = 0; i < disabledDates.length; i++) {
+        const newDate = disabledDates[i];
+        const newDateIncrementOne = disabledDates[i + 1];
+
+        if (i === 0) {
+          checkIncheckOutHalfDay[newDate] = {
+            checkIn: true
+          };
+        }
+
+        if (
+          !checkIncheckOutHalfDay[newDate] &&
+          disabledDates[i + 1] &&
+          getDayDiff(newDate, newDateIncrementOne) > 1
+        ) {
+          checkIncheckOutHalfDay[newDate] = {
+            checkOut: true
+          };
+          checkIncheckOutHalfDay[newDateIncrementOne] = {
+            checkIn: true
+          };
+        }
+
+        if (i === disabledDates.length - 1) {
+          checkIncheckOutHalfDay[newDate] = {
+            checkOut: true
+          };
+        }
+      }
+
+      this.createBookingDates(checkIncheckOutHalfDay)
 
       this.bookingDates.forEach((booking: Booking) => {
         checkIncheckOutHalfDay[booking.checkInDate] = {
@@ -279,7 +303,7 @@ export default defineComponent({
           checkOut: true,
         };
 
-        this.disabledDatesBetweenBookings.push(
+        this.disabledDates.push(
           ...this.getDatesBetweenTwoDates(
             new Date(booking.checkInDate),
             new Date(booking.checkOutDate)
@@ -287,13 +311,55 @@ export default defineComponent({
         );
       });
 
-      const halfDays = Object.keys(checkIncheckOutHalfDay);
-      sortedDates = bookingDates
-        .filter((date: any) => !halfDays.includes(date))
-        .map((date: any) => new Date(date));
+      this.disabledDates.push(...disabledDates)
+      this.disabledDates.sort((a, b) => {
+        const aa = a
+          .split("/")
+          .reverse()
+          .join();
+        const bb = b
+          .split("/")
+          .reverse()
+          .join();
 
-      this.sortedDisabledDates = sortedDates.sort((a: Date, b: Date) => a - b);
+        return aa < bb ? -1 : aa > bb ? 1 : 0;
+      });
+
       this.checkIncheckOutHalfDay = checkIncheckOutHalfDay;
+    },
+    createBookingDates(checkIncheckOutHalfDay: CheckInCheckOutHalfDay) {
+      // Create bookingDates with bookedDates
+      const newBookingDates = new Set() as Set<Booking>
+      let increment = 0 as number
+      let booking = {} as Booking
+
+      Object.keys(checkIncheckOutHalfDay).forEach((date: string, i: number) => {
+        increment = i
+
+        if (checkIncheckOutHalfDay[date].checkIn) booking.checkInDate = date
+        if (checkIncheckOutHalfDay[date].checkOut) booking.checkOutDate = date
+
+        if (increment % 2 === 1) {
+          newBookingDates.add({
+            checkInDate: booking.checkInDate,
+            checkOutDate: booking.checkOutDate
+          })
+        }
+      })
+
+      this.newBookingDates = [...this.bookingDates, ...newBookingDates]
+      this.newBookingDates.sort((a, b) => {
+        const aa = a.checkInDate
+          .split("/")
+          .reverse()
+          .join();
+        const bb = b.checkInDate
+          .split("/")
+          .reverse()
+          .join();
+
+        return aa < bb ? -1 : aa > bb ? 1 : 0;
+      })
     },
     // Return an array of date between two date with YYYY-MM-DD format
     getDatesBetweenTwoDates(startDate: Date, endDate: Date): string[] {
@@ -334,32 +400,30 @@ export default defineComponent({
       if (this.checkIn === day.date) {
         this.$emit("update:checkIn", null);
         this.$emit("update:checkOut", null);
-        this.disabledDates = [];
+        this.nextDisableBookingDate = null
         this.hoveringDates = [];
       } else if (this.checkIn && !this.checkOut) {
         this.$emit("update:checkOut", day.date);
-        this.disabledDates = [];
+        this.nextDisableBookingDate = null
       } else if (!this.checkIn) {
         this.$emit("update:checkIn", day.date);
-        this.getNextBookingDate(day.date);
-        this.getNextBookedDate(day.date);
+        this.getNextBookingDate(day);
       } else {
         this.$emit("update:checkIn", day.date);
         this.$emit("update:checkOut", null);
-        this.disabledDates = [];
+        this.nextDisableBookingDate = null
         this.hoveringDates = [];
       }
     },
     // Récupère la prochaine date de booking
-    getNextBookingDate(date: Date) {
-      if (this.bookingDates.length > 0) {
-        this.nextDisableBookingDate = nextBookingDate(this.bookingDates, date);
-      }
-    },
-    // Récupère la prochaine date booké
-    getNextBookedDate(date: Date) {
-      if (this.bookedDates) {
-        this.nextDisabledBookedDate = nextDisabledDate(this.bookedDates, date);
+    getNextBookingDate(day: Day) {
+      if (this.newBookingDates.length > 0) {
+        let newDate = day.date
+        if (this.checkIncheckOutHalfDay[day.formatDay]?.checkOut) {
+          newDate = addDays(day.date, 1)
+        }
+
+        this.nextDisableBookingDate = nextBookingDate(this.newBookingDates, newDate);
       }
     },
   },

@@ -23,7 +23,7 @@ interface Icon {
 }
 
 export default defineComponent({
-  name: "Calendar",
+  name: "BaseIcon",
   props: {
     name: {
       type: String,

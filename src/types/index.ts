@@ -20,10 +20,8 @@ interface Month {
 }
 interface Booking {
   checkInDate: string;
-  checkInTime: number;
   checkOutDate: string;
-  checkOutTime: number;
-  type: string;
+  type?: string;
 }
 interface Placeholder {
   checkIn: string;
@@ -35,11 +33,19 @@ interface Icon {
   [key: string]: string;
 }
 
+interface Period {
+  startAt: string
+  endAt: string
+  minimumDuration: number
+  periodType: string
+}
+
 export {
   Booking,
   CheckInCheckOutHalfDay,
   Day,
   Icon,
   Month,
+  Period,
   Placeholder,
 }
