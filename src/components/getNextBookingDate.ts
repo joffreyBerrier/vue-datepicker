@@ -44,18 +44,6 @@ const nextBookingDate = (bookingDates: Booking[], date: Date) : Date => {
   }
 }
 
-// Get next disabled date
-const nextDisabledDate = (bookedDates: string[], checkIn: Date) : Date => {
-  const nextDisabledDate = bookedDates.find((date: string) => {
-    if (isDateAfter(new Date(date), checkIn)) {
-      return date
-    }
-  })
-
-  return nextDisabledDate
-}
-
 export {
   nextBookingDate,
-  nextDisabledDate
 }
