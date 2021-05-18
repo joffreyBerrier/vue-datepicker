@@ -21,9 +21,25 @@ const getDayDiff = (d1: string, d2: string): number => {
   return parseInt((t2 - t1) / (24 * 3600 * 1000), 10);
 }
 
+const resetTimeDate = (date: string) => {
+  const formatDateAt00 = new Date(date).setHours(0, 0, 0, 0);
+
+  return new Date(formatDateAt00);
+};
+
+const validateDateBetweenTwoDates = (fromDate: string, toDate: string, givenDate: string) => {
+  return (
+    resetTimeDate(givenDate) <= resetTimeDate(toDate) &&
+    resetTimeDate(givenDate) >= resetTimeDate(fromDate)
+  );
+}
+
+
 export {
   addDays,
   getDayDiff,
   isDateAfter,
-  isDateBefore
+  isDateBefore,
+  resetTimeDate,
+  validateDateBetweenTwoDates,
 }

@@ -37,7 +37,7 @@ export default defineComponent({
         {
           startAt: "2021-07-01",
           endAt: "2021-08-01",
-          minimumDuration: 4,
+          minimumDuration: 7,
           periodType: "nightly"
         },
         {
@@ -55,9 +55,8 @@ export default defineComponent({
         {
           startAt: "2021-10-04",
           endAt: "2021-11-29",
-          minimumDuration: 1,
+          minimumDuration: 2,
           periodType: "weekly_by_sunday",
-          price: 4000.0
         }
       ] as Period[],
       checkIn: null,

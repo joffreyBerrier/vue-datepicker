@@ -39,10 +39,18 @@ interface Period {
   minimumDuration: number
   periodType: string
 }
+interface CurrentPeriod {
+  startAt: string
+  endAt: string
+  minimumDuration: number
+  periodType: string
+  nextEnableDate: Date
+}
 
 export {
   Booking,
   CheckInCheckOutHalfDay,
+  CurrentPeriod,
   Day,
   Icon,
   Month,

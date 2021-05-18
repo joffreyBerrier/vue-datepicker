@@ -4,22 +4,10 @@ import { addDays, isDateAfter } from './helpers';
 import {
   Booking,
 } from '../types/index'
-
-const resetTimeDate = (date: string) => {
-  const formatDateAt00 = new Date(date).setHours(0, 0, 0, 0);
-
-  return new Date(formatDateAt00);
-};
+import { resetTimeDate, validateDateBetweenTwoDates } from './helpers'
 
 const validateDateBeforeDate = (fromDate: string, givenDate: string) => {
   return resetTimeDate(givenDate) <= resetTimeDate(fromDate);
-}
-
-const validateDateBetweenTwoDates = (fromDate: string, toDate: string, givenDate: string) => {
-  return (
-    resetTimeDate(givenDate) <= resetTimeDate(toDate) &&
-    resetTimeDate(givenDate) >= resetTimeDate(fromDate)
-  );
 }
 
 const nextBookingDate = (bookingDates: Booking[], date: Date) : Date => {
