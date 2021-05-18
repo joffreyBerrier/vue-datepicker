@@ -1,36 +1,36 @@
 // Calendar
 interface CheckInOrCheckOut {
-  checkIn?: boolean;
-  checkOut?: boolean;
+  checkIn?: boolean
+  checkOut?: boolean
 }
 interface CheckInCheckOutHalfDay {
-  [key: string]: CheckInOrCheckOut;
+  [key: string]: CheckInOrCheckOut
 }
 interface Day {
-  belongsToThisMonth: boolean;
-  date: Date;
-  dayNumber: string;
-  formatDay: string;
+  belongsToThisMonth: boolean
+  date: Date
+  dayNumber: string
+  formatDay: string
 }
 interface Month {
-  days: Day[];
-  monthKey: number;
-  monthName: string;
-  yearKey: number;
+  days: Day[]
+  monthKey: number
+  monthName: string
+  yearKey: number
 }
 interface Booking {
-  checkInDate: string;
-  checkOutDate: string;
-  type?: string;
+  checkInDate: string
+  checkOutDate: string
+  type?: string
 }
 interface Placeholder {
-  checkIn: string;
-  checkOut: string;
+  checkIn: string
+  checkOut: string
 }
 
 // BaseIcon
 interface Icon {
-  [key: string]: string;
+  [key: string]: string
 }
 
 interface Period {
