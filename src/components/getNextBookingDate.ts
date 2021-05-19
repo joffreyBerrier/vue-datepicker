@@ -8,7 +8,7 @@ const validateDateBeforeDate = (fromDate: string, givenDate: string) => {
   return resetTimeDate(givenDate) <= resetTimeDate(fromDate)
 }
 
-const nextBookingDate = (
+const getNextBookingDate = (
   bookingDates: Booking[],
   date: Date
 ): Date | undefined => {
@@ -30,4 +30,4 @@ const nextBookingDate = (
   }
 }
 
-export { nextBookingDate }
+export { getNextBookingDate }

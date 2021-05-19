@@ -67,7 +67,7 @@
             focus:outline-none
             disabled:opacity-50
           "
-          @click="activeIndex--"
+          @click="paginate('-')"
         >
           <base-icon name="chevronLeft" />
         </button>
@@ -89,14 +89,14 @@
             focus:outline-none
             disabled:opacity-50
           "
-          @click="activeIndex++"
+          @click="paginate('+')"
         >
           <base-icon name="chevronRight" />
         </button>
       </div>
 
       <div class="grid grid-cols-2 gap-4">
-        <div v-for="month in paginate" :key="month.monthKey">
+        <div v-for="month in slicedMonths" :key="month.monthKey">
           <ul class="grid grid-cols-7 text-center py-6 text-sm">
             <li>Mo</li>
             <li>Tu</li>
@@ -127,6 +127,7 @@
                   // Disabled date
                   {
                     'bg-gray-100 pointer-events-none':
+                      (day.formatDay !== formatToday && today > day.date) ||
                       isDateBefore(day.date, checkIn) ||
                       (disabledDates.includes(day.formatDay) &&
                         !checkIncheckOutHalfDay[day.formatDay]) ||
@@ -167,40 +168,29 @@
                   },
                   // Inactive saturday period
                   {
-                    'day-period_saturday':
-                      saturdayWeeklyPeriods.includes(day.formatDay) &&
-                      day.date.getDay() !== 6,
+                    'day-in-period':
+                      (saturdayWeeklyPeriods.includes(day.formatDay) &&
+                        day.date.getDay() !== 6) ||
+                      (sundayWeeklyPeriods.includes(day.formatDay) &&
+                        day.date.getDay() !== 0),
                   },
-                  // Inactive sunday period
-                  {
-                    'day-period_sunday':
-                      sundayWeeklyPeriods.includes(day.formatDay) &&
-                      day.date.getDay() !== 0,
-                  },
-                  // CheckIn saturday period
+                  // CheckIn saturday / sunday period
                   {
                     'checkIn-in-period':
                       checkIn !== day.date &&
-                      currentPeriod?.periodType === 'weekly_by_saturday' &&
                       currentPeriod?.nextEnableDate > day.date &&
-                      saturdayWeeklyPeriods.includes(day.formatDay) &&
-                      day.date.getDay() === 6,
-                  },
-                  // CheckIn sunday period
-                  {
-                    'checkIn-in-period':
-                      checkIn !== day.date &&
-                      currentPeriod?.periodType === 'weekly_by_sunday' &&
-                      currentPeriod?.nextEnableDate > day.date &&
-                      sundayWeeklyPeriods.includes(day.formatDay) &&
-                      day.date.getDay() === 0,
+                      (currentPeriod?.periodType === 'weekly_by_saturday' ||
+                        currentPeriod?.periodType === 'weekly_by_sunday') &&
+                      (saturdayWeeklyPeriods.includes(day.formatDay) ||
+                        sundayWeeklyPeriods.includes(day.formatDay)) &&
+                      (day.date.getDay() === 6 || day.date.getDay() === 0),
                   },
                   // CheckIn nightly period
                   {
                     'checkIn-in-period':
                       checkIn !== day.date &&
-                      currentPeriod?.periodType === 'nightly' &&
                       currentPeriod?.nextEnableDate > day.date &&
+                      currentPeriod?.periodType === 'nightly' &&
                       nightlyPeriods.includes(day.formatDay),
                   },
                 ]"
@@ -231,22 +221,27 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType } from 'vue'
+  import { defineComponent, PropType, ref, computed } from 'vue'
 
   import { format } from 'fecha'
 
   import BaseIcon from './BaseIcon.vue'
 
   import {
-    isDateAfter,
-    getDayDiff,
-    isDateBefore,
     addDays,
+    getDatesBetweenTwoDates,
+    getDayDiff,
+    isDateAfter,
+    isDateBefore,
     validateDateBetweenTwoDates,
   } from './helpers'
 
-  import { createMonth, renderMultipleMonths } from './generateMonth'
-  import { nextBookingDate } from './getNextBookingDate'
+  import {
+    useCreateMonth,
+    useCreateMultipleMonths,
+    useGetPeriod,
+  } from './compose'
+  import { getNextBookingDate } from './getNextBookingDate'
 
   import {
     Booking,
@@ -280,6 +275,10 @@
         type: Date,
         default: new Date(),
       },
+      countOfMonth: {
+        type: Number,
+        default: 24,
+      },
       formatDate: {
         type: String,
         default: 'YYYY-MM-DD',
@@ -296,94 +295,81 @@
         }),
       },
     },
-    emits: ['update:checkIn', 'update:checkOut'],
+    emits: [
+      'update:checkIn',
+      'update:checkOut',
+      'renderPreviousMonth',
+      'renderNextMonth',
+    ],
+    setup(props) {
+      const formattingFormat = ref('YYYY-MM-DD')
+
+      const today = ref(new Date())
+      const months = ref([])
+      // Current month of the current day
+      months.value.push(useCreateMonth(today.value))
+
+      // Next 12 month after the current day
+      const multipleMonths = useCreateMultipleMonths(
+        today.value,
+        props.countOfMonth
+      )
+      months.value.push(...multipleMonths)
+
+      // Create array of disabledDates for each types of period
+      const saturdayWeeklyPeriods = computed(() => {
+        return useGetPeriod(
+          props.periodDates,
+          'weekly_by_saturday',
+          formattingFormat.value
+        )
+      })
+      const sundayWeeklyPeriods = computed(() => {
+        return useGetPeriod(
+          props.periodDates,
+          'weekly_by_sunday',
+          formattingFormat.value
+        )
+      })
+      const nightlyPeriods = computed(() => {
+        return useGetPeriod(
+          props.periodDates,
+          'nightly',
+          formattingFormat.value
+        )
+      })
+
+      return {
+        formattingFormat,
+        months,
+        nightlyPeriods,
+        saturdayWeeklyPeriods,
+        sundayWeeklyPeriods,
+        today,
+      }
+    },
     data() {
       return {
         activeIndex: 0 as number,
         checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
         currentPeriod: null as CurrentPeriod | null,
         disabledDates: [] as string[],
-        formatDay: 'YYYY-MM-DD',
         hoveringDates: [] as string[],
         hoveringDay: new Date() as Date,
-        months: [] as Month[],
         nextDisableBookingDate: null as Date | null,
         newBookingDates: [] as Booking[],
         showCalendar: true as boolean,
-        today: new Date() as Date,
       }
     },
     computed: {
-      saturdayWeeklyPeriods(): string[] {
-        if (
-          this.periodDates.length > 0 &&
-          this.periodDates.some(
-            (period) => period.periodType === 'weekly_by_saturday'
-          )
-        ) {
-          return this.periodDates
-            .filter((period) => period.periodType === 'weekly_by_saturday')
-            .map((period) => {
-              return this.getDatesBetweenTwoDates(
-                new Date(period.startAt),
-                new Date(period.endAt)
-              )
-            })[0]
-        }
-
-        return []
-      },
-      sundayWeeklyPeriods(): string[] {
-        if (
-          this.periodDates.length > 0 &&
-          this.periodDates.some(
-            (period) => period.periodType === 'weekly_by_sunday'
-          )
-        ) {
-          return this.periodDates
-            .filter((period) => period.periodType === 'weekly_by_sunday')
-            .map((period) => {
-              return this.getDatesBetweenTwoDates(
-                new Date(period.startAt),
-                new Date(period.endAt)
-              )
-            })[0]
-        }
-
-        return []
-      },
-      nightlyPeriods(): string[] {
-        if (
-          this.periodDates.length > 0 &&
-          this.periodDates.some((period) => period.periodType === 'nightly')
-        ) {
-          return this.periodDates
-            .filter((period) => period.periodType === 'nightly')
-            .map((period) => {
-              return this.getDatesBetweenTwoDates(
-                new Date(period.startAt),
-                new Date(period.endAt)
-              )
-            })[0]
-        }
-
-        return []
-      },
       formatToday(): string {
-        return format(this.today, this.formatDay)
+        return format(this.today, this.formattingFormat)
       },
-      paginate(): Month[] {
+      slicedMonths(): Month[] {
         return this.months.slice(this.activeIndex, 2 + this.activeIndex)
       },
     },
     beforeMount() {
-      // Current month of the current day
-      this.months.push(createMonth(this.today))
-
-      // Next 12 month after the current day
-      const months = renderMultipleMonths(this.today, 12)
-      this.months.push(...months)
-
       if (this.bookingDates.length > 0 || this.bookedDates.length > 0)
         this.createHalfDayDates()
 
@@ -393,11 +379,22 @@
       document.removeEventListener('click', this.handleClickOutside)
     },
     methods: {
+      isDateAfter,
+      isDateBefore,
+      paginate(operator: string) {
+        if (operator === '-') {
+          this.activeIndex--
+          this.$emit('renderPreviousMonth')
+        }
+        if (operator === '+') {
+          this.activeIndex++
+          this.$emit('renderNextMonth')
+          this.createHalfDayDates()
+        }
+      },
       dayFormat(date: Date): string {
         return format(date, this.formatDate)
       },
-      isDateAfter,
-      isDateBefore,
       handleClickOutside(event: Event) {
         const ignoredElement = this.$refs.Calendar as HTMLElement
 
@@ -413,14 +410,15 @@
         this.showCalendar = !this.showCalendar
       },
       // Create halfDayDates
-      createHalfDayDates() {
+      createHalfDayDatesWithBookedDates(
+        dates: string[]
+      ): CheckInCheckOutHalfDay {
         const checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay
+        const bookedDates = [...dates]
 
-        const disabledDates = [...this.bookedDates]
-
-        for (let i = 0; i < disabledDates.length; i++) {
-          const newDate = disabledDates[i]
-          const newDateIncrementOne = disabledDates[i + 1]
+        for (let i = 0; i < bookedDates.length; i++) {
+          const newDate = bookedDates[i]
+          const newDateIncrementOne = bookedDates[i + 1]
 
           if (i === 0) {
             checkIncheckOutHalfDay[newDate] = {
@@ -430,7 +428,7 @@
 
           if (
             !checkIncheckOutHalfDay[newDate] &&
-            disabledDates[i + 1] &&
+            bookedDates[i + 1] &&
             getDayDiff(newDate, newDateIncrementOne) > 1
           ) {
             checkIncheckOutHalfDay[newDate] = {
@@ -441,44 +439,22 @@
             }
           }
 
-          if (i === disabledDates.length - 1) {
+          if (i === bookedDates.length - 1) {
             checkIncheckOutHalfDay[newDate] = {
               checkOut: true,
             }
           }
         }
 
-        this.createBookingDates(checkIncheckOutHalfDay)
-
-        this.bookingDates.forEach((booking: Booking) => {
-          checkIncheckOutHalfDay[booking.checkInDate] = {
-            checkIn: true,
-          }
-          checkIncheckOutHalfDay[booking.checkOutDate] = {
-            checkOut: true,
-          }
-
-          this.disabledDates.push(
-            ...this.getDatesBetweenTwoDates(
-              new Date(booking.checkInDate),
-              new Date(booking.checkOutDate)
-            )
-          )
-        })
-
-        this.disabledDates.push(...disabledDates)
-        this.disabledDates.sort((a, b) => {
-          const aa = a.split('/').reverse().join()
-          const bb = b.split('/').reverse().join()
-
-          return aa < bb ? -1 : aa > bb ? 1 : 0
-        })
-
-        this.checkIncheckOutHalfDay = checkIncheckOutHalfDay
+        return {
+          checkIncheckOutHalfDay,
+          bookedDates,
+        }
       },
-      createBookingDates(checkIncheckOutHalfDay: CheckInCheckOutHalfDay) {
-        // Create bookingDates with bookedDates
-        const newBookingDates = new Set() as Set<Booking>
+      createBookingDatesWithHalfDayDates(
+        checkIncheckOutHalfDay: CheckInCheckOutHalfDay
+      ): PropType<Booking[]> {
+        const bookingDates = new Set() as Set<Booking>
         let increment = 0 as number
         let booking = {} as Booking
 
@@ -491,7 +467,7 @@
               booking.checkOutDate = date
 
             if (increment % 2 === 1) {
-              newBookingDates.add({
+              bookingDates.add({
                 checkInDate: booking.checkInDate,
                 checkOutDate: booking.checkOutDate,
               })
@@ -499,42 +475,68 @@
           }
         )
 
-        this.newBookingDates = [...this.bookingDates, ...newBookingDates]
-        this.newBookingDates.sort((a, b) => {
+        return [...this.bookingDates, ...bookingDates].sort((a, b) => {
           const aa = a.checkInDate.split('/').reverse().join()
           const bb = b.checkInDate.split('/').reverse().join()
 
           return aa < bb ? -1 : aa > bb ? 1 : 0
         })
       },
-      // Return an array of date between two date with YYYY-MM-DD format
-      getDatesBetweenTwoDates(startDate: Date, endDate: Date): string[] {
-        let arr = []
+      createHalfDayDates() {
+        let checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay
+        let bookedDates = [] as string[]
 
-        for (
-          let dt = new Date(startDate);
-          dt <= endDate;
-          dt.setDate(dt.getDate() + 1)
-        ) {
-          const formatDay = format(new Date(dt), this.formatDay)
-          const formatStartDate = format(new Date(startDate), this.formatDay)
-          const formatEndDate = format(new Date(endDate), this.formatDay)
+        // Create halfDay dates with booked dates
+        const res = this.createHalfDayDatesWithBookedDates(this.bookedDates)
+        checkIncheckOutHalfDay = res.checkIncheckOutHalfDay
+        bookedDates = res.bookedDates
 
-          if (formatDay != formatStartDate && formatDay != formatEndDate) {
-            arr.push(formatDay)
+        // Create bookingDates with halfDay
+        this.newBookingDates = this.createBookingDatesWithHalfDayDates(
+          checkIncheckOutHalfDay
+        )
+
+        // Set DisabledDates to []
+        this.disabledDates = []
+
+        // Field DisabledDates whith BookingDates
+        this.bookingDates.forEach((booking: Booking) => {
+          checkIncheckOutHalfDay[booking.checkInDate] = {
+            checkIn: true,
           }
-        }
+          checkIncheckOutHalfDay[booking.checkOutDate] = {
+            checkOut: true,
+          }
 
-        return arr
+          this.disabledDates.push(
+            ...getDatesBetweenTwoDates(
+              new Date(booking.checkInDate),
+              new Date(booking.checkOutDate),
+              this.formattingFormat
+            )
+          )
+        })
+
+        // Field DisabledDates whith BookedDates
+        this.disabledDates.push(...bookedDates)
+        this.disabledDates.sort((a, b) => {
+          const aa = a.split('/').reverse().join()
+          const bb = b.split('/').reverse().join()
+
+          return aa < bb ? -1 : aa > bb ? 1 : 0
+        })
+
+        this.checkIncheckOutHalfDay = checkIncheckOutHalfDay
       },
       // Trigger each time the mouseOver is triggered
       dayMouseOver(day: Day) {
         this.hoveringDay = day.date
 
         if (this.checkIn && !this.checkOut) {
-          this.hoveringDates = this.getDatesBetweenTwoDates(
+          this.hoveringDates = getDatesBetweenTwoDates(
             this.checkIn,
-            this.hoveringDay
+            this.hoveringDay,
+            this.formattingFormat
           )
         }
       },
@@ -577,7 +579,7 @@
             newDate = addDays(day.date, 1)
           }
 
-          this.nextDisableBookingDate = nextBookingDate(
+          this.nextDisableBookingDate = getNextBookingDate(
             this.newBookingDates,
             newDate
           )
@@ -629,8 +631,7 @@
     border-right-color: transparent;
     @apply border-t-[120px] border-r-[120px] border-b-0 border-l-0;
   }
-  .day-period_saturday,
-  .day-period_sunday {
+  .day-in-period {
     @apply pointer-events-none font-extralight;
   }
   .checkIn-in-period {

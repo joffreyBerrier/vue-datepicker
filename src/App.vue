@@ -6,6 +6,7 @@
       :booked-dates="bookedDates"
       :period-dates="periodDates"
       :booking-dates="bookingDates"
+      @renderNextMonth="renderNextMonth"
     />
   </div>
 </template>
@@ -46,7 +47,7 @@
           {
             startAt: '2021-07-01',
             endAt: '2021-08-01',
-            minimumDuration: 7,
+            minimumDuration: 4,
             periodType: 'nightly',
           },
           {
@@ -64,13 +65,27 @@
           {
             startAt: '2021-10-04',
             endAt: '2021-11-29',
-            minimumDuration: 2,
+            minimumDuration: 1,
             periodType: 'weekly_by_sunday',
           },
         ] as Period[],
         checkIn: null,
         checkOut: null,
+        nextBookedDates: [
+          '2021-12-01',
+          '2021-12-02',
+          '2021-12-03',
+          '2021-12-04',
+          '2021-12-05',
+          '2021-12-06',
+        ] as string[],
       }
+    },
+    methods: {
+      renderNextMonth() {
+        if (this.bookedDates.length === 6)
+          this.bookedDates.push(...this.nextBookedDates)
+      },
     },
   })
 </script>

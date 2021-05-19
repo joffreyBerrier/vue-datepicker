@@ -1,3 +1,5 @@
+import { format } from 'fecha'
+
 const addDays = (date: string | Date, quantity: number): Date => {
   const result = new Date(date)
 
@@ -38,8 +40,33 @@ const validateDateBetweenTwoDates = (
   )
 }
 
+const getDatesBetweenTwoDates = (
+  startDate: Date,
+  endDate: Date,
+  formattingFormat: string
+): string[] => {
+  const arr = []
+
+  for (
+    let dt = new Date(startDate);
+    dt <= endDate;
+    dt.setDate(dt.getDate() + 1)
+  ) {
+    const formatDay = format(new Date(dt), formattingFormat)
+    const formatStartDate = format(new Date(startDate), formattingFormat)
+    const formatEndDate = format(new Date(endDate), formattingFormat)
+
+    if (formatDay != formatStartDate && formatDay != formatEndDate) {
+      arr.push(formatDay)
+    }
+  }
+
+  return arr
+}
+
 export {
   addDays,
+  getDatesBetweenTwoDates,
   getDayDiff,
   isDateAfter,
   isDateBefore,

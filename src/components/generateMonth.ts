@@ -14,7 +14,10 @@ const getFirstDayOfMonth = (date: Date): Date => {
   return new Date(date.getFullYear(), date.getMonth(), 1)
 }
 
-const getFirstDayOfFirstWeekOfMonth = (date: Date, firstDayOfWeek: number) => {
+const getFirstDayOfFirstWeekOfMonth = (
+  date: Date,
+  firstDayOfWeek: number
+): Date => {
   const firstDay = getFirstDayOfMonth(date)
   let offset = firstDayOfWeek - firstDay.getDay()
 
@@ -63,20 +66,6 @@ const getNextMonth = (date: Date): Date => {
   return nextMonth
 }
 
-const renderMultipleMonths = (date: Date, max: number): Month[] => {
-  let nextMonth = new Date(date)
-  const dates = []
-
-  for (let countMonth = 0; countMonth < max; countMonth++) {
-    const tempNextMonth = getNextMonth(nextMonth)
-
-    dates.push(tempNextMonth)
-    nextMonth = tempNextMonth
-  }
-
-  return createMultipleMonth(dates)
-}
-
 const createMultipleMonth = (dates: Date[]): Month[] => {
   const months = [] as Month[]
 
@@ -89,4 +78,10 @@ const createMultipleMonth = (dates: Date[]): Month[] => {
   return months
 }
 
-export { createMonth, renderMultipleMonths }
+export {
+  getFirstDayOfMonth,
+  getFirstDayOfFirstWeekOfMonth,
+  getMonthName,
+  getNextMonth,
+  createMultipleMonth,
+}
