@@ -1,132 +1,48 @@
 <template>
-  <div ref="Calendar" class="w-full relative select-none">
-    <div
-      class="
-        flex
-        items-center
-        h-[50px]
-        cursor-pointer
-        px-4
-        border border-gray-200
-      "
-      @click="openCalendar"
-    >
-      <base-icon
-        name="calendar"
-        :color="[
-          'mr-4',
-          { 'text-gray-300': !checkIn, 'text-gray-700': checkIn },
-        ]"
+  <div ref="Calendar" class="calendar">
+    <calendar-input
+      :placeholder="placeholder"
+      :check-in="checkIn"
+      :check-out="checkOut"
+      :day-format="dayFormat"
+      @openCalendar="openCalendar"
+    />
+
+    <div v-if="showCalendar" class="calendar_wrapper">
+      <calendar-header
+        :active-index="activeIndex"
+        :months="months"
+        @paginate="paginate"
       />
 
-      <p class="flex items-center m-0">
-        <span
-          :class="[{ 'text-gray-300': !checkIn, 'text-gray-700': checkIn }]"
-        >
-          <template v-if="checkIn">
-            {{ dayFormat(checkIn) }}
-          </template>
-          <template v-else>{{ placeholder.checkIn }}</template>
-        </span>
-
-        <base-icon
-          name="arrowNarrowRight"
-          :color="[
-            'mx-4',
-            { 'text-gray-300': !checkIn, 'text-gray-700': checkIn },
-          ]"
-        />
-
-        <span
-          :class="[{ 'text-gray-300': !checkIn, 'text-gray-700': checkIn }]"
-        >
-          <template v-if="checkOut">
-            {{ dayFormat(checkOut) }}
-          </template>
-          <template v-else>{{ placeholder.checkOut }}</template>
-        </span>
-      </p>
-    </div>
-
-    <div
-      v-if="showCalendar"
-      class="p-4 bg-white shadow-md absolute w-full md:w-[600px] top-[100%]"
-    >
-      <div class="relative grid grid-cols-2 items-center gap-4">
-        <button
-          :disabled="activeIndex === 0"
-          class="
-            absolute
-            left-0
-            w-10
-            h-10
-            flex
-            items-center
-            justify-center
-            border border-gray-200
-            focus:outline-none
-            disabled:opacity-50
-          "
-          @click="paginate('-')"
-        >
-          <base-icon name="chevronLeft" />
-        </button>
-
-        <p class="text-center py-2">{{ months[activeIndex].monthName }}</p>
-        <p class="text-center py-2">{{ months[activeIndex + 1].monthName }}</p>
-
-        <button
-          :disabled="activeIndex >= months.length - 2"
-          class="
-            absolute
-            right-0
-            w-10
-            h-10
-            flex
-            items-center
-            justify-center
-            border border-gray-200
-            focus:outline-none
-            disabled:opacity-50
-          "
-          @click="paginate('+')"
-        >
-          <base-icon name="chevronRight" />
-        </button>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
+      <div class="calendar_wrapper_content">
         <div v-for="month in slicedMonths" :key="month.monthKey">
-          <ul class="grid grid-cols-7 text-center py-6 text-sm">
-            <li>Mo</li>
-            <li>Tu</li>
-            <li>We</li>
-            <li>Th</li>
-            <li>Fr</li>
-            <li>Sa</li>
-            <li>Su</li>
+          <ul class="calendar_wrapper_content-header-days">
+            <li v-for="day in days" :key="day.key">
+              {{ day.name }}
+            </li>
           </ul>
 
-          <div class="grid grid-cols-7">
+          <div class="calendar_wrapper_content-days">
             <template v-for="day in month.days" :key="day.formatDay">
               <button
                 v-if="day.belongsToThisMonth"
                 type="button"
                 :class="[
                   // Basic style
-                  'focus:outline-none relative pb-[100%] border border-gray-200 overflow-hidden',
+                  'calendar_day',
                   // Today
                   {
-                    'border-2 border-blue-500': formatToday === day.formatDay,
+                    'calendar_day--today': formatToday === day.formatDay,
                   },
                   // CheckIn or CheckOut
                   {
-                    'bg-blue-500':
+                    'calendar_day--checkIn-checkOut':
                       checkIn === day.date || checkOut === day.date,
                   },
                   // Disabled date
                   {
-                    'bg-gray-100 pointer-events-none':
+                    'calendar_day--disabled':
                       (day.formatDay !== formatToday && today > day.date) ||
                       isDateBefore(day.date, checkIn) ||
                       (disabledDates.includes(day.formatDay) &&
@@ -137,38 +53,39 @@
                   },
                   // Hovering date
                   {
-                    'bg-blue-300':
+                    'calendar_day--hovering':
                       (!checkIn &&
                         checkIn !== day.date &&
                         hoveringDay === day.date) ||
                       hoveringDates.includes(day.formatDay),
                   },
                   {
-                    'bg-blue-500': checkIn && hoveringDay === day.date,
+                    'calendar_day--hovering-checkIn':
+                      checkIn && hoveringDay === day.date,
                   },
                   // Half day checkIn + checkIn
                   {
-                    'half-day_checkin':
+                    'calendar_day--half-day_checkin':
                       checkIncheckOutHalfDay[day.formatDay] &&
                       checkIncheckOutHalfDay[day.formatDay].checkIn &&
                       checkIn,
                   },
                   // Half day checkIn + !checkIn
                   {
-                    'half-day_checkin pointer-events-none':
+                    'calendar_day--half-day_checkin event-none':
                       checkIncheckOutHalfDay[day.formatDay] &&
                       checkIncheckOutHalfDay[day.formatDay].checkIn &&
                       !checkIn,
                   },
                   // Half day checkOut
                   {
-                    'half-day_checkOut':
+                    'calendar_day--half-day_checkOut':
                       checkIncheckOutHalfDay[day.formatDay] &&
                       checkIncheckOutHalfDay[day.formatDay].checkOut,
                   },
                   // Inactive saturday period
                   {
-                    'day-in-period':
+                    'calendar_day--in-period':
                       (saturdayWeeklyPeriods.includes(day.formatDay) &&
                         day.date.getDay() !== 6) ||
                       (sundayWeeklyPeriods.includes(day.formatDay) &&
@@ -176,7 +93,7 @@
                   },
                   // CheckIn saturday / sunday period
                   {
-                    'checkIn-in-period':
+                    'calendar_day--in-period-checkIn':
                       checkIn !== day.date &&
                       currentPeriod?.nextEnableDate > day.date &&
                       (currentPeriod?.periodType === 'weekly_by_saturday' ||
@@ -187,7 +104,7 @@
                   },
                   // CheckIn nightly period
                   {
-                    'checkIn-in-period':
+                    'calendar_day--in-period-checkIn':
                       checkIn !== day.date &&
                       currentPeriod?.nextEnableDate > day.date &&
                       currentPeriod?.periodType === 'nightly' &&
@@ -198,16 +115,7 @@
                 @mouseleave="dayMouseLeave"
                 @click="dayClicked(day)"
               >
-                <span
-                  class="
-                    absolute
-                    z-10
-                    top-1/2
-                    left-1/2
-                    transform
-                    -translate-x-1/2 -translate-y-1/2
-                  "
-                >
+                <span class="calendar_day--day-number">
                   {{ day.dayNumber }}
                 </span>
               </button>
@@ -225,7 +133,8 @@
 
   import { format } from 'fecha'
 
-  import BaseIcon from './BaseIcon.vue'
+  import CalendarInput from './CalendarInput.vue'
+  import CalendarHeader from './CalendarHeader.vue'
 
   import {
     addDays,
@@ -256,7 +165,8 @@
   export default defineComponent({
     name: 'Calendar',
     components: {
-      BaseIcon,
+      CalendarHeader,
+      CalendarInput,
     },
     props: {
       bookedDates: {
@@ -268,12 +178,12 @@
         default: (): Booking[] => [],
       },
       checkIn: {
-        type: Date,
-        default: new Date(),
+        type: [Date, null],
+        default: null,
       },
       checkOut: {
-        type: Date,
-        default: new Date(),
+        type: [Date, null],
+        default: null,
       },
       countOfMonth: {
         type: Number,
@@ -353,6 +263,15 @@
         activeIndex: 0 as number,
         checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
         currentPeriod: null as CurrentPeriod | null,
+        days: [
+          { key: 1, name: 'Mo' },
+          { key: 2, name: 'Tu' },
+          { key: 3, name: 'We' },
+          { key: 4, name: 'Th' },
+          { key: 5, name: 'Fr' },
+          { key: 6, name: 'Sa' },
+          { key: 0, name: 'Su' },
+        ],
         disabledDates: [] as string[],
         hoveringDates: [] as string[],
         hoveringDay: new Date() as Date,
@@ -618,23 +537,64 @@
 </script>
 
 <style>
-  .half-day_checkin:before,
-  .half-day_checkOut:before {
+  .calendar {
+    @apply w-full relative select-none;
+  }
+  .calendar_wrapper {
+    @apply p-4 bg-white shadow-md absolute w-full md:w-[600px] top-[100%];
+  }
+  .calendar_wrapper_content {
+    @apply grid grid-cols-2 gap-4;
+  }
+  .calendar_wrapper_content-header-days {
+    @apply grid grid-cols-7 text-center py-6 text-sm;
+  }
+  .calendar_wrapper_content-days {
+    @apply grid grid-cols-7;
+  }
+  .calendar_day {
+    @apply focus:outline-none relative pb-[100%] border border-gray-200 overflow-hidden;
+  }
+  .calendar_day--today {
+    @apply border-2 border-blue-500;
+  }
+  .calendar_day--checkIn-checkOut {
+    @apply bg-blue-500;
+  }
+  .calendar_day--disabled {
+    @apply bg-gray-100 pointer-events-none;
+  }
+  .calendar_day--hovering {
+    @apply bg-blue-300;
+  }
+  .calendar_day--hovering-checkIn {
+    @apply bg-blue-500;
+  }
+  .calendar_day--half-day_checkin:before,
+  .calendar_day--half-day_checkOut:before {
     content: '';
     z-index: 1;
     border-bottom: 120px solid rgba(243, 244, 246, 1);
     border-left: 120px solid transparent;
     @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-0 w-0 border-b-[120px] border-l-[120px];
   }
-  .half-day_checkOut:before {
+  .calendar_day--half-day_checkOut:before {
     border-top-color: rgba(243, 244, 246, 1);
     border-right-color: transparent;
     @apply border-t-[120px] border-r-[120px] border-b-0 border-l-0;
   }
-  .day-in-period {
+  .calendar_day--in-period {
     @apply pointer-events-none font-extralight;
   }
-  .checkIn-in-period {
+  .calendar_day--in-period-checkIn {
     @apply pointer-events-none font-extralight;
+  }
+  .calendar_day--day-number {
+    @apply absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+  }
+
+  // global
+  .event-none {
+    @apply pointer-events-none;
   }
 </style>
