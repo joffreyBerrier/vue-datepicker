@@ -535,9 +535,6 @@
   .calendar_wrapper_content {
     @apply grid grid-cols-2 gap-4;
   }
-  .calendar_wrapper_content-header-days {
-    @apply grid grid-cols-7 text-center py-6 text-sm;
-  }
   .calendar_wrapper_content-days {
     @apply grid grid-cols-7;
   }
@@ -582,7 +579,6 @@
     @apply absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
   }
 
-  // global
   .event-none {
     @apply pointer-events-none;
   }

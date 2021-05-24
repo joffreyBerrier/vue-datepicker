@@ -26,3 +26,9 @@
     },
   })
 </script>
+
+<style>
+  .calendar_wrapper_content-header-days {
+    @apply grid grid-cols-7 text-center py-6 text-sm;
+  }
+</style>
