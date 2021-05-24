@@ -20,13 +20,30 @@
           <calendar-days />
 
           <div class="calendar_wrapper_content-days">
-            <template v-for="day in month.days" :key="day.formatDay">
+            <div
+              v-for="day in month.days"
+              :key="day.formatDay"
+              :class="[
+                'calendar_day-wrap',
+                { 'calendar_day-wrap--no-border': !day.belongsToThisMonth },
+              ]"
+            >
+              <div
+                v-if="
+                  day.belongsToThisMonth &&
+                  hoveringDay === day.date &&
+                  hoveringPeriod
+                "
+                class="calendar_tooltip"
+                v-html="tooltipText"
+              />
+
               <button
                 v-if="day.belongsToThisMonth"
                 type="button"
                 :class="[
                   // Basic style
-                  'calendar_day',
+                  'calendar_day z-10',
                   // Today
                   {
                     'calendar_day--today': formatToday === day.formatDay,
@@ -116,7 +133,7 @@
                 </span>
               </button>
               <span v-else></span>
-            </template>
+            </div>
           </div>
         </div>
       </div>
@@ -261,6 +278,7 @@
         activeIndex: 0 as number,
         checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
         currentPeriod: null as CurrentPeriod | null,
+        hoveringPeriod: null as CurrentPeriod | null,
         disabledDates: [] as string[],
         hoveringDates: [] as string[],
         hoveringDay: new Date() as Date,
@@ -270,6 +288,22 @@
       }
     },
     computed: {
+      tooltipText(): string {
+        const { periodType } = this.hoveringPeriod
+        const { minimumDuration } = this.hoveringPeriod
+
+        if (periodType === 'weekly_by_saturday') {
+          return 'Du samedi au samedi<br/> uniquement'
+        }
+        if (periodType === 'weekly_by_sunday') {
+          return 'Du dimanche au dimanche<br/> uniquement'
+        }
+        if (periodType === 'nightly') {
+          return `Un minimum de ${minimumDuration}<br/> nuit est requis.`
+        }
+
+        return ''
+      },
       formatToday(): string {
         return format(this.today, this.formattingFormat)
       },
@@ -439,6 +473,7 @@
       // Trigger each time the mouseOver is triggered
       dayMouseOver(day: Day) {
         this.hoveringDay = day.date
+        this.hoveringPeriod = this.getCurrentPeriod(day)
 
         if (this.checkIn && !this.checkOut) {
           this.hoveringDates = getDatesBetweenTwoDates(
@@ -450,6 +485,7 @@
       },
       dayMouseLeave() {
         this.hoveringDay = new Date()
+        // this.hoveringPeriod = null
       },
       // Trigger each time the click on day is triggered
       dayClicked(day: Day) {
@@ -469,13 +505,13 @@
           // CheckIn
           this.$emit('update:checkIn', day.date)
           this.getNextBookingDate(day)
-          this.getCurrentPeriod(day)
+          this.currentPeriod = this.getCurrentPeriod(day)
         } else {
           // CheckIn + CheckOut
           this.$emit('update:checkIn', day.date)
           this.$emit('update:checkOut', null)
           this.getNextBookingDate(day)
-          this.getCurrentPeriod(day)
+          this.currentPeriod = this.getCurrentPeriod(day)
           this.hoveringDates = []
         }
       },
@@ -494,7 +530,7 @@
         }
       },
       getCurrentPeriod(day: Day) {
-        this.periodDates.forEach((period: Period) => {
+        const currentPeriod = this.periodDates.find((period: Period) => {
           if (
             period.endAt !== day.formatDay &&
             (period.startAt === day.formatDay ||
@@ -504,22 +540,28 @@
                 day.formatDay
               ))
           ) {
-            const durationType =
-              period.periodType === 'weekly_by_saturday' ||
-              period.periodType === 'weekly_by_sunday'
-                ? 'week'
-                : 'day'
-            const minimumDuration =
-              durationType === 'week'
-                ? period.minimumDuration * 7
-                : period.minimumDuration
-
-            this.currentPeriod = {
-              ...period,
-              nextEnableDate: addDays(day.date, minimumDuration),
-            }
+            return period
           }
         })
+
+        if (currentPeriod) {
+          const durationType =
+            currentPeriod.periodType === 'weekly_by_saturday' ||
+            currentPeriod.periodType === 'weekly_by_sunday'
+              ? 'week'
+              : 'day'
+          const minimumDuration =
+            durationType === 'week'
+              ? currentPeriod.minimumDuration * 7
+              : currentPeriod.minimumDuration
+
+          return {
+            ...currentPeriod,
+            nextEnableDate: addDays(day.date, minimumDuration),
+          }
+        }
+
+        return null
       },
     },
   })
@@ -538,8 +580,17 @@
   .calendar_wrapper_content-days {
     @apply grid grid-cols-7;
   }
+  .calendar_day-wrap {
+    @apply relative h-0 pb-[100%] border border-gray-200;
+  }
+  .calendar_day-wrap--no-border {
+    @apply border-0;
+  }
+  .calendar_tooltip {
+    @apply absolute top-full bg-white left-1/2 transform -translate-x-1/2 shadow-sm border border-gray-200 p-3 text-xs z-20 text-center w-max;
+  }
   .calendar_day {
-    @apply focus:outline-none relative pb-[100%] border border-gray-200 overflow-hidden;
+    @apply w-full h-full absolute focus:outline-none overflow-hidden;
   }
   .calendar_day--today {
     @apply border-2 border-blue-500;
