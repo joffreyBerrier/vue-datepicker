@@ -17,11 +17,7 @@
 
       <div class="calendar_wrapper_content">
         <div v-for="month in slicedMonths" :key="month.monthKey">
-          <ul class="calendar_wrapper_content-header-days">
-            <li v-for="day in days" :key="day.key">
-              {{ day.name }}
-            </li>
-          </ul>
+          <calendar-days />
 
           <div class="calendar_wrapper_content-days">
             <template v-for="day in month.days" :key="day.formatDay">
@@ -133,8 +129,9 @@
 
   import { format } from 'fecha'
 
-  import CalendarInput from './CalendarInput.vue'
+  import CalendarDays from './CalendarDays.vue'
   import CalendarHeader from './CalendarHeader.vue'
+  import CalendarInput from './CalendarInput.vue'
 
   import {
     addDays,
@@ -165,6 +162,7 @@
   export default defineComponent({
     name: 'Calendar',
     components: {
+      CalendarDays,
       CalendarHeader,
       CalendarInput,
     },
@@ -263,15 +261,6 @@
         activeIndex: 0 as number,
         checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
         currentPeriod: null as CurrentPeriod | null,
-        days: [
-          { key: 1, name: 'Mo' },
-          { key: 2, name: 'Tu' },
-          { key: 3, name: 'We' },
-          { key: 4, name: 'Th' },
-          { key: 5, name: 'Fr' },
-          { key: 6, name: 'Sa' },
-          { key: 0, name: 'Su' },
-        ],
         disabledDates: [] as string[],
         hoveringDates: [] as string[],
         hoveringDay: new Date() as Date,
