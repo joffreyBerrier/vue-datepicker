@@ -26,7 +26,10 @@
               :class="[
                 'calendar_day-wrap',
                 { 'calendar_day-wrap--no-border': !day.belongsToThisMonth },
+                { 'calendar_day-wrap--disabled': inDisabledDay(day) },
               ]"
+              @mouseenter="dayMouseOver(day)"
+              @mouseleave="dayMouseLeave"
             >
               <div
                 v-if="
@@ -55,14 +58,7 @@
                   },
                   // Disabled date
                   {
-                    'calendar_day--disabled':
-                      (day.formatDay !== formatToday && today > day.date) ||
-                      isDateBefore(day.date, checkIn) ||
-                      (disabledDates.includes(day.formatDay) &&
-                        !checkIncheckOutHalfDay[day.formatDay]) ||
-                      (checkIn &&
-                        nextDisableBookingDate &&
-                        isDateAfter(day.date, nextDisableBookingDate)),
+                    'calendar_day--disabled': inDisabledDay(day),
                   },
                   // Hovering date
                   {
@@ -98,34 +94,18 @@
                   },
                   // Inactive saturday period
                   {
-                    'calendar_day--in-period':
-                      (saturdayWeeklyPeriods.includes(day.formatDay) &&
-                        day.date.getDay() !== 6) ||
-                      (sundayWeeklyPeriods.includes(day.formatDay) &&
-                        day.date.getDay() !== 0),
+                    'calendar_day--in-period': inWeeklyPeriods(day),
                   },
                   // CheckIn saturday / sunday period
                   {
                     'calendar_day--in-period-checkIn':
-                      checkIn !== day.date &&
-                      currentPeriod?.nextEnableDate > day.date &&
-                      (currentPeriod?.periodType === 'weekly_by_saturday' ||
-                        currentPeriod?.periodType === 'weekly_by_sunday') &&
-                      (saturdayWeeklyPeriods.includes(day.formatDay) ||
-                        sundayWeeklyPeriods.includes(day.formatDay)) &&
-                      (day.date.getDay() === 6 || day.date.getDay() === 0),
+                      inWeeklyPeriodsCheckin(day),
                   },
                   // CheckIn nightly period
                   {
-                    'calendar_day--in-period-checkIn':
-                      checkIn !== day.date &&
-                      currentPeriod?.nextEnableDate > day.date &&
-                      currentPeriod?.periodType === 'nightly' &&
-                      nightlyPeriods.includes(day.formatDay),
+                    'calendar_day--in-period-checkIn': inNightlyPeriod(day),
                   },
                 ]"
-                @mouseenter="dayMouseOver(day)"
-                @mouseleave="dayMouseLeave"
                 @click="dayClicked(day)"
               >
                 <span class="calendar_day--day-number">
@@ -356,7 +336,7 @@
         dates: string[]
       ): CheckInCheckOutHalfDay {
         const checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay
-        const bookedDates = [...dates]
+        const bookedDates = this.sortDates([...dates])
 
         for (let i = 0; i < bookedDates.length; i++) {
           const newDate = bookedDates[i]
@@ -417,12 +397,7 @@
           }
         )
 
-        return [...this.bookingDates, ...bookingDates].sort((a, b) => {
-          const aa = a.checkInDate.split('/').reverse().join()
-          const bb = b.checkInDate.split('/').reverse().join()
-
-          return aa < bb ? -1 : aa > bb ? 1 : 0
-        })
+        return this.sortDatesObj([...this.bookingDates, ...bookingDates])
       },
       createHalfDayDates() {
         let checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay
@@ -461,19 +436,70 @@
 
         // Field DisabledDates whith BookedDates
         this.disabledDates.push(...bookedDates)
-        this.disabledDates.sort((a, b) => {
+        this.disabledDates = this.sortDates(this.disabledDates)
+
+        this.checkIncheckOutHalfDay = checkIncheckOutHalfDay
+      },
+      sortDatesObj(dates) {
+        return dates.sort((a, b) => {
+          const aa = a.checkInDate.split('/').reverse().join()
+          const bb = b.checkInDate.split('/').reverse().join()
+
+          return aa < bb ? -1 : aa > bb ? 1 : 0
+        })
+      },
+      sortDates(dates) {
+        return dates.sort((a, b) => {
           const aa = a.split('/').reverse().join()
           const bb = b.split('/').reverse().join()
 
           return aa < bb ? -1 : aa > bb ? 1 : 0
         })
-
-        this.checkIncheckOutHalfDay = checkIncheckOutHalfDay
       },
       // Trigger each time the mouseOver is triggered
+      inWeeklyPeriods(day: Day) {
+        return (
+          (this.saturdayWeeklyPeriods.includes(day.formatDay) &&
+            day.date.getDay() !== 6) ||
+          (this.sundayWeeklyPeriods.includes(day.formatDay) &&
+            day.date.getDay() !== 0)
+        )
+      },
+      inWeeklyPeriodsCheckin(day: Day) {
+        return (
+          this.checkIn !== day.date &&
+          this.currentPeriod?.nextEnableDate > day.date &&
+          (this.currentPeriod?.periodType === 'weekly_by_saturday' ||
+            this.currentPeriod?.periodType === 'weekly_by_sunday') &&
+          (this.saturdayWeeklyPeriods.includes(day.formatDay) ||
+            this.sundayWeeklyPeriods.includes(day.formatDay)) &&
+          (day.date.getDay() === 6 || day.date.getDay() === 0)
+        )
+      },
+      inNightlyPeriod(day: Day) {
+        return (
+          this.checkIn !== day.date &&
+          this.currentPeriod?.nextEnableDate > day.date &&
+          this.currentPeriod?.periodType === 'nightly' &&
+          this.nightlyPeriods.includes(day.formatDay)
+        )
+      },
+      inDisabledDay(day: Day) {
+        return (
+          (day.formatDay !== this.formatToday && this.today > day.date) ||
+          isDateBefore(day.date, this.checkIn) ||
+          (this.disabledDates.includes(day.formatDay) &&
+            !this.checkIncheckOutHalfDay[day.formatDay]) ||
+          (this.checkIn &&
+            this.nextDisableBookingDate &&
+            isDateAfter(day.date, this.nextDisableBookingDate))
+        )
+      },
       dayMouseOver(day: Day) {
         this.hoveringDay = day.date
-        this.hoveringPeriod = this.getCurrentPeriod(day)
+        if (this.inWeeklyPeriods(day) || this.inNightlyPeriod(day)) {
+          this.hoveringPeriod = this.getCurrentPeriod(day)
+        }
 
         if (this.checkIn && !this.checkOut) {
           this.hoveringDates = getDatesBetweenTwoDates(
@@ -485,7 +511,7 @@
       },
       dayMouseLeave() {
         this.hoveringDay = new Date()
-        // this.hoveringPeriod = null
+        this.hoveringPeriod = null
       },
       // Trigger each time the click on day is triggered
       dayClicked(day: Day) {
@@ -584,7 +610,10 @@
     @apply relative h-0 pb-[100%] border border-gray-200;
   }
   .calendar_day-wrap--no-border {
-    @apply border-0;
+    @apply border-0 pointer-events-none;
+  }
+  .calendar_day-wrap--disabled {
+    @apply pointer-events-none;
   }
   .calendar_tooltip {
     @apply absolute top-full bg-white left-1/2 transform -translate-x-1/2 shadow-sm border border-gray-200 p-3 text-xs z-20 text-center w-max;

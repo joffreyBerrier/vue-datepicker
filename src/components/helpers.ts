@@ -53,12 +53,8 @@ const getDatesBetweenTwoDates = (
     dt.setDate(dt.getDate() + 1)
   ) {
     const formatDay = format(new Date(dt), formattingFormat)
-    const formatStartDate = format(new Date(startDate), formattingFormat)
-    const formatEndDate = format(new Date(endDate), formattingFormat)
 
-    if (formatDay != formatStartDate && formatDay != formatEndDate) {
-      arr.push(formatDay)
-    }
+    arr.push(formatDay)
   }
 
   return arr
