@@ -8,6 +8,9 @@ https://github.com/joffreyBerrier/vue-datepicker/projects/1
 
 # 👊 Done 👊
 
+- Manage tooltip 👊
+- Manage minimum duration 👊
+- Manage periods (weekly / nightly) 👊
 - Show dates + month + year 👊
 - Manage HoveringDate 👊
 - Manage Checkin / CheckOut halfday 👊
@@ -38,8 +41,5 @@ Example:
 
 # To Do
 
-- Manage periods (weekly / nightly)
-- Manage tooltip
-- Manage minimum duration
 - Manage translations
 - Manage export library with **Library Mode** of #vite

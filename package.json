@@ -1,7 +1,10 @@
 {
-  "author": "Joffrey Berrier",
   "name": "vue-calendar-3",
   "version": "0.0.0",
+  "repository": "https://github.com/joffreyBerrier/vue-datepicker",
+  "funding": "https://github.com/sponsors/joffreyBerrier",
+  "license": "MIT",
+  "author": "Joffrey Berrier <joffrey.berrier@gmail.com>",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",

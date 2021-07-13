@@ -1,42 +1,28 @@
-import { format } from 'fecha';
-import { addDays, isDateAfter } from './helpers';
+import { format } from 'fecha'
+import { addDays } from './helpers'
 
-import {
-  Booking,
-} from '../types/index'
-
-const resetTimeDate = (date: string) => {
-  const formatDateAt00 = new Date(date).setHours(0, 0, 0, 0);
-
-  return new Date(formatDateAt00);
-};
+import { Booking } from '../types/index'
+import { resetTimeDate, validateDateBetweenTwoDates } from './helpers'
 
 const validateDateBeforeDate = (fromDate: string, givenDate: string) => {
-  return resetTimeDate(givenDate) <= resetTimeDate(fromDate);
+  return resetTimeDate(givenDate) <= resetTimeDate(fromDate)
 }
 
-const validateDateBetweenTwoDates = (fromDate: string, toDate: string, givenDate: string) => {
-  return (
-    resetTimeDate(givenDate) <= resetTimeDate(toDate) &&
-    resetTimeDate(givenDate) >= resetTimeDate(fromDate)
-  );
-}
-
-const nextBookingDate = (bookingDates: Booking[], date: Date) : Date => {
+const getNextBookingDate = (
+  bookingDates: Booking[],
+  date: Date
+): Date | undefined => {
   if (bookingDates.length > 0) {
-    const nextDateFormatted = format(addDays(date, 1));
+    const nextDateFormatted = format(addDays(date, 1))
     const nextBooking = bookingDates.find(
       (booking) =>
-        validateDateBeforeDate(
-          booking.checkInDate,
-          nextDateFormatted
-        ) ||
+        validateDateBeforeDate(booking.checkInDate, nextDateFormatted) ||
         validateDateBetweenTwoDates(
           booking.checkInDate,
           booking.checkOutDate,
           nextDateFormatted
         )
-    ) as Booking | undefined;
+    ) as Booking | undefined
 
     if (nextBooking && nextBooking.checkInDate) {
       return new Date(nextBooking.checkInDate)
@@ -44,6 +30,4 @@ const nextBookingDate = (bookingDates: Booking[], date: Date) : Date => {
   }
 }
 
-export {
-  nextBookingDate,
-}
+export { getNextBookingDate }

@@ -1,144 +1,119 @@
 <template>
-  <div class="w-full relative select-none" ref="Calendar">
-    <div
-      @click="openCalendar"
-      class="flex items-center h-[50px] cursor-pointer px-4 border border-gray-200"
-    >
-      <base-icon
-        name="calendar"
-        :color="[
-          'mr-4',
-          { 'text-gray-300': !checkIn, 'text-gray-700': checkIn },
-        ]"
+  <div ref="Calendar" class="calendar">
+    <calendar-input
+      :placeholder="placeholder"
+      :check-in="checkIn"
+      :check-out="checkOut"
+      :day-format="dayFormat"
+      @openCalendar="openCalendar"
+    />
+
+    <div v-if="showCalendar" class="calendar_wrapper">
+      <calendar-header
+        :active-index="activeIndex"
+        :months="months"
+        @paginate="paginate"
       />
 
-      <p class="flex items-center m-0">
-        <span
-          :class="[{ 'text-gray-300': !checkIn, 'text-gray-700': checkIn }]"
-        >
-          <template v-if="checkIn">{{ checkIn }}</template>
-          <template v-else>{{ placeholder.checkIn }}</template>
-        </span>
+      <div class="calendar_wrapper_content">
+        <div v-for="month in slicedMonths" :key="month.monthKey">
+          <calendar-days />
 
-        <base-icon
-          name="arrowNarrowRight"
-          :color="[
-            'mx-4',
-            { 'text-gray-300': !checkIn, 'text-gray-700': checkIn },
-          ]"
-        />
+          <div class="calendar_wrapper_content-days">
+            <div
+              v-for="day in month.days"
+              :key="day.formatDay"
+              :class="[
+                'calendar_day-wrap',
+                { 'calendar_day-wrap--no-border': !day.belongsToThisMonth },
+                { 'calendar_day-wrap--disabled': inDisabledDay(day) },
+              ]"
+              @mouseenter="dayMouseOver(day)"
+              @mouseleave="dayMouseLeave"
+            >
+              <div
+                v-if="
+                  day.belongsToThisMonth &&
+                  hoveringDay === day.date &&
+                  hoveringPeriod
+                "
+                class="calendar_tooltip"
+                v-html="tooltipText"
+              />
 
-        <span
-          :class="[{ 'text-gray-300': !checkIn, 'text-gray-700': checkIn }]"
-        >
-          <template v-if="checkOut">{{ checkOut }}</template>
-          <template v-else>{{ placeholder.checkOut }}</template>
-        </span>
-      </p>
-    </div>
-
-    <div
-      v-if="showCalendar"
-      class="p-4 bg-white shadow-md absolute w-full md:w-[600px] top-[100%]"
-    >
-      <div class="relative grid grid-cols-2 items-center gap-4">
-        <button
-          :disabled="activeIndex === 0"
-          @click="activeIndex--"
-          class="absolute left-0 w-10 h-10 flex items-center justify-center border border-gray-200 focus:outline-none disabled:opacity-50"
-        >
-          <base-icon name="chevronLeft" />
-        </button>
-
-        <p class="text-center py-2">{{ months[activeIndex].monthName }}</p>
-        <p class="text-center py-2">{{ months[activeIndex + 1].monthName }}</p>
-
-        <button
-          :disabled="activeIndex >= months.length - 2"
-          @click="activeIndex++"
-          class="absolute right-0 w-10 h-10 flex items-center justify-center border border-gray-200 focus:outline-none disabled:opacity-50"
-        >
-          <base-icon name="chevronRight" />
-        </button>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div v-for="month in paginate">
-          <ul class="grid grid-cols-7 text-center py-6 text-sm">
-            <li>Mo</li>
-            <li>Tu</li>
-            <li>We</li>
-            <li>Th</li>
-            <li>Fr</li>
-            <li>Sa</li>
-            <li>Su</li>
-          </ul>
-
-          <div class="grid grid-cols-7">
-            <template v-for="day in month.days" :key="day.formatDay">
               <button
                 v-if="day.belongsToThisMonth"
                 type="button"
                 :class="[
                   // Basic style
-                  'focus:outline-none relative pb-[100%] border border-gray-200 overflow-hidden',
+                  'calendar_day z-10',
                   // Today
                   {
-                    'border-2 border-blue-500': formatToday === day.formatDay,
+                    'calendar_day--today': formatToday === day.formatDay,
                   },
                   // CheckIn or CheckOut
                   {
-                    'bg-blue-500':
+                    'calendar_day--checkIn-checkOut':
                       checkIn === day.date || checkOut === day.date,
                   },
                   // Disabled date
                   {
-                    'bg-gray-100 pointer-events-none':
-                      isDateBefore(day.date, checkIn) ||
-                      disabledDates.includes(day.formatDay) && !checkIncheckOutHalfDay[day.formatDay] ||
-                      (checkIn &&
-                        nextDisableBookingDate &&
-                        isDateAfter(day.date, nextDisableBookingDate))
+                    'calendar_day--disabled': inDisabledDay(day),
                   },
                   // Hovering date
                   {
-                    'bg-blue-300':
-                      hoveringDay === day.date ||
+                    'calendar_day--hovering':
+                      (!checkIn &&
+                        checkIn !== day.date &&
+                        hoveringDay === day.date) ||
                       hoveringDates.includes(day.formatDay),
+                  },
+                  {
+                    'calendar_day--hovering-checkIn':
+                      checkIn && hoveringDay === day.date,
                   },
                   // Half day checkIn + checkIn
                   {
-                    halfDayCheckIn:
+                    'calendar_day--half-day_checkin':
                       checkIncheckOutHalfDay[day.formatDay] &&
                       checkIncheckOutHalfDay[day.formatDay].checkIn &&
                       checkIn,
                   },
                   // Half day checkIn + !checkIn
                   {
-                    'halfDayCheckIn pointer-events-none':
+                    'calendar_day--half-day_checkin event-none':
                       checkIncheckOutHalfDay[day.formatDay] &&
                       checkIncheckOutHalfDay[day.formatDay].checkIn &&
                       !checkIn,
                   },
                   // Half day checkOut
                   {
-                    halfDayCheckOut:
+                    'calendar_day--half-day_checkOut':
                       checkIncheckOutHalfDay[day.formatDay] &&
                       checkIncheckOutHalfDay[day.formatDay].checkOut,
                   },
+                  // Inactive saturday period
+                  {
+                    'calendar_day--in-period': inWeeklyPeriods(day),
+                  },
+                  // CheckIn saturday / sunday period
+                  {
+                    'calendar_day--in-period-checkIn':
+                      inWeeklyPeriodsCheckin(day),
+                  },
+                  // CheckIn nightly period
+                  {
+                    'calendar_day--in-period-checkIn': inNightlyPeriod(day),
+                  },
                 ]"
-                @mouseenter="dayMouseOver(day)"
-                @mouseleave="dayMouseLeave"
                 @click="dayClicked(day)"
               >
-                <span
-                  class="absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                >
+                <span class="calendar_day--day-number">
                   {{ day.dayNumber }}
                 </span>
               </button>
               <span v-else></span>
-            </template>
+            </div>
           </div>
         </div>
       </div>
@@ -147,301 +122,544 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+  import { defineComponent, PropType, ref, computed } from 'vue'
 
-import { format } from "fecha";
+  import { format } from 'fecha'
 
-import BaseIcon from "./BaseIcon.vue";
+  import CalendarDays from './CalendarDays.vue'
+  import CalendarHeader from './CalendarHeader.vue'
+  import CalendarInput from './CalendarInput.vue'
 
-import { createMonth, renderMultipleMonths } from "./generateMonth";
-import { isDateAfter, getDayDiff, isDateBefore, addDays } from "./helpers";
-import { nextBookingDate } from "./getNextBookingDate";
-
-import {
-  Booking,
-  CheckInCheckOutHalfDay,
-  Day,
-  Month,
-  Period,
-  Placeholder,
-} from '../types/index'
-
-
-export default defineComponent({
-  name: "Calendar",
-  components: {
-    BaseIcon,
-  },
-  props: {
-    bookedDates: {
-      type: Array as PropType<string[]>,
-      default: (): string[] => [],
-    },
-    bookingDates: {
-      type: Array as PropType<Booking[]>,
-      default: (): Booking[] => [],
-    },
-    checkIn: {
-      type: Date,
-      default: new Date(),
-    },
-    checkOut: {
-      type: Date,
-      default: new Date(),
-    },
-    periodDates: {
-      type: Array as PropType<Period[]>,
-      default: (): Period[] => [],
-    },
-    placeholder: {
-      type: Object as PropType<Placeholder>,
-      default: (): Placeholder => ({
-        checkIn: "Arrivée",
-        checkOut: "Départ",
-      }),
-    },
-  },
-  data() {
-    return {
-      activeIndex: 0 as number,
-      checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
-      disabledDates: [] as string[],
-      formatDay: "YYYY-MM-DD",
-      hoveringDates: [] as string[],
-      hoveringDay: new Date() as Date,
-      months: [] as Month[],
-      nextDisableBookingDate: null as Date | null,
-      newBookingDates: [] as Booking[],
-      showCalendar: true as boolean,
-      today: new Date() as Date,
-    };
-  },
-  beforeMount() {
-    // Current month of the current day
-    this.months.push(createMonth(this.today));
-
-    // Next 12 month after the current day
-    const months = renderMultipleMonths(this.today, 12);
-    this.months.push(...months);
-
-    if (this.bookingDates.length > 0 || this.bookedDates.length > 0) this.createHalfDayDates();
-
-    document.addEventListener("click", this.handleClickOutside, false);
-  },
-  unmounted() {
-    document.removeEventListener("click", this.handleClickOutside);
-  },
-  emits: ["update:checkIn", "update:checkOut"],
-  computed: {
-    formatToday(): string {
-      return format(this.today, this.formatDay);
-    },
-    paginate(): Month[] {
-      return this.months.slice(this.activeIndex, 2 + this.activeIndex);
-    },
-  },
-  methods: {
+  import {
+    addDays,
+    getDatesBetweenTwoDates,
+    getDayDiff,
     isDateAfter,
     isDateBefore,
-    handleClickOutside(event: Event) {
-      const ignoredElement = this.$refs.Calendar as HTMLElement;
+    validateDateBetweenTwoDates,
+  } from './helpers'
 
-      if (ignoredElement && this.showCalendar) {
-        const isIgnoredElementClicked = ignoredElement.contains(event.target);
+  import {
+    useCreateMonth,
+    useCreateMultipleMonths,
+    useGetPeriod,
+  } from './compose'
+  import { getNextBookingDate } from './getNextBookingDate'
 
-        if (!isIgnoredElementClicked) {
-          this.showCalendar = false;
-        }
+  import {
+    Booking,
+    CheckInCheckOutHalfDay,
+    CurrentPeriod,
+    Day,
+    Month,
+    Period,
+    Placeholder,
+  } from '../types/index'
+
+  export default defineComponent({
+    name: 'Calendar',
+    components: {
+      CalendarDays,
+      CalendarHeader,
+      CalendarInput,
+    },
+    props: {
+      bookedDates: {
+        type: Array as PropType<string[]>,
+        default: (): string[] => [],
+      },
+      bookingDates: {
+        type: Array as PropType<Booking[]>,
+        default: (): Booking[] => [],
+      },
+      checkIn: {
+        type: [Date, null],
+        default: null,
+      },
+      checkOut: {
+        type: [Date, null],
+        default: null,
+      },
+      countOfMonth: {
+        type: Number,
+        default: 24,
+      },
+      formatDate: {
+        type: String,
+        default: 'YYYY-MM-DD',
+      },
+      periodDates: {
+        type: Array as PropType<Period[]>,
+        default: (): Period[] => [],
+      },
+      placeholder: {
+        type: Object as PropType<Placeholder>,
+        default: (): Placeholder => ({
+          checkIn: 'Arrivée',
+          checkOut: 'Départ',
+        }),
+      },
+    },
+    emits: [
+      'update:checkIn',
+      'update:checkOut',
+      'renderPreviousMonth',
+      'renderNextMonth',
+    ],
+    setup(props) {
+      const formattingFormat = ref('YYYY-MM-DD')
+
+      const today = ref(new Date())
+      const months = ref([])
+      // Current month of the current day
+      months.value.push(useCreateMonth(today.value))
+
+      // Next 12 month after the current day
+      const multipleMonths = useCreateMultipleMonths(
+        today.value,
+        props.countOfMonth
+      )
+      months.value.push(...multipleMonths)
+
+      // Create array of disabledDates for each types of period
+      const saturdayWeeklyPeriods = computed(() => {
+        return useGetPeriod(
+          props.periodDates,
+          'weekly_by_saturday',
+          formattingFormat.value
+        )
+      })
+      const sundayWeeklyPeriods = computed(() => {
+        return useGetPeriod(
+          props.periodDates,
+          'weekly_by_sunday',
+          formattingFormat.value
+        )
+      })
+      const nightlyPeriods = computed(() => {
+        return useGetPeriod(
+          props.periodDates,
+          'nightly',
+          formattingFormat.value
+        )
+      })
+
+      return {
+        formattingFormat,
+        months,
+        nightlyPeriods,
+        saturdayWeeklyPeriods,
+        sundayWeeklyPeriods,
+        today,
       }
     },
-    openCalendar() {
-      this.showCalendar = !this.showCalendar;
-    },
-    // Create halfDayDates
-    createHalfDayDates() {
-      const checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay;
-
-      const disabledDates = [...this.bookedDates]
-
-      for (let i = 0; i < disabledDates.length; i++) {
-        const newDate = disabledDates[i];
-        const newDateIncrementOne = disabledDates[i + 1];
-
-        if (i === 0) {
-          checkIncheckOutHalfDay[newDate] = {
-            checkIn: true
-          };
-        }
-
-        if (
-          !checkIncheckOutHalfDay[newDate] &&
-          disabledDates[i + 1] &&
-          getDayDiff(newDate, newDateIncrementOne) > 1
-        ) {
-          checkIncheckOutHalfDay[newDate] = {
-            checkOut: true
-          };
-          checkIncheckOutHalfDay[newDateIncrementOne] = {
-            checkIn: true
-          };
-        }
-
-        if (i === disabledDates.length - 1) {
-          checkIncheckOutHalfDay[newDate] = {
-            checkOut: true
-          };
-        }
+    data() {
+      return {
+        activeIndex: 0 as number,
+        checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
+        currentPeriod: null as CurrentPeriod | null,
+        hoveringPeriod: null as CurrentPeriod | null,
+        disabledDates: [] as string[],
+        hoveringDates: [] as string[],
+        hoveringDay: new Date() as Date,
+        nextDisableBookingDate: null as Date | null,
+        newBookingDates: [] as Booking[],
+        showCalendar: true as boolean,
       }
+    },
+    computed: {
+      tooltipText(): string {
+        const { periodType } = this.hoveringPeriod
+        const { minimumDuration } = this.hoveringPeriod
 
-      this.createBookingDates(checkIncheckOutHalfDay)
+        if (periodType === 'weekly_by_saturday') {
+          return 'Du samedi au samedi<br/> uniquement'
+        }
+        if (periodType === 'weekly_by_sunday') {
+          return 'Du dimanche au dimanche<br/> uniquement'
+        }
+        if (periodType === 'nightly') {
+          return `Un minimum de ${minimumDuration}<br/> nuit est requis.`
+        }
 
-      this.bookingDates.forEach((booking: Booking) => {
-        checkIncheckOutHalfDay[booking.checkInDate] = {
-          checkIn: true,
-        };
-        checkIncheckOutHalfDay[booking.checkOutDate] = {
-          checkOut: true,
-        };
+        return ''
+      },
+      formatToday(): string {
+        return format(this.today, this.formattingFormat)
+      },
+      slicedMonths(): Month[] {
+        return this.months.slice(this.activeIndex, 2 + this.activeIndex)
+      },
+    },
+    beforeMount() {
+      if (this.bookingDates.length > 0 || this.bookedDates.length > 0)
+        this.createHalfDayDates()
 
-        this.disabledDates.push(
-          ...this.getDatesBetweenTwoDates(
-            new Date(booking.checkInDate),
-            new Date(booking.checkOutDate)
+      document.addEventListener('click', this.handleClickOutside, false)
+    },
+    unmounted() {
+      document.removeEventListener('click', this.handleClickOutside)
+    },
+    methods: {
+      isDateAfter,
+      isDateBefore,
+      paginate(operator: string) {
+        if (operator === '-') {
+          this.activeIndex--
+          this.$emit('renderPreviousMonth')
+        }
+        if (operator === '+') {
+          this.activeIndex++
+          this.$emit('renderNextMonth')
+          this.createHalfDayDates()
+        }
+      },
+      dayFormat(date: Date): string {
+        return format(date, this.formatDate)
+      },
+      handleClickOutside(event: Event) {
+        const ignoredElement = this.$refs.Calendar as HTMLElement
+
+        if (ignoredElement && this.showCalendar) {
+          const isIgnoredElementClicked = ignoredElement.contains(event.target)
+
+          if (!isIgnoredElementClicked) {
+            this.showCalendar = false
+          }
+        }
+      },
+      openCalendar() {
+        this.showCalendar = !this.showCalendar
+      },
+      // Create halfDayDates
+      createHalfDayDatesWithBookedDates(
+        dates: string[]
+      ): CheckInCheckOutHalfDay {
+        const checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay
+        const bookedDates = this.sortDates([...dates])
+
+        for (let i = 0; i < bookedDates.length; i++) {
+          const newDate = bookedDates[i]
+          const newDateIncrementOne = bookedDates[i + 1]
+
+          if (i === 0) {
+            checkIncheckOutHalfDay[newDate] = {
+              checkIn: true,
+            }
+          }
+
+          if (
+            !checkIncheckOutHalfDay[newDate] &&
+            bookedDates[i + 1] &&
+            getDayDiff(newDate, newDateIncrementOne) > 1
+          ) {
+            checkIncheckOutHalfDay[newDate] = {
+              checkOut: true,
+            }
+            checkIncheckOutHalfDay[newDateIncrementOne] = {
+              checkIn: true,
+            }
+          }
+
+          if (i === bookedDates.length - 1) {
+            checkIncheckOutHalfDay[newDate] = {
+              checkOut: true,
+            }
+          }
+        }
+
+        return {
+          checkIncheckOutHalfDay,
+          bookedDates,
+        }
+      },
+      createBookingDatesWithHalfDayDates(
+        checkIncheckOutHalfDay: CheckInCheckOutHalfDay
+      ): PropType<Booking[]> {
+        const bookingDates = new Set() as Set<Booking>
+        let increment = 0 as number
+        let booking = {} as Booking
+
+        Object.keys(checkIncheckOutHalfDay).forEach(
+          (date: string, i: number) => {
+            increment = i
+
+            if (checkIncheckOutHalfDay[date].checkIn) booking.checkInDate = date
+            if (checkIncheckOutHalfDay[date].checkOut)
+              booking.checkOutDate = date
+
+            if (increment % 2 === 1) {
+              bookingDates.add({
+                checkInDate: booking.checkInDate,
+                checkOutDate: booking.checkOutDate,
+              })
+            }
+          }
+        )
+
+        return this.sortDatesObj([...this.bookingDates, ...bookingDates])
+      },
+      createHalfDayDates() {
+        let checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay
+        let bookedDates = [] as string[]
+
+        // Create halfDay dates with booked dates
+        const res = this.createHalfDayDatesWithBookedDates(this.bookedDates)
+        checkIncheckOutHalfDay = res.checkIncheckOutHalfDay
+        bookedDates = res.bookedDates
+
+        // Create bookingDates with halfDay
+        this.newBookingDates = this.createBookingDatesWithHalfDayDates(
+          checkIncheckOutHalfDay
+        )
+
+        // Set DisabledDates to []
+        this.disabledDates = []
+
+        // Field DisabledDates whith BookingDates
+        this.bookingDates.forEach((booking: Booking) => {
+          checkIncheckOutHalfDay[booking.checkInDate] = {
+            checkIn: true,
+          }
+          checkIncheckOutHalfDay[booking.checkOutDate] = {
+            checkOut: true,
+          }
+
+          this.disabledDates.push(
+            ...getDatesBetweenTwoDates(
+              new Date(booking.checkInDate),
+              new Date(booking.checkOutDate),
+              this.formattingFormat
+            )
           )
-        );
-      });
+        })
 
-      this.disabledDates.push(...disabledDates)
-      this.disabledDates.sort((a, b) => {
-        const aa = a
-          .split("/")
-          .reverse()
-          .join();
-        const bb = b
-          .split("/")
-          .reverse()
-          .join();
+        // Field DisabledDates whith BookedDates
+        this.disabledDates.push(...bookedDates)
+        this.disabledDates = this.sortDates(this.disabledDates)
 
-        return aa < bb ? -1 : aa > bb ? 1 : 0;
-      });
+        this.checkIncheckOutHalfDay = checkIncheckOutHalfDay
+      },
+      sortDatesObj(dates) {
+        return dates.sort((a, b) => {
+          const aa = a.checkInDate.split('/').reverse().join()
+          const bb = b.checkInDate.split('/').reverse().join()
 
-      this.checkIncheckOutHalfDay = checkIncheckOutHalfDay;
-    },
-    createBookingDates(checkIncheckOutHalfDay: CheckInCheckOutHalfDay) {
-      // Create bookingDates with bookedDates
-      const newBookingDates = new Set() as Set<Booking>
-      let increment = 0 as number
-      let booking = {} as Booking
+          return aa < bb ? -1 : aa > bb ? 1 : 0
+        })
+      },
+      sortDates(dates) {
+        return dates.sort((a, b) => {
+          const aa = a.split('/').reverse().join()
+          const bb = b.split('/').reverse().join()
 
-      Object.keys(checkIncheckOutHalfDay).forEach((date: string, i: number) => {
-        increment = i
-
-        if (checkIncheckOutHalfDay[date].checkIn) booking.checkInDate = date
-        if (checkIncheckOutHalfDay[date].checkOut) booking.checkOutDate = date
-
-        if (increment % 2 === 1) {
-          newBookingDates.add({
-            checkInDate: booking.checkInDate,
-            checkOutDate: booking.checkOutDate
-          })
-        }
-      })
-
-      this.newBookingDates = [...this.bookingDates, ...newBookingDates]
-      this.newBookingDates.sort((a, b) => {
-        const aa = a.checkInDate
-          .split("/")
-          .reverse()
-          .join();
-        const bb = b.checkInDate
-          .split("/")
-          .reverse()
-          .join();
-
-        return aa < bb ? -1 : aa > bb ? 1 : 0;
-      })
-    },
-    // Return an array of date between two date with YYYY-MM-DD format
-    getDatesBetweenTwoDates(startDate: Date, endDate: Date): string[] {
-      let arr = [];
-
-      for (
-        let dt = new Date(startDate);
-        dt <= endDate;
-        dt.setDate(dt.getDate() + 1)
-      ) {
-        const formatDay = format(new Date(dt), this.formatDay);
-        const formatStartDate = format(new Date(startDate), this.formatDay);
-        const formatEndDate = format(new Date(endDate), this.formatDay);
-
-        if (formatDay != formatStartDate && formatDay != formatEndDate) {
-          arr.push(formatDay);
-        }
-      }
-
-      return arr;
-    },
-    // Trigger each time the mouseOver is triggered
-    dayMouseOver(day: Day) {
-      this.hoveringDay = day.date;
-
-      if (this.checkIn && !this.checkOut) {
-        this.hoveringDates = this.getDatesBetweenTwoDates(
-          this.checkIn,
-          this.hoveringDay
-        );
-      }
-    },
-    dayMouseLeave() {
-      this.hoveringDay = new Date();
-    },
-    // Trigger each time the click on day is triggered
-    dayClicked(day: Day) {
-      if (this.checkIn === day.date) {
-        this.$emit("update:checkIn", null);
-        this.$emit("update:checkOut", null);
-        this.nextDisableBookingDate = null
-        this.hoveringDates = [];
-      } else if (this.checkIn && !this.checkOut) {
-        this.$emit("update:checkOut", day.date);
-        this.nextDisableBookingDate = null
-      } else if (!this.checkIn) {
-        this.$emit("update:checkIn", day.date);
-        this.getNextBookingDate(day);
-      } else {
-        this.$emit("update:checkIn", day.date);
-        this.$emit("update:checkOut", null);
-        this.nextDisableBookingDate = null
-        this.hoveringDates = [];
-      }
-    },
-    // Récupère la prochaine date de booking
-    getNextBookingDate(day: Day) {
-      if (this.newBookingDates.length > 0) {
-        let newDate = day.date
-        if (this.checkIncheckOutHalfDay[day.formatDay]?.checkOut) {
-          newDate = addDays(day.date, 1)
+          return aa < bb ? -1 : aa > bb ? 1 : 0
+        })
+      },
+      // Trigger each time the mouseOver is triggered
+      inWeeklyPeriods(day: Day) {
+        return (
+          (this.saturdayWeeklyPeriods.includes(day.formatDay) &&
+            day.date.getDay() !== 6) ||
+          (this.sundayWeeklyPeriods.includes(day.formatDay) &&
+            day.date.getDay() !== 0)
+        )
+      },
+      inWeeklyPeriodsCheckin(day: Day) {
+        return (
+          this.checkIn !== day.date &&
+          this.currentPeriod?.nextEnableDate > day.date &&
+          (this.currentPeriod?.periodType === 'weekly_by_saturday' ||
+            this.currentPeriod?.periodType === 'weekly_by_sunday') &&
+          (this.saturdayWeeklyPeriods.includes(day.formatDay) ||
+            this.sundayWeeklyPeriods.includes(day.formatDay)) &&
+          (day.date.getDay() === 6 || day.date.getDay() === 0)
+        )
+      },
+      inNightlyPeriod(day: Day) {
+        return (
+          this.checkIn !== day.date &&
+          this.currentPeriod?.nextEnableDate > day.date &&
+          this.currentPeriod?.periodType === 'nightly' &&
+          this.nightlyPeriods.includes(day.formatDay)
+        )
+      },
+      inDisabledDay(day: Day) {
+        return (
+          (day.formatDay !== this.formatToday && this.today > day.date) ||
+          isDateBefore(day.date, this.checkIn) ||
+          (this.disabledDates.includes(day.formatDay) &&
+            !this.checkIncheckOutHalfDay[day.formatDay]) ||
+          (this.checkIn &&
+            this.nextDisableBookingDate &&
+            isDateAfter(day.date, this.nextDisableBookingDate))
+        )
+      },
+      dayMouseOver(day: Day) {
+        this.hoveringDay = day.date
+        if (this.inWeeklyPeriods(day) || this.inNightlyPeriod(day)) {
+          this.hoveringPeriod = this.getCurrentPeriod(day)
         }
 
-        this.nextDisableBookingDate = nextBookingDate(this.newBookingDates, newDate);
-      }
+        if (this.checkIn && !this.checkOut) {
+          this.hoveringDates = getDatesBetweenTwoDates(
+            this.checkIn,
+            this.hoveringDay,
+            this.formattingFormat
+          )
+        }
+      },
+      dayMouseLeave() {
+        this.hoveringDay = new Date()
+        this.hoveringPeriod = null
+      },
+      // Trigger each time the click on day is triggered
+      dayClicked(day: Day) {
+        if (this.checkIn === day.date) {
+          // CheckIn when already CheckIn
+          this.$emit('update:checkIn', null)
+          this.$emit('update:checkOut', null)
+          this.nextDisableBookingDate = null
+          this.currentPeriod = null
+          this.hoveringDates = []
+        } else if (this.checkIn && !this.checkOut) {
+          // CheckIn + !ChecKout
+          this.$emit('update:checkOut', day.date)
+          this.nextDisableBookingDate = null
+          this.currentPeriod = null
+        } else if (!this.checkIn) {
+          // CheckIn
+          this.$emit('update:checkIn', day.date)
+          this.getNextBookingDate(day)
+          this.currentPeriod = this.getCurrentPeriod(day)
+        } else {
+          // CheckIn + CheckOut
+          this.$emit('update:checkIn', day.date)
+          this.$emit('update:checkOut', null)
+          this.getNextBookingDate(day)
+          this.currentPeriod = this.getCurrentPeriod(day)
+          this.hoveringDates = []
+        }
+      },
+      // Récupère la prochaine date de booking
+      getNextBookingDate(day: Day) {
+        if (this.newBookingDates.length > 0) {
+          let newDate = day.date
+          if (this.checkIncheckOutHalfDay[day.formatDay]?.checkOut) {
+            newDate = addDays(day.date, 1)
+          }
+
+          this.nextDisableBookingDate = getNextBookingDate(
+            this.newBookingDates,
+            newDate
+          )
+        }
+      },
+      getCurrentPeriod(day: Day) {
+        const currentPeriod = this.periodDates.find((period: Period) => {
+          if (
+            period.endAt !== day.formatDay &&
+            (period.startAt === day.formatDay ||
+              validateDateBetweenTwoDates(
+                period.startAt,
+                period.endAt,
+                day.formatDay
+              ))
+          ) {
+            return period
+          }
+        })
+
+        if (currentPeriod) {
+          const durationType =
+            currentPeriod.periodType === 'weekly_by_saturday' ||
+            currentPeriod.periodType === 'weekly_by_sunday'
+              ? 'week'
+              : 'day'
+          const minimumDuration =
+            durationType === 'week'
+              ? currentPeriod.minimumDuration * 7
+              : currentPeriod.minimumDuration
+
+          return {
+            ...currentPeriod,
+            nextEnableDate: addDays(day.date, minimumDuration),
+          }
+        }
+
+        return null
+      },
     },
-  },
-});
+  })
 </script>
 
 <style>
-.halfDayCheckIn:before,
-.halfDayCheckOut:before {
-  content: "";
-  z-index: 1;
-  border-bottom: 120px solid rgba(243, 244, 246, 1);
-  border-left: 120px solid transparent;
-  @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-0 w-0 border-b-[120px] border-l-[120px];
-}
-.halfDayCheckOut:before {
-  border-top-color: rgba(243, 244, 246, 1);
-  border-right-color: transparent;
-  @apply border-t-[120px] border-r-[120px] border-b-0 border-l-0;
-}
+  .calendar {
+    @apply w-full relative select-none;
+  }
+  .calendar_wrapper {
+    @apply p-4 bg-white shadow-md absolute w-full md:w-[600px] top-[100%];
+  }
+  .calendar_wrapper_content {
+    @apply grid grid-cols-2 gap-4;
+  }
+  .calendar_wrapper_content-days {
+    @apply grid grid-cols-7;
+  }
+  .calendar_day-wrap {
+    @apply relative h-0 pb-[100%] border border-gray-200;
+  }
+  .calendar_day-wrap--no-border {
+    @apply border-0 pointer-events-none;
+  }
+  .calendar_day-wrap--disabled {
+    @apply pointer-events-none;
+  }
+  .calendar_tooltip {
+    @apply absolute top-full bg-white left-1/2 transform -translate-x-1/2 shadow-sm border border-gray-200 p-3 text-xs z-20 text-center w-max;
+  }
+  .calendar_day {
+    @apply w-full h-full absolute focus:outline-none overflow-hidden;
+  }
+  .calendar_day--today {
+    @apply border-2 border-blue-500;
+  }
+  .calendar_day--checkIn-checkOut {
+    @apply bg-blue-500;
+  }
+  .calendar_day--disabled {
+    @apply bg-gray-100 pointer-events-none;
+  }
+  .calendar_day--hovering {
+    @apply bg-blue-300;
+  }
+  .calendar_day--hovering-checkIn {
+    @apply bg-blue-500;
+  }
+  .calendar_day--half-day_checkin:before,
+  .calendar_day--half-day_checkOut:before {
+    content: '';
+    z-index: 1;
+    border-bottom: 120px solid rgba(243, 244, 246, 1);
+    border-left: 120px solid transparent;
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-0 w-0 border-b-[120px] border-l-[120px];
+  }
+  .calendar_day--half-day_checkOut:before {
+    border-top-color: rgba(243, 244, 246, 1);
+    border-right-color: transparent;
+    @apply border-t-[120px] border-r-[120px] border-b-0 border-l-0;
+  }
+  .calendar_day--in-period {
+    @apply pointer-events-none font-extralight;
+  }
+  .calendar_day--in-period-checkIn {
+    @apply pointer-events-none font-extralight;
+  }
+  .calendar_day--day-number {
+    @apply absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+  }
+
+  .event-none {
+    @apply pointer-events-none;
+  }
 </style>
