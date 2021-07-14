@@ -7,6 +7,7 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   build: {
+    cssCodeSplit: true,
     lib: {
       name: 'VueCalendar',
       entry: path.resolve(__dirname, 'src/library.ts'),
