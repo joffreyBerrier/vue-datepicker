@@ -24,22 +24,22 @@
     data() {
       return {
         bookedDates: [
-          '2021-06-01',
-          '2021-06-02',
-          '2021-06-03',
-          '2021-06-23',
-          '2021-06-24',
-          '2021-06-25',
+          '2021-07-01',
+          '2021-07-02',
+          '2021-07-03',
+          '2021-07-23',
+          '2021-07-24',
+          '2021-07-25',
         ] as string[],
         bookingDates: [
           {
-            checkInDate: '2021-05-01',
-            checkOutDate: '2021-05-10',
+            checkInDate: '2021-07-01',
+            checkOutDate: '2021-07-10',
             type: 'admin',
           },
           {
-            checkInDate: '2021-06-10',
-            checkOutDate: '2021-06-20',
+            checkInDate: '2021-08-10',
+            checkOutDate: '2021-08-20',
             type: 'contract',
           },
         ] as Booking[],

@@ -1,15 +1,29 @@
 {
   "name": "vue-calendar-3",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "repository": "https://github.com/joffreyBerrier/vue-datepicker",
   "funding": "https://github.com/sponsors/joffreyBerrier",
   "license": "MIT",
   "author": "Joffrey Berrier <joffrey.berrier@gmail.com>",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "serve": "vite preview",
     "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore ."
+  },
+  "files": [
+    "dist/*",
+    "types/*",
+    "*.json"
+  ],
+  "types": "./types/main.d.ts",
+  "main": "./dist/vue-calendar-3.umd.js",
+  "module": "./dist/vue-calendar-3.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue-calendar-3.es.js",
+      "require": "./dist/vue-calendar-3.umd.js"
+    }
   },
   "dependencies": {
     "autoprefixer": "^10.2.5",
