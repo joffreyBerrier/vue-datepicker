@@ -594,6 +594,10 @@
 </script>
 
 <style>
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
   .calendar {
     @apply w-full relative select-none;
   }
