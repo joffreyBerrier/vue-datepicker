@@ -594,6 +594,10 @@
 </script>
 
 <style>
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
   .calendar {
     @apply w-full relative select-none;
   }
@@ -619,7 +623,7 @@
     @apply absolute top-full bg-white left-1/2 transform -translate-x-1/2 shadow-sm border border-gray-200 p-3 text-xs z-20 text-center w-max;
   }
   .calendar_day {
-    @apply w-full h-full absolute focus:outline-none overflow-hidden;
+    @apply w-full left-0 right-0 h-full absolute focus:outline-none overflow-hidden font-bold;
   }
   .calendar_day--today {
     @apply border-2 border-blue-500;
@@ -628,7 +632,7 @@
     @apply bg-blue-500;
   }
   .calendar_day--disabled {
-    @apply bg-gray-100 pointer-events-none;
+    @apply bg-gray-100 pointer-events-none font-extralight;
   }
   .calendar_day--hovering {
     @apply bg-blue-300;
@@ -658,7 +662,6 @@
   .calendar_day--day-number {
     @apply absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
   }
-
   .event-none {
     @apply pointer-events-none;
   }
