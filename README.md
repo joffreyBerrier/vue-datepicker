@@ -197,3 +197,17 @@ periodDates: [
 # To Do
 
 - Manage translations
+
+
+## Contributing to development 💁‍♂️💁‍♀️
+
+- First create an issue
+- Fork the repo from github.
+- Clone your forked repo and run: `yarn` or `npm i`
+- Then, make your changes on any branch you want and push it.
+- Naming your branch with the gitflow convention:
+  - Feature branches? [feature/issueId]
+  - Release branches? [release/issueId]
+  - Hotfix branches? [hotfix/issueId]
+  - Support branches? [support/issueId]
+- Finally, open a pull request on the official repo, using the source branch from your forked repo.
