@@ -1,6 +1,6 @@
 {
   "name": "vue-calendar-3",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": "https://github.com/joffreyBerrier/vue-datepicker",
   "funding": "https://github.com/sponsors/joffreyBerrier",
   "license": "MIT",
@@ -23,7 +23,8 @@
     ".": {
       "import": "./dist/vue-calendar-3.es.js",
       "require": "./dist/vue-calendar-3.umd.js"
-    }
+    },
+    "./style": "./dist/library.css"
   },
   "dependencies": {
     "autoprefixer": "^10.2.5",
