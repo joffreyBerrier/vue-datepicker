@@ -6,12 +6,12 @@ https://github.com/joffreyBerrier/vue-datepicker/projects/1
 
 🔥 Vue3 + Typescript + Tailwind + HeroIcon 🔥
 
-<!-- # Sandbox example -->
+# Sandbox example
 
-<!--
+
 _Open this link on a new tab_
 
-[![Edit vue-wheel](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/vue-wheel-rjgn0?fontsize=14&theme=dark&view=preview) -->
+[![Edit vue-calendar-3](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/vue-calendar-3-ezer3?fontsize=14&theme=dark&view=preview) 
 
 ## Installation
 
