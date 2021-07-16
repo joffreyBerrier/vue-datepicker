@@ -26,6 +26,7 @@ yarn add vue-calendar-3
 
 ```javascript
 import { Calendar } from 'vue-calendar-3'
+import 'vue-calendar-3/style'
 
 export default {
   components: {
