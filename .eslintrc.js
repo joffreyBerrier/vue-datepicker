@@ -3,6 +3,7 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
+    jest: true,
     node: true,
   },
   extends: [
@@ -15,5 +16,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2021,
   },
-  plugins: ['vue'],
+  plugins: [],
+  rules: {
+    '@typescript-eslint/no-var-requires': 0,
+  },
 }

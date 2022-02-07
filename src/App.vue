@@ -6,7 +6,10 @@
       :booked-dates="bookedDates"
       :period-dates="periodDates"
       :booking-dates="bookingDates"
+      :show-year="true"
+      :show-input-calendar="false"
       @renderNextMonth="renderNextMonth"
+      @select-booking-date="clickOnDate"
     />
   </div>
 </template>
@@ -23,73 +26,34 @@
     },
     data() {
       return {
-        bookedDates: [
-          '2021-07-01',
-          '2021-07-02',
-          '2021-07-03',
-          '2021-07-23',
-          '2021-07-24',
-          '2021-07-25',
-        ] as string[],
+        bookedDates: [] as string[],
         bookingDates: [
           {
-            checkInDate: '2021-07-01',
-            checkOutDate: '2021-07-10',
+            checkInDate: '2022-07-01',
+            checkOutDate: '2022-07-10',
             type: 'admin',
           },
           {
-            checkInDate: '2021-08-10',
-            checkOutDate: '2021-08-20',
+            checkInDate: '2022-08-01',
+            checkOutDate: '2022-08-20',
+            type: 'contract',
+          },
+          {
+            checkInDate: '2022-10-01',
+            checkOutDate: '2022-10-20',
             type: 'contract',
           },
         ] as Booking[],
-        periodDates: [
-          {
-            startAt: '2021-07-01',
-            endAt: '2021-08-31',
-            minimumDuration: 4,
-            periodType: 'nightly',
-          },
-          {
-            startAt: '2021-09-01',
-            endAt: '2021-09-30',
-            minimumDuration: 2,
-            periodType: 'weekly_by_saturday',
-          },
-          {
-            startAt: '2021-10-01',
-            endAt: '2021-10-30',
-            minimumDuration: 4,
-            periodType: 'nightly',
-          },
-          {
-            startAt: '2021-11-01',
-            endAt: '2021-11-29',
-            minimumDuration: 1,
-            periodType: 'weekly_by_sunday',
-          },
-        ] as Period[],
+        periodDates: [] as Period[],
         checkIn: null,
         checkOut: null,
-        nextBookedDates: [
-          '2021-12-01',
-          '2021-12-02',
-          '2021-12-03',
-          '2021-12-04',
-          '2021-12-05',
-          '2021-12-06',
-          '2021-11-14',
-          '2021-11-15',
-          '2021-11-16',
-          '2021-11-17',
-          '2021-11-18',
-          '2021-11-19',
-          '2021-11-20',
-          '2021-11-21',
-        ] as string[],
+        nextBookedDates: [] as string[],
       }
     },
     methods: {
+      clickOnDate(day, currentBooking) {
+        console.log(day, currentBooking)
+      },
       renderNextMonth() {
         if (this.bookedDates.length === 6)
           this.bookedDates.push(...this.nextBookedDates)
@@ -97,3 +61,25 @@
     },
   })
 </script>
+
+<style>
+  .calendar_day--contract .calendar_day.calendar_day--booking {
+    background: #9dc1c9;
+  }
+  .calendar_day--contract .calendar_day--half-day_checkin:before {
+    border-bottom-color: #9dc1c9;
+  }
+  .calendar_day--contract .calendar_day--half-day_checkOut:before {
+    border-top-color: #9dc1c9;
+  }
+
+  .calendar_day--admin .calendar_day.calendar_day--booking {
+    background: #a56a0b;
+  }
+  .calendar_day--admin .calendar_day--half-day_checkin:before {
+    border-bottom-color: #a56a0b;
+  }
+  .calendar_day--admin .calendar_day--half-day_checkOut:before {
+    border-top-color: #a56a0b;
+  }
+</style>

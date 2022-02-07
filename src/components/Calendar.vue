@@ -1,6 +1,7 @@
 <template>
   <div ref="Calendar" class="calendar">
     <calendar-input
+      v-if="showInputCalendar"
       :placeholder="placeholder"
       :check-in="checkIn"
       :check-out="checkOut"
@@ -8,8 +9,22 @@
       @openCalendar="openCalendar"
     />
 
-    <div v-if="showCalendar" class="calendar_wrapper">
+    <div>
+      <button @click="paginate('-')">
+        <base-icon name="chevronLeft" />
+      </button>
+
+      <button @click="paginate('+')">
+        <base-icon name="chevronRight" />
+      </button>
+    </div>
+
+    <div
+      v-if="showCalendar"
+      :class="['calendar_wrapper', { 'calendar_wrapper--year': showYear }]"
+    >
       <calendar-header
+        v-if="!showYear"
         :active-index="activeIndex"
         :months="months"
         @paginate="paginate"
@@ -17,6 +32,8 @@
 
       <div class="calendar_wrapper_content">
         <div v-for="month in slicedMonths" :key="month.monthKey">
+          <template v-if="showYear">{{ month.monthName }}</template>
+
           <calendar-days />
 
           <div class="calendar_wrapper_content-days">
@@ -25,8 +42,13 @@
               :key="day.formatDay"
               :class="[
                 'calendar_day-wrap',
+                // Color date
+                `calendar_day--${getBookingType(day)}`,
                 { 'calendar_day-wrap--no-border': !day.belongsToThisMonth },
-                { 'calendar_day-wrap--disabled': inDisabledDay(day) },
+                {
+                  'calendar_day-wrap--disabled':
+                    inDisabledDay(day) && !isInBookingDates(day),
+                },
               ]"
               @mouseenter="dayMouseOver(day)"
               @mouseleave="dayMouseLeave"
@@ -56,9 +78,18 @@
                     'calendar_day--checkIn-checkOut':
                       checkIn === day.date || checkOut === day.date,
                   },
+                  // Booking date
+                  {
+                    'calendar_day--booking':
+                      isInBookingDates(day) &&
+                      !isInCheckinHalfDayAndCheckin(day) &&
+                      !isInCheckinHalfDayAndNotCheckin(day) &&
+                      !isInCheckoutHalfDay(day),
+                  },
                   // Disabled date
                   {
-                    'calendar_day--disabled': inDisabledDay(day),
+                    'calendar_day--disabled':
+                      inDisabledDay(day) && !isInBookingDates(day),
                   },
                   // Hovering date
                   {
@@ -75,22 +106,16 @@
                   // Half day checkIn + checkIn
                   {
                     'calendar_day--half-day_checkin':
-                      checkIncheckOutHalfDay[day.formatDay] &&
-                      checkIncheckOutHalfDay[day.formatDay].checkIn &&
-                      checkIn,
+                      isInCheckinHalfDayAndCheckin(day),
                   },
                   // Half day checkIn + !checkIn
                   {
                     'calendar_day--half-day_checkin event-none':
-                      checkIncheckOutHalfDay[day.formatDay] &&
-                      checkIncheckOutHalfDay[day.formatDay].checkIn &&
-                      !checkIn,
+                      isInCheckinHalfDayAndNotCheckin(day),
                   },
                   // Half day checkOut
                   {
-                    'calendar_day--half-day_checkOut':
-                      checkIncheckOutHalfDay[day.formatDay] &&
-                      checkIncheckOutHalfDay[day.formatDay].checkOut,
+                    'calendar_day--half-day_checkOut': isInCheckoutHalfDay(day),
                   },
                   // Inactive saturday period
                   {
@@ -126,6 +151,8 @@
 
   import { format } from 'fecha'
 
+  import BaseIcon from './BaseIcon.vue'
+
   import CalendarDays from './CalendarDays.vue'
   import CalendarHeader from './CalendarHeader.vue'
   import CalendarInput from './CalendarInput.vue'
@@ -134,6 +161,7 @@
     addDays,
     getDatesBetweenTwoDates,
     getDayDiff,
+    getMonthDiff,
     isDateAfter,
     isDateBefore,
     validateDateBetweenTwoDates,
@@ -159,6 +187,7 @@
   export default defineComponent({
     name: 'Calendar',
     components: {
+      BaseIcon,
       CalendarDays,
       CalendarHeader,
       CalendarInput,
@@ -180,9 +209,13 @@
         type: [Date, null],
         default: null,
       },
-      countOfMonth: {
-        type: Number,
-        default: 24,
+      startDate: {
+        type: Date,
+        default: new Date(new Date().getFullYear() - 2, 0, 1),
+      },
+      endDate: {
+        type: Date,
+        default: new Date(new Date().getFullYear() + 2, 0, 1),
       },
       formatDate: {
         type: String,
@@ -199,25 +232,38 @@
           checkOut: 'Départ',
         }),
       },
+      showYear: {
+        type: Boolean,
+        default: false,
+      },
+      showInputCalendar: {
+        type: Boolean,
+        default: true,
+      },
     },
     emits: [
       'update:checkIn',
       'update:checkOut',
+      'select-booking-date',
       'renderPreviousMonth',
       'renderNextMonth',
     ],
     setup(props) {
       const formattingFormat = ref('YYYY-MM-DD')
-
-      const today = ref(new Date())
+      const year = new Date().getFullYear()
+      const today = props.showYear ? ref(new Date(year, 0, 1)) : ref(new Date())
       const months = ref([])
+
+      const countOfMonth = getMonthDiff(props.startDate, props.endDate)
+      const activeIndex = ref(getMonthDiff(props.startDate, new Date()) - 1)
+
       // Current month of the current day
-      months.value.push(useCreateMonth(today.value))
+      months.value.push(useCreateMonth(props.startDate))
 
       // Next 12 month after the current day
       const multipleMonths = useCreateMultipleMonths(
-        today.value,
-        props.countOfMonth
+        props.startDate,
+        countOfMonth
       )
       months.value.push(...multipleMonths)
 
@@ -245,6 +291,7 @@
       })
 
       return {
+        activeIndex,
         formattingFormat,
         months,
         nightlyPeriods,
@@ -255,13 +302,13 @@
     },
     data() {
       return {
-        activeIndex: 0 as number,
         checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
         currentPeriod: null as CurrentPeriod | null,
-        hoveringPeriod: null as CurrentPeriod | null,
         disabledDates: [] as string[],
+        flatBookingDates: [] as string[],
         hoveringDates: [] as string[],
         hoveringDay: new Date() as Date,
+        hoveringPeriod: null as CurrentPeriod | null,
         nextDisableBookingDate: null as Date | null,
         newBookingDates: [] as Booking[],
         showCalendar: true as boolean,
@@ -288,7 +335,9 @@
         return format(this.today, this.formattingFormat)
       },
       slicedMonths(): Month[] {
-        return this.months.slice(this.activeIndex, 2 + this.activeIndex)
+        const count = this.showYear ? 12 : 1
+
+        return this.months.slice(this.activeIndex, count + this.activeIndex)
       },
     },
     beforeMount() {
@@ -304,12 +353,14 @@
       isDateAfter,
       isDateBefore,
       paginate(operator: string) {
+        const count = this.showYear ? 12 : 1
+
         if (operator === '-') {
-          this.activeIndex--
+          this.activeIndex -= count
           this.$emit('renderPreviousMonth')
         }
         if (operator === '+') {
-          this.activeIndex++
+          this.activeIndex += count
           this.$emit('renderNextMonth')
           this.createHalfDayDates()
         }
@@ -414,9 +465,11 @@
         )
 
         // Set DisabledDates to []
+        this.flatBookingDates = []
         this.disabledDates = []
 
         // Field DisabledDates whith BookingDates
+        const bookingTypeAndDates = {}
         this.bookingDates.forEach((booking: Booking) => {
           checkIncheckOutHalfDay[booking.checkInDate] = {
             checkIn: true,
@@ -425,16 +478,30 @@
             checkOut: true,
           }
 
-          this.disabledDates.push(
-            ...getDatesBetweenTwoDates(
-              new Date(booking.checkInDate),
-              new Date(booking.checkOutDate),
-              this.formattingFormat
-            )
+          const flatBookingDate = getDatesBetweenTwoDates(
+            new Date(booking.checkInDate),
+            new Date(booking.checkOutDate),
+            this.formattingFormat
           )
+
+          if (bookingTypeAndDates[booking.type]) {
+            bookingTypeAndDates[booking.type].push(...flatBookingDate)
+          } else {
+            bookingTypeAndDates[booking.type] = flatBookingDate
+          }
+        })
+
+        const objectArray = Object.entries(bookingTypeAndDates)
+
+        objectArray.forEach(([key, value]) => {
+          this.flatBookingDates.push({
+            key,
+            value,
+          })
         })
 
         // Field DisabledDates whith BookedDates
+        this.disabledDates = this.flatBookingDates.map((b) => b.value).flat()
         this.disabledDates.push(...bookedDates)
         this.disabledDates = this.sortDates(this.disabledDates)
 
@@ -515,7 +582,9 @@
       },
       // Trigger each time the click on day is triggered
       dayClicked(day: Day) {
-        if (this.checkIn === day.date) {
+        if (this.isInBookingDates(day)) {
+          this.$emit('select-booking-date', day, this.getBooking(day))
+        } else if (this.checkIn === day.date) {
           // CheckIn when already CheckIn
           this.$emit('update:checkIn', null)
           this.$emit('update:checkOut', null)
@@ -589,6 +658,41 @@
 
         return null
       },
+      isInBookingDates(day: Day) {
+        return (
+          this.flatBookingDates.some((x) => x.value.includes(day.formatDay)) &&
+          day.belongsToThisMonth &&
+          !this.isInCheckoutHalfDay(day)
+        )
+      },
+      isInCheckinHalfDayAndCheckin(day: Day) {
+        return (
+          this.checkIncheckOutHalfDay[day.formatDay]?.checkIn && this.checkIn
+        )
+      },
+      isInCheckinHalfDayAndNotCheckin(day: Day) {
+        return (
+          this.checkIncheckOutHalfDay[day.formatDay]?.checkIn && !this.checkIn
+        )
+      },
+      isInCheckoutHalfDay(day: Day) {
+        return this.checkIncheckOutHalfDay[day.formatDay]?.checkOut
+      },
+      getBooking(day: Day) {
+        if (
+          this.flatBookingDates.some((x) => x.value.includes(day.formatDay)) &&
+          day.belongsToThisMonth
+        ) {
+          return this.flatBookingDates.find((b) =>
+            b.value.includes(day.formatDay)
+          )
+        }
+
+        return ''
+      },
+      getBookingType(day: Day) {
+        return this.getBooking(day).key
+      },
     },
   })
 </script>
@@ -611,7 +715,7 @@
     @apply grid grid-cols-7;
   }
   .calendar_day-wrap {
-    @apply relative h-0 pb-[100%] border border-gray-200;
+    @apply relative h-0 pb-[100%] border-[.5px] border-gray-200;
   }
   .calendar_day-wrap--no-border {
     @apply border-0 pointer-events-none;
@@ -664,5 +768,12 @@
   }
   .event-none {
     @apply pointer-events-none;
+  }
+  /* Year calendar */
+  .calendar_wrapper--year {
+    @apply w-full;
+  }
+  .calendar_wrapper--year .calendar_wrapper_content {
+    @apply grid grid-cols-4 gap-4;
   }
 </style>
