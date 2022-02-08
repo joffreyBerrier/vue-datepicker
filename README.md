@@ -8,10 +8,9 @@ https://github.com/joffreyBerrier/vue-datepicker/projects/1
 
 # Sandbox example
 
-
 _Open this link on a new tab_
 
-[![Edit vue-calendar-3](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/vue-calendar-3-ezer3?fontsize=14&theme=dark&view=preview) 
+[![Edit vue-calendar-3](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/vue-calendar-3-ezer3?fontsize=14&theme=dark&view=preview)
 
 ## Installation
 
@@ -198,12 +197,11 @@ periodDates: [
 
 - Manage translations
 
-
 ## Contributing to development 💁‍♂️💁‍♀️
 
 - First create an issue
 - Fork the repo from github.
-- Clone your forked repo and run: `yarn` or `npm i`
+- Clone your forked repo and run: `npm i`
 - Then, make your changes on any branch you want and push it.
 - Naming your branch with the gitflow convention:
   - Feature branches? [feature/issueId]

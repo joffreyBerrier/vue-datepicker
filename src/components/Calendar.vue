@@ -6,7 +6,7 @@
       :check-in="checkIn"
       :check-out="checkOut"
       :day-format="dayFormat"
-      @openCalendar="openCalendar"
+      @open-calendar="openCalendar"
     />
 
     <div>
@@ -66,6 +66,7 @@
               <button
                 v-if="day.belongsToThisMonth"
                 type="button"
+                :style="day.style"
                 :class="[
                   // Basic style
                   'calendar_day z-10',
@@ -103,20 +104,6 @@
                     'calendar_day--hovering-checkIn':
                       checkIn && hoveringDay === day.date,
                   },
-                  // Half day checkIn + checkIn
-                  {
-                    'calendar_day--half-day_checkin':
-                      isInCheckinHalfDayAndCheckin(day),
-                  },
-                  // Half day checkIn + !checkIn
-                  {
-                    'calendar_day--half-day_checkin event-none':
-                      isInCheckinHalfDayAndNotCheckin(day),
-                  },
-                  // Half day checkOut
-                  {
-                    'calendar_day--half-day_checkOut': isInCheckoutHalfDay(day),
-                  },
                   // Inactive saturday period
                   {
                     'calendar_day--in-period': inWeeklyPeriods(day),
@@ -133,6 +120,25 @@
                 ]"
                 @click="dayClicked(day)"
               >
+                <i
+                  v-if="
+                    isInCheckoutHalfDay(day) ||
+                    isInCheckinHalfDayAndCheckin(day) ||
+                    isInCheckinHalfDayAndNotCheckin(day)
+                  "
+                  :style="{ background: bookingStyle[day.formatDay] }"
+                  :class="[
+                    'calendar_day_haldDay',
+                    {
+                      'calendar_day_haldDay--checkIn':
+                        isInCheckinHalfDayAndCheckin(day) ||
+                        isInCheckinHalfDayAndNotCheckin(day),
+                      'calendar_day_haldDay--checkOut':
+                        isInCheckoutHalfDay(day),
+                    },
+                  ]"
+                />
+
                 <span class="calendar_day--day-number">
                   {{ day.dayNumber }}
                 </span>
@@ -147,7 +153,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType, ref, computed } from 'vue'
+  import { defineComponent, PropType, ref, Ref, computed } from 'vue'
 
   import { format } from 'fecha'
 
@@ -164,6 +170,8 @@
     getMonthDiff,
     isDateAfter,
     isDateBefore,
+    sortDates,
+    sortDatesObj,
     validateDateBetweenTwoDates,
   } from './helpers'
 
@@ -176,13 +184,15 @@
 
   import {
     Booking,
+    BookingColor,
     CheckInCheckOutHalfDay,
     CurrentPeriod,
     Day,
+    FlatBooking,
     Month,
     Period,
     Placeholder,
-  } from '../types/index'
+  } from '@/types'
 
   export default defineComponent({
     name: 'Calendar',
@@ -193,6 +203,10 @@
       CalendarInput,
     },
     props: {
+      bookingColor: {
+        type: Object as PropType<BookingColor>,
+        default: () => ({}),
+      },
       bookedDates: {
         type: Array as PropType<string[]>,
         default: (): string[] => [],
@@ -202,11 +216,11 @@
         default: (): Booking[] => [],
       },
       checkIn: {
-        type: [Date, null],
+        type: Date,
         default: null,
       },
       checkOut: {
-        type: [Date, null],
+        type: Date,
         default: null,
       },
       startDate: {
@@ -252,7 +266,7 @@
       const formattingFormat = ref('YYYY-MM-DD')
       const year = new Date().getFullYear()
       const today = props.showYear ? ref(new Date(year, 0, 1)) : ref(new Date())
-      const months = ref([])
+      const months = ref([]) as Ref<Month[]>
 
       const countOfMonth = getMonthDiff(props.startDate, props.endDate)
       const activeIndex = ref(getMonthDiff(props.startDate, new Date()) - 1)
@@ -302,10 +316,11 @@
     },
     data() {
       return {
+        bookingStyle: {} as { [key: string]: string },
         checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
         currentPeriod: null as CurrentPeriod | null,
         disabledDates: [] as string[],
-        flatBookingDates: [] as string[],
+        flatBookingDates: [] as FlatBooking[],
         hoveringDates: [] as string[],
         hoveringDay: new Date() as Date,
         hoveringPeriod: null as CurrentPeriod | null,
@@ -316,17 +331,19 @@
     },
     computed: {
       tooltipText(): string {
-        const { periodType } = this.hoveringPeriod
-        const { minimumDuration } = this.hoveringPeriod
+        if (this.hoveringPeriod) {
+          const { periodType } = this.hoveringPeriod
+          const { minimumDuration } = this.hoveringPeriod
 
-        if (periodType === 'weekly_by_saturday') {
-          return 'Du samedi au samedi<br/> uniquement'
-        }
-        if (periodType === 'weekly_by_sunday') {
-          return 'Du dimanche au dimanche<br/> uniquement'
-        }
-        if (periodType === 'nightly') {
-          return `Un minimum de ${minimumDuration}<br/> nuit est requis.`
+          if (periodType === 'weekly_by_saturday') {
+            return 'Du samedi au samedi<br/> uniquement'
+          }
+          if (periodType === 'weekly_by_sunday') {
+            return 'Du dimanche au dimanche<br/> uniquement'
+          }
+          if (periodType === 'nightly') {
+            return `Un minimum de ${minimumDuration}<br/> nuit est requis.`
+          }
         }
 
         return ''
@@ -368,7 +385,7 @@
       dayFormat(date: Date): string {
         return format(date, this.formatDate)
       },
-      handleClickOutside(event: Event) {
+      handleClickOutside(event: MouseEvent & { target: HTMLElement }) {
         const ignoredElement = this.$refs.Calendar as HTMLElement
 
         if (ignoredElement && this.showCalendar) {
@@ -383,15 +400,16 @@
         this.showCalendar = !this.showCalendar
       },
       // Create halfDayDates
-      createHalfDayDatesWithBookedDates(
-        dates: string[]
-      ): CheckInCheckOutHalfDay {
-        const checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay
-        const bookedDates = this.sortDates([...dates])
+      createHalfDayDatesWithBookedDates(dates: string[]): {
+        checkIncheckOutHalfDay: CheckInCheckOutHalfDay
+        bookedDates: string[]
+      } {
+        const checkIncheckOutHalfDay: CheckInCheckOutHalfDay = {}
+        const bookedDates = sortDates([...dates])
 
         for (let i = 0; i < bookedDates.length; i++) {
-          const newDate = bookedDates[i]
-          const newDateIncrementOne = bookedDates[i + 1]
+          const newDate = bookedDates[i] as string
+          const newDateIncrementOne = bookedDates[i + 1] as string
 
           if (i === 0) {
             checkIncheckOutHalfDay[newDate] = {
@@ -448,10 +466,10 @@
           }
         )
 
-        return this.sortDatesObj([...this.bookingDates, ...bookingDates])
+        return sortDatesObj([...this.bookingDates, ...bookingDates])
       },
       createHalfDayDates() {
-        let checkIncheckOutHalfDay = {} as CheckInCheckOutHalfDay
+        let checkIncheckOutHalfDay: CheckInCheckOutHalfDay = {}
         let bookedDates = [] as string[]
 
         // Create halfDay dates with booked dates
@@ -469,7 +487,10 @@
         this.disabledDates = []
 
         // Field DisabledDates whith BookingDates
-        const bookingTypeAndDates = {}
+        const bookingTypeAndDates: {
+          [key: string]: string[]
+        } = {}
+        // Tamere
         this.bookingDates.forEach((booking: Booking) => {
           checkIncheckOutHalfDay[booking.checkInDate] = {
             checkIn: true,
@@ -484,10 +505,12 @@
             this.formattingFormat
           )
 
-          if (bookingTypeAndDates[booking.type]) {
-            bookingTypeAndDates[booking.type].push(...flatBookingDate)
-          } else {
-            bookingTypeAndDates[booking.type] = flatBookingDate
+          if (booking.type) {
+            if (bookingTypeAndDates[booking.type]) {
+              bookingTypeAndDates[booking.type].push(...flatBookingDate)
+            } else {
+              bookingTypeAndDates[booking.type] = flatBookingDate
+            }
           }
         })
 
@@ -495,32 +518,32 @@
 
         objectArray.forEach(([key, value]) => {
           this.flatBookingDates.push({
+            color: this.bookingColor[key] || '#000000',
             key,
             value,
+          })
+
+          value.forEach((day) => {
+            this.bookingStyle[day] = this.bookingColor[key] || '#000000'
           })
         })
 
         // Field DisabledDates whith BookedDates
         this.disabledDates = this.flatBookingDates.map((b) => b.value).flat()
         this.disabledDates.push(...bookedDates)
-        this.disabledDates = this.sortDates(this.disabledDates)
+        this.disabledDates = sortDates(this.disabledDates)
 
         this.checkIncheckOutHalfDay = checkIncheckOutHalfDay
-      },
-      sortDatesObj(dates) {
-        return dates.sort((a, b) => {
-          const aa = a.checkInDate.split('/').reverse().join()
-          const bb = b.checkInDate.split('/').reverse().join()
 
-          return aa < bb ? -1 : aa > bb ? 1 : 0
-        })
-      },
-      sortDates(dates) {
-        return dates.sort((a, b) => {
-          const aa = a.split('/').reverse().join()
-          const bb = b.split('/').reverse().join()
-
-          return aa < bb ? -1 : aa > bb ? 1 : 0
+        // Add style on days
+        this.months.forEach((m) => {
+          m.days.forEach((day) => {
+            day.style = {
+              background: !this.checkIncheckOutHalfDay[day.formatDay]
+                ? this.bookingStyle[day.formatDay]
+                : '',
+            }
+          })
         })
       },
       // Trigger each time the mouseOver is triggered
@@ -567,7 +590,6 @@
         if (this.inWeeklyPeriods(day) || this.inNightlyPeriod(day)) {
           this.hoveringPeriod = this.getCurrentPeriod(day)
         }
-
         if (this.checkIn && !this.checkOut) {
           this.hoveringDates = getDatesBetweenTwoDates(
             this.checkIn,
@@ -581,7 +603,7 @@
         this.hoveringPeriod = null
       },
       // Trigger each time the click on day is triggered
-      dayClicked(day: Day) {
+      dayClicked(day: Day): void {
         if (this.isInBookingDates(day)) {
           this.$emit('select-booking-date', day, this.getBooking(day))
         } else if (this.checkIn === day.date) {
@@ -678,20 +700,24 @@
       isInCheckoutHalfDay(day: Day) {
         return this.checkIncheckOutHalfDay[day.formatDay]?.checkOut
       },
-      getBooking(day: Day) {
+      getBooking(day: Day): FlatBooking | null {
         if (
-          this.flatBookingDates.some((x) => x.value.includes(day.formatDay)) &&
+          this.flatBookingDates.some((b) => b.value.includes(day.formatDay)) &&
           day.belongsToThisMonth
         ) {
-          return this.flatBookingDates.find((b) =>
+          const flatBooking = this.flatBookingDates.find((b) =>
             b.value.includes(day.formatDay)
           )
+
+          if (flatBooking) {
+            return flatBooking
+          }
         }
 
-        return ''
+        return null
       },
-      getBookingType(day: Day) {
-        return this.getBooking(day).key
+      getBookingType(day: Day): string | null {
+        return this.getBooking(day)?.key || null
       },
     },
   })
@@ -744,19 +770,6 @@
   .calendar_day--hovering-checkIn {
     @apply bg-blue-500;
   }
-  .calendar_day--half-day_checkin:before,
-  .calendar_day--half-day_checkOut:before {
-    content: '';
-    z-index: 1;
-    border-bottom: 120px solid rgba(243, 244, 246, 1);
-    border-left: 120px solid transparent;
-    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-0 w-0 border-b-[120px] border-l-[120px];
-  }
-  .calendar_day--half-day_checkOut:before {
-    border-top-color: rgba(243, 244, 246, 1);
-    border-right-color: transparent;
-    @apply border-t-[120px] border-r-[120px] border-b-0 border-l-0;
-  }
   .calendar_day--in-period {
     @apply pointer-events-none font-extralight;
   }
@@ -775,5 +788,18 @@
   }
   .calendar_wrapper--year .calendar_wrapper_content {
     @apply grid grid-cols-4 gap-4;
+  }
+
+  /* New */
+  .calendar_day_haldDay {
+    @apply w-[200%] h-[200%] absolute transform rotate-45;
+  }
+  .calendar_day_haldDay--checkIn {
+    top: 0px;
+    right: -140%;
+  }
+  .calendar_day_haldDay--checkOut {
+    top: -140%;
+    right: 0;
   }
 </style>

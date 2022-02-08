@@ -1,4 +1,5 @@
 import { format } from 'fecha'
+import { Booking } from '@/types'
 
 const addDays = (date: string | Date, quantity: number): Date => {
   const result = new Date(date)
@@ -69,13 +70,33 @@ const getMonthDiff = (d1: Date, d2: Date): number => {
   return months <= 0 ? 0 : months
 }
 
+const sortDatesObj = (dates: Booking[]): Booking[] => {
+  return dates.sort((a, b) => {
+    const aa = a.checkInDate.split('/').reverse().join()
+    const bb = b.checkInDate.split('/').reverse().join()
+
+    return aa < bb ? -1 : aa > bb ? 1 : 0
+  })
+}
+
+const sortDates = (dates: string[]): string[] => {
+  return dates.sort((a, b) => {
+    const aa = a.split('/').reverse().join()
+    const bb = b.split('/').reverse().join()
+
+    return aa < bb ? -1 : aa > bb ? 1 : 0
+  })
+}
+
 export {
   addDays,
   getDatesBetweenTwoDates,
   getDayDiff,
+  getMonthDiff,
   isDateAfter,
   isDateBefore,
-  getMonthDiff,
   resetTimeDate,
+  sortDates,
+  sortDatesObj,
   validateDateBetweenTwoDates,
 }

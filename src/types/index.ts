@@ -1,16 +1,35 @@
 // Calendar
-interface CheckInOrCheckOut {
-  checkIn?: boolean
-  checkOut?: boolean
+interface Booking {
+  checkInDate: string
+  checkOutDate: string
+  type?: string
+}
+interface BookingColor {
+  [key: string]: string
+}
+interface HeaderDay {
+  key: number
+  name: string
 }
 interface CheckInCheckOutHalfDay {
-  [key: string]: CheckInOrCheckOut
+  [key: string]: {
+    checkOut?: boolean
+    checkIn?: boolean
+  }
+}
+interface FlatBooking {
+  color: string
+  key: string
+  value: string[]
 }
 interface Day {
   belongsToThisMonth: boolean
   date: Date
   dayNumber: string
   formatDay: string
+  style: {
+    [key: string]: string
+  }
 }
 interface Month {
   days: Day[]
@@ -18,11 +37,7 @@ interface Month {
   monthName: string
   yearKey: number
 }
-interface Booking {
-  checkInDate: string
-  checkOutDate: string
-  type?: string
-}
+
 interface Placeholder {
   checkIn: string
   checkOut: string
@@ -49,9 +64,12 @@ interface CurrentPeriod {
 
 export {
   Booking,
+  BookingColor,
   CheckInCheckOutHalfDay,
   CurrentPeriod,
   Day,
+  FlatBooking,
+  HeaderDay,
   Icon,
   Month,
   Period,

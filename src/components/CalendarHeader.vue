@@ -24,7 +24,7 @@
 <script lang="ts">
   import { defineComponent, PropType } from 'vue'
 
-  import { Month } from '../types/index'
+  import { Month } from '@/types'
 
   import BaseIcon from './BaseIcon.vue'
 

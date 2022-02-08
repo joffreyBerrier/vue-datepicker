@@ -29,6 +29,7 @@ export const useCreateMonth = (date: Date): Month => {
       date: day,
       dayNumber: format(day, 'D'),
       formatDay: format(day, 'YYYY-MM-DD'),
+      style: {},
     })
   }
 

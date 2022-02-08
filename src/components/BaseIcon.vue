@@ -30,8 +30,8 @@
         default: '',
       },
       color: {
-        type: Array as PropType<string[]>,
-        default: (): string[] => [],
+        type: Array,
+        default: () => [],
       },
       size: {
         type: String,

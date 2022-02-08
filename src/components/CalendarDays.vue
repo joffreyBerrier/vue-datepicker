@@ -7,6 +7,7 @@
 </template>
 
 <script lang="ts">
+  import { HeaderDay } from '@/types'
   import { defineComponent } from 'vue'
 
   export default defineComponent({
@@ -21,7 +22,7 @@
           { key: 5, name: 'Fr' },
           { key: 6, name: 'Sa' },
           { key: 0, name: 'Su' },
-        ],
+        ] as HeaderDay[],
       }
     },
   })

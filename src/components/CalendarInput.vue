@@ -57,7 +57,7 @@
 <script lang="ts">
   import { defineComponent, PropType } from 'vue'
 
-  import { Placeholder } from '../types/index'
+  import { Placeholder } from '@/types'
 
   import BaseIcon from './BaseIcon.vue'
 
@@ -66,11 +66,11 @@
     components: { BaseIcon },
     props: {
       checkIn: {
-        type: [Date, null],
+        type: Date,
         default: null,
       },
       checkOut: {
-        type: [Date, null],
+        type: Date,
         default: null,
       },
       dayFormat: {

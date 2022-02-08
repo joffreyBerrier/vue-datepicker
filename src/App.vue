@@ -3,12 +3,13 @@
     <Calendar
       v-model:checkIn="checkIn"
       v-model:checkOut="checkOut"
+      :booking-color="bookingColor"
       :booked-dates="bookedDates"
       :period-dates="periodDates"
       :booking-dates="bookingDates"
       :show-year="true"
       :show-input-calendar="false"
-      @renderNextMonth="renderNextMonth"
+      @render-next-month="renderNextMonth"
       @select-booking-date="clickOnDate"
     />
   </div>
@@ -27,6 +28,10 @@
     data() {
       return {
         bookedDates: [] as string[],
+        bookingColor: {
+          admin: '#9dc1c9',
+          contract: '#a56a0b',
+        },
         bookingDates: [
           {
             checkInDate: '2022-07-01',
@@ -61,25 +66,3 @@
     },
   })
 </script>
-
-<style>
-  .calendar_day--contract .calendar_day.calendar_day--booking {
-    background: #9dc1c9;
-  }
-  .calendar_day--contract .calendar_day--half-day_checkin:before {
-    border-bottom-color: #9dc1c9;
-  }
-  .calendar_day--contract .calendar_day--half-day_checkOut:before {
-    border-top-color: #9dc1c9;
-  }
-
-  .calendar_day--admin .calendar_day.calendar_day--booking {
-    background: #a56a0b;
-  }
-  .calendar_day--admin .calendar_day--half-day_checkin:before {
-    border-bottom-color: #a56a0b;
-  }
-  .calendar_day--admin .calendar_day--half-day_checkOut:before {
-    border-top-color: #a56a0b;
-  }
-</style>

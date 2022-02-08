@@ -4,6 +4,7 @@ const path = require('path')
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import * as volar from '@volar/experimental/compiler'
 
 export default defineConfig({
   build: {
@@ -21,5 +22,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [vue()],
+  plugins: [vue(volar.getVuePluginOptionsForVite())],
 })
