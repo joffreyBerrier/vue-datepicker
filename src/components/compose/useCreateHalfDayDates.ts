@@ -1,6 +1,11 @@
-import { PropType, ref } from 'vue'
+import { ref, Ref } from 'vue'
 
-import { Booking, CheckInCheckOutHalfDay, Day } from '../../types'
+import {
+  Booking,
+  BookingColor,
+  CheckInCheckOutHalfDay,
+  FlatBooking,
+} from '../../types'
 import {
   getDayDiff,
   getDatesBetweenTwoDates,
@@ -11,123 +16,139 @@ import {
 const createHalfDayDatesWithBookedDates = (
   dates: string[]
 ): {
-  checkIncheckOutHalfDay: CheckInCheckOutHalfDay
-  bookedDates: string[]
+  checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>
+  bookedDates: Ref<string[]>
 } => {
-  const checkIncheckOutHalfDay: CheckInCheckOutHalfDay = {}
-  const bookedDates = sortDates([...dates])
+  const checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay> = ref({})
+  const bookedDates = ref(sortDates([...dates])) as Ref<string[]>
 
-  for (let i = 0; i < bookedDates.length; i++) {
-    const newDate = bookedDates[i] as string
-    const newDateIncrementOne = bookedDates[i + 1] as string
+  for (let i = 0; i < bookedDates.value.length; i++) {
+    const newDate = bookedDates.value[i] as string
+    const newDateIncrementOne = bookedDates.value[i + 1] as string
 
     if (i === 0) {
-      checkIncheckOutHalfDay[newDate] = {
+      checkIncheckOutHalfDay.value[newDate] = {
         checkIn: true,
       }
     }
 
     if (
-      !checkIncheckOutHalfDay[newDate] &&
-      bookedDates[i + 1] &&
+      !checkIncheckOutHalfDay.value[newDate] &&
+      bookedDates.value[i + 1] &&
       getDayDiff(newDate, newDateIncrementOne) > 1
     ) {
-      checkIncheckOutHalfDay[newDate] = {
+      checkIncheckOutHalfDay.value[newDate] = {
         checkOut: true,
       }
-      checkIncheckOutHalfDay[newDateIncrementOne] = {
+      checkIncheckOutHalfDay.value[newDateIncrementOne] = {
         checkIn: true,
       }
     }
 
-    if (i === bookedDates.length - 1) {
-      checkIncheckOutHalfDay[newDate] = {
+    if (i === bookedDates.value.length - 1) {
+      checkIncheckOutHalfDay.value[newDate] = {
         checkOut: true,
       }
     }
   }
 
   return {
-    checkIncheckOutHalfDay,
     bookedDates,
+    checkIncheckOutHalfDay,
   }
 }
 
 const createBookingDatesWithHalfDayDates = (
-  checkIncheckOutHalfDay: CheckInCheckOutHalfDay
-): PropType<Booking[]> => {
+  checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>,
+  bookingDatesProps: Booking[]
+): Ref<Booking[]> => {
   const bookingDates = new Set() as Set<Booking>
   let increment = 0 as number
   const booking = {} as Booking
 
-  Object.keys(checkIncheckOutHalfDay).forEach((date: string, i: number) => {
-    increment = i
+  Object.keys(checkIncheckOutHalfDay.value).forEach(
+    (date: string, i: number) => {
+      increment = i
 
-    if (checkIncheckOutHalfDay[date].checkIn) booking.checkInDate = date
-    if (checkIncheckOutHalfDay[date].checkOut) booking.checkOutDate = date
+      if (checkIncheckOutHalfDay.value[date].checkIn) booking.checkInDate = date
+      if (checkIncheckOutHalfDay.value[date].checkOut)
+        booking.checkOutDate = date
 
-    if (increment % 2 === 1) {
-      bookingDates.add({
-        checkInDate: booking.checkInDate,
-        checkOutDate: booking.checkOutDate,
-      })
+      if (increment % 2 === 1) {
+        bookingDates.add({
+          checkInDate: booking.checkInDate,
+          checkOutDate: booking.checkOutDate,
+        })
+      }
     }
-  })
+  )
 
-  return sortDatesObj([...bookingDates])
+  return sortDatesObj([
+    ...bookingDatesProps,
+    ...bookingDates,
+  ]) as unknown as Ref<Booking[]>
 }
 
 export const useCreateHalfDayDates = (
-  bookedDatesProps,
-  bookingDatesProps,
-  formattingFormat
-) => {
-  let checkIncheckOutHalfDay = ref({})
-  let bookedDates = ref([])
-
-  // Create halfDay dates with booked dates
-  const res = createHalfDayDatesWithBookedDates(bookedDatesProps)
-  checkIncheckOutHalfDay = res.checkIncheckOutHalfDay
-  bookedDates = res.bookedDates
-
-  // Create bookingDates with halfDay
-  const newBookingDates = createBookingDatesWithHalfDayDates(
-    checkIncheckOutHalfDay
-  )
-
+  bookingDates: Booking[],
+  bookedDatesProps: string[],
+  bookingColor: BookingColor,
+  formattingFormat: Ref<string>
+): {
+  flatBookingDates: Ref<FlatBooking[]>
+  checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>
+  disabledDates: Ref<string[]>
+  newBookingDates: Ref<Booking[]>
+} => {
+  const disabledDates: Ref<string[]> = ref([])
   // Set DisabledDates to []
-  const flatBookingDates = ref([])
-  const disabledDates = ref([])
-
+  const flatBookingDates: Ref<FlatBooking[]> = ref([])
   // Field DisabledDates whith BookingDates
   const bookingTypeAndDates: {
     [key: string]: string[]
   } = {}
-  // Tamere
-  bookingDatesProps.forEach((booking: Booking) => {
-    checkIncheckOutHalfDay[booking.checkInDate] = {
+
+  // Create halfDay dates with booked dates
+  const bookedDates: Ref<string[]> =
+    createHalfDayDatesWithBookedDates(bookedDatesProps).bookedDates
+  const checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay> =
+    createHalfDayDatesWithBookedDates(bookedDatesProps).checkIncheckOutHalfDay
+
+  // Create bookingDates with halfDay
+  const newBookingDates: Ref<Booking[]> = createBookingDatesWithHalfDayDates(
+    checkIncheckOutHalfDay,
+    bookingDates
+  )
+
+  bookingDates.forEach((booking: Booking) => {
+    checkIncheckOutHalfDay.value[booking.checkInDate] = {
       checkIn: true,
     }
-    checkIncheckOutHalfDay[booking.checkOutDate] = {
+    checkIncheckOutHalfDay.value[booking.checkOutDate] = {
       checkOut: true,
     }
 
-    const flatBookingDate = getDatesBetweenTwoDates(
-      new Date(booking.checkInDate),
-      new Date(booking.checkOutDate),
-      formattingFormat
+    const flatBookingDatesString: Ref<string[]> = ref(
+      getDatesBetweenTwoDates(
+        new Date(booking.checkInDate),
+        new Date(booking.checkOutDate),
+        formattingFormat.value
+      )
     )
 
     if (booking.type) {
       if (bookingTypeAndDates[booking.type]) {
-        bookingTypeAndDates[booking.type].push(...flatBookingDate)
+        bookingTypeAndDates[booking.type].push(...flatBookingDatesString.value)
       } else {
-        bookingTypeAndDates[booking.type] = flatBookingDate
+        bookingTypeAndDates[booking.type] = flatBookingDatesString.value
       }
     }
   })
 
-  const objectArray = Object.entries(bookingTypeAndDates)
+  const objectArray = Object.entries(bookingTypeAndDates) as unknown as [
+    string,
+    string[]
+  ][]
 
   objectArray.forEach(([key, value]) => {
     flatBookingDates.value.push({
@@ -135,32 +156,17 @@ export const useCreateHalfDayDates = (
       key,
       value,
     })
-
-    value.forEach((day) => {
-      bookingStyle[day] = bookingColor[key] || '#000000'
-    })
   })
 
   // Field DisabledDates whith BookedDates
-  disabledDates = flatBookingDates.value.map((b) => b.value).flat()
-  disabledDates.value.push(...bookedDates)
-  disabledDates = sortDates(disabledDates)
-
-  checkIncheckOutHalfDay = checkIncheckOutHalfDay
-
-  // Add style on days
-  months.forEach((m) => {
-    m.days.forEach((day: Day) => {
-      day.style = {
-        background: !app.checkIncheckOutHalfDay[day.formatDay]
-          ? app.bookingStyle[day.formatDay]
-          : '',
-      }
-    })
-  })
+  disabledDates.value = flatBookingDates.value.map((b) => b.value).flat()
+  disabledDates.value.push(...bookedDates.value)
+  disabledDates.value = sortDates(disabledDates.value)
 
   return {
+    flatBookingDates,
     checkIncheckOutHalfDay,
     disabledDates,
+    newBookingDates,
   }
 }

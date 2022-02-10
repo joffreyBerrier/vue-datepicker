@@ -1,6 +1,6 @@
 <template>
   <ul class="calendar_wrapper_content-header-days">
-    <li v-for="day in days" :key="day.key">
+    <li v-for="day in days" :key="day.key" class="font-medium">
       {{ day.name }}
     </li>
   </ul>

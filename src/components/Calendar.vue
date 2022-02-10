@@ -1,5 +1,5 @@
 <template>
-  <div ref="Calendar" class="calendar">
+  <div ref="calendarRef" class="calendar">
     <calendar-input
       v-if="showInputCalendar"
       :placeholder="placeholder"
@@ -9,12 +9,20 @@
       @open-calendar="openCalendar"
     />
 
-    <div>
-      <button @click="paginate('-')">
+    <div v-if="showYear" class="calendar_paginate-wrapper">
+      <button
+        :disabled="disabledPagination.left"
+        class="calendar_paginate-button"
+        @click="paginate('-')"
+      >
         <base-icon name="chevronLeft" />
       </button>
-
-      <button @click="paginate('+')">
+      <span class="calendar_paginate-year">{{ currentYear }}</span>
+      <button
+        :disabled="disabledPagination.right"
+        class="calendar_paginate-button"
+        @click="paginate('+')"
+      >
         <base-icon name="chevronRight" />
       </button>
     </div>
@@ -32,7 +40,7 @@
 
       <div class="calendar_wrapper_content">
         <div v-for="month in slicedMonths" :key="month.monthKey">
-          <template v-if="showYear">{{ month.monthName }}</template>
+          <span v-if="showYear" class="font-bold">{{ month.monthName }}</span>
 
           <calendar-days />
 
@@ -153,7 +161,14 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType, ref, Ref, computed } from 'vue'
+  import {
+    defineComponent,
+    computed,
+    ComputedRef,
+    PropType,
+    ref,
+    Ref,
+  } from 'vue'
 
   import { format } from 'fecha'
 
@@ -166,26 +181,27 @@
   import {
     addDays,
     getDatesBetweenTwoDates,
-    getDayDiff,
     getMonthDiff,
     isDateAfter,
     isDateBefore,
-    sortDates,
-    sortDatesObj,
     validateDateBetweenTwoDates,
   } from './helpers'
 
   import {
+    useBookingStyle,
+    useCheckIncheckOutHalfDay,
+    useCreateHalfDayDates,
     useCreateMonth,
     useCreateMultipleMonths,
+    useFlatBooking,
     useGetPeriod,
+    useToggleCalendar,
   } from './compose'
   import { getNextBookingDate } from './getNextBookingDate'
 
   import {
     Booking,
     BookingColor,
-    CheckInCheckOutHalfDay,
     CurrentPeriod,
     Day,
     FlatBooking,
@@ -222,6 +238,10 @@
       checkOut: {
         type: Date,
         default: null,
+      },
+      disabledDaysBeforeDayDate: {
+        type: Boolean,
+        default: true,
       },
       startDate: {
         type: Date,
@@ -262,24 +282,35 @@
       'renderPreviousMonth',
       'renderNextMonth',
     ],
-    setup(props) {
+    setup(props, { emit }) {
       const formattingFormat = ref('YYYY-MM-DD')
-      const year = new Date().getFullYear()
-      const today = props.showYear ? ref(new Date(year, 0, 1)) : ref(new Date())
+      const today = ref(new Date())
       const months = ref([]) as Ref<Month[]>
 
-      const countOfMonth = getMonthDiff(props.startDate, props.endDate)
-      const activeIndex = ref(getMonthDiff(props.startDate, new Date()) - 1)
+      const createStartActiveIndex = () => {
+        if (props.showYear) {
+          return (
+            getMonthDiff(props.startDate, new Date()) - new Date().getMonth()
+          )
+        }
+
+        return getMonthDiff(props.startDate, new Date()) - 1
+      }
+      const activeIndex = ref(createStartActiveIndex())
 
       // Current month of the current day
       months.value.push(useCreateMonth(props.startDate))
 
       // Next 12 month after the current day
+      const countOfMonth = getMonthDiff(props.startDate, props.endDate) + 11
       const multipleMonths = useCreateMultipleMonths(
         props.startDate,
         countOfMonth
       )
       months.value.push(...multipleMonths)
+
+      const { calendarRef, openCalendar, showCalendar } =
+        useToggleCalendar(props)
 
       // Create array of disabledDates for each types of period
       const saturdayWeeklyPeriods = computed(() => {
@@ -304,29 +335,109 @@
         )
       })
 
+      const bookingDatesT = props.bookingDates as unknown as Booking[]
+      const bookedDatesT = props.bookedDates as unknown as string[]
+      const bookingColorT = props.bookingColor as unknown as BookingColor
+
+      let { disabledDates, newBookingDates } = useCreateHalfDayDates(
+        bookingDatesT,
+        bookedDatesT,
+        bookingColorT,
+        formattingFormat
+      )
+      const bookingStyle = useBookingStyle(
+        bookingDatesT,
+        bookingColorT,
+        formattingFormat
+      )
+      const flatBookingDates = useFlatBooking(
+        bookingDatesT,
+        bookingColorT,
+        formattingFormat
+      )
+      const checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
+        bookingDatesT,
+        bookedDatesT
+      )
+
+      // Add style on days
+      months.value.forEach((m) => {
+        m.days.forEach((day: Day) => {
+          day.style = {
+            background: !checkIncheckOutHalfDay.value[day.formatDay]
+              ? bookingStyle.value[day.formatDay]
+              : '',
+          }
+        })
+      })
+
+      const currentYear: ComputedRef<number> = computed(() => {
+        return months.value[activeIndex.value].yearKey
+      })
+
+      const disabledPagination: ComputedRef<{ left: boolean; right: boolean }> =
+        computed(() => {
+          const diff = props.showYear ? 12 : 2
+
+          return {
+            left: activeIndex.value === 0,
+            right: activeIndex.value >= months.value.length - diff,
+          }
+        })
+
+      const paginate = (operator: string) => {
+        const count = props.showYear ? 12 : 1
+
+        if (operator === '-') {
+          activeIndex.value -= count
+          emit('renderPreviousMonth')
+        }
+        if (operator === '+') {
+          activeIndex.value += count
+          emit('renderNextMonth')
+        }
+
+        if (operator === '+' || props.showYear) {
+          const res = useCreateHalfDayDates(
+            bookingDatesT,
+            bookedDatesT,
+            bookingColorT,
+            formattingFormat
+          )
+
+          disabledDates = res.disabledDates
+          newBookingDates = res.newBookingDates
+        }
+      }
+
       return {
         activeIndex,
+        bookingStyle,
+        calendarRef,
+        checkIncheckOutHalfDay,
+        currentYear,
+        disabledDates,
+        disabledPagination,
+        flatBookingDates,
         formattingFormat,
         months,
+        newBookingDates,
         nightlyPeriods,
+        openCalendar,
+        paginate,
         saturdayWeeklyPeriods,
+        showCalendar,
         sundayWeeklyPeriods,
         today,
       }
     },
     data() {
       return {
-        bookingStyle: {} as { [key: string]: string },
-        checkIncheckOutHalfDay: {} as CheckInCheckOutHalfDay,
         currentPeriod: null as CurrentPeriod | null,
-        disabledDates: [] as string[],
-        flatBookingDates: [] as FlatBooking[],
         hoveringDates: [] as string[],
         hoveringDay: new Date() as Date,
         hoveringPeriod: null as CurrentPeriod | null,
         nextDisableBookingDate: null as Date | null,
-        newBookingDates: [] as Booking[],
-        showCalendar: true as boolean,
       }
     },
     computed: {
@@ -352,199 +463,16 @@
         return format(this.today, this.formattingFormat)
       },
       slicedMonths(): Month[] {
-        const count = this.showYear ? 12 : 1
+        const count = this.showYear ? 12 : 2
 
         return this.months.slice(this.activeIndex, count + this.activeIndex)
       },
     },
-    beforeMount() {
-      if (this.bookingDates.length > 0 || this.bookedDates.length > 0)
-        this.createHalfDayDates()
-
-      document.addEventListener('click', this.handleClickOutside, false)
-    },
-    unmounted() {
-      document.removeEventListener('click', this.handleClickOutside)
-    },
     methods: {
       isDateAfter,
       isDateBefore,
-      paginate(operator: string) {
-        const count = this.showYear ? 12 : 1
-
-        if (operator === '-') {
-          this.activeIndex -= count
-          this.$emit('renderPreviousMonth')
-        }
-        if (operator === '+') {
-          this.activeIndex += count
-          this.$emit('renderNextMonth')
-          this.createHalfDayDates()
-        }
-      },
       dayFormat(date: Date): string {
         return format(date, this.formatDate)
-      },
-      handleClickOutside(event: MouseEvent & { target: HTMLElement }) {
-        const ignoredElement = this.$refs.Calendar as HTMLElement
-
-        if (ignoredElement && this.showCalendar) {
-          const isIgnoredElementClicked = ignoredElement.contains(event.target)
-
-          if (!isIgnoredElementClicked) {
-            this.showCalendar = false
-          }
-        }
-      },
-      openCalendar() {
-        this.showCalendar = !this.showCalendar
-      },
-      // Create halfDayDates
-      createHalfDayDatesWithBookedDates(dates: string[]): {
-        checkIncheckOutHalfDay: CheckInCheckOutHalfDay
-        bookedDates: string[]
-      } {
-        const checkIncheckOutHalfDay: CheckInCheckOutHalfDay = {}
-        const bookedDates = sortDates([...dates])
-
-        for (let i = 0; i < bookedDates.length; i++) {
-          const newDate = bookedDates[i] as string
-          const newDateIncrementOne = bookedDates[i + 1] as string
-
-          if (i === 0) {
-            checkIncheckOutHalfDay[newDate] = {
-              checkIn: true,
-            }
-          }
-
-          if (
-            !checkIncheckOutHalfDay[newDate] &&
-            bookedDates[i + 1] &&
-            getDayDiff(newDate, newDateIncrementOne) > 1
-          ) {
-            checkIncheckOutHalfDay[newDate] = {
-              checkOut: true,
-            }
-            checkIncheckOutHalfDay[newDateIncrementOne] = {
-              checkIn: true,
-            }
-          }
-
-          if (i === bookedDates.length - 1) {
-            checkIncheckOutHalfDay[newDate] = {
-              checkOut: true,
-            }
-          }
-        }
-
-        return {
-          checkIncheckOutHalfDay,
-          bookedDates,
-        }
-      },
-      createBookingDatesWithHalfDayDates(
-        checkIncheckOutHalfDay: CheckInCheckOutHalfDay
-      ): PropType<Booking[]> {
-        const bookingDates = new Set() as Set<Booking>
-        let increment = 0 as number
-        let booking = {} as Booking
-
-        Object.keys(checkIncheckOutHalfDay).forEach(
-          (date: string, i: number) => {
-            increment = i
-
-            if (checkIncheckOutHalfDay[date].checkIn) booking.checkInDate = date
-            if (checkIncheckOutHalfDay[date].checkOut)
-              booking.checkOutDate = date
-
-            if (increment % 2 === 1) {
-              bookingDates.add({
-                checkInDate: booking.checkInDate,
-                checkOutDate: booking.checkOutDate,
-              })
-            }
-          }
-        )
-
-        return sortDatesObj([...this.bookingDates, ...bookingDates])
-      },
-      createHalfDayDates() {
-        let checkIncheckOutHalfDay: CheckInCheckOutHalfDay = {}
-        let bookedDates = [] as string[]
-
-        // Create halfDay dates with booked dates
-        const res = this.createHalfDayDatesWithBookedDates(this.bookedDates)
-        checkIncheckOutHalfDay = res.checkIncheckOutHalfDay
-        bookedDates = res.bookedDates
-
-        // Create bookingDates with halfDay
-        this.newBookingDates = this.createBookingDatesWithHalfDayDates(
-          checkIncheckOutHalfDay
-        )
-
-        // Set DisabledDates to []
-        this.flatBookingDates = []
-        this.disabledDates = []
-
-        // Field DisabledDates whith BookingDates
-        const bookingTypeAndDates: {
-          [key: string]: string[]
-        } = {}
-        // Tamere
-        this.bookingDates.forEach((booking: Booking) => {
-          checkIncheckOutHalfDay[booking.checkInDate] = {
-            checkIn: true,
-          }
-          checkIncheckOutHalfDay[booking.checkOutDate] = {
-            checkOut: true,
-          }
-
-          const flatBookingDate = getDatesBetweenTwoDates(
-            new Date(booking.checkInDate),
-            new Date(booking.checkOutDate),
-            this.formattingFormat
-          )
-
-          if (booking.type) {
-            if (bookingTypeAndDates[booking.type]) {
-              bookingTypeAndDates[booking.type].push(...flatBookingDate)
-            } else {
-              bookingTypeAndDates[booking.type] = flatBookingDate
-            }
-          }
-        })
-
-        const objectArray = Object.entries(bookingTypeAndDates)
-
-        objectArray.forEach(([key, value]) => {
-          this.flatBookingDates.push({
-            color: this.bookingColor[key] || '#000000',
-            key,
-            value,
-          })
-
-          value.forEach((day) => {
-            this.bookingStyle[day] = this.bookingColor[key] || '#000000'
-          })
-        })
-
-        // Field DisabledDates whith BookedDates
-        this.disabledDates = this.flatBookingDates.map((b) => b.value).flat()
-        this.disabledDates.push(...bookedDates)
-        this.disabledDates = sortDates(this.disabledDates)
-
-        this.checkIncheckOutHalfDay = checkIncheckOutHalfDay
-
-        // Add style on days
-        this.months.forEach((m) => {
-          m.days.forEach((day) => {
-            day.style = {
-              background: !this.checkIncheckOutHalfDay[day.formatDay]
-                ? this.bookingStyle[day.formatDay]
-                : '',
-            }
-          })
-        })
       },
       // Trigger each time the mouseOver is triggered
       inWeeklyPeriods(day: Day) {
@@ -576,7 +504,9 @@
       },
       inDisabledDay(day: Day) {
         return (
-          (day.formatDay !== this.formatToday && this.today > day.date) ||
+          (this.disabledDaysBeforeDayDate &&
+            day.formatDay !== this.formatToday &&
+            this.today > day.date) ||
           isDateBefore(day.date, this.checkIn) ||
           (this.disabledDates.includes(day.formatDay) &&
             !this.checkIncheckOutHalfDay[day.formatDay]) ||
@@ -732,7 +662,10 @@
     @apply w-full relative select-none;
   }
   .calendar_wrapper {
-    @apply p-4 bg-white shadow-md absolute w-full md:w-[600px] top-[100%];
+    @apply bg-white w-full md:w-[600px];
+  }
+  .calendar_wrapper:not(.calendar_wrapper--year) {
+    @apply p-4 shadow-md absolute top-[100%];
   }
   .calendar_wrapper_content {
     @apply grid grid-cols-2 gap-4;
@@ -753,7 +686,7 @@
     @apply absolute top-full bg-white left-1/2 transform -translate-x-1/2 shadow-sm border border-gray-200 p-3 text-xs z-20 text-center w-max;
   }
   .calendar_day {
-    @apply w-full left-0 right-0 h-full absolute focus:outline-none overflow-hidden font-bold;
+    @apply w-full left-0 right-0 h-full text-sm absolute focus:outline-none overflow-hidden;
   }
   .calendar_day--today {
     @apply border-2 border-blue-500;
@@ -787,9 +720,22 @@
     @apply w-full;
   }
   .calendar_wrapper--year .calendar_wrapper_content {
-    @apply grid grid-cols-4 gap-4;
+    @apply grid grid-cols-4 gap-x-6 gap-y-2;
   }
 
+  .calendar_paginate-wrapper {
+    @apply mb-4;
+  }
+  .calendar_paginate-button {
+    @apply p-4 border border-gray-200 hover:bg-gray-100 duration-300 disabled:bg-gray-100 disabled:text-gray-400;
+  }
+  .calendar_paginate-year {
+    @apply w-20 inline-block text-center font-bold;
+  }
+
+  .calendar_day--booking {
+    @apply opacity-80;
+  }
   /* New */
   .calendar_day_haldDay {
     @apply w-[200%] h-[200%] absolute transform rotate-45;

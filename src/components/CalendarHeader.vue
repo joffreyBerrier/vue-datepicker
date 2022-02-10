@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType } from 'vue'
+  import { defineComponent, computed, ComputedRef, PropType } from 'vue'
 
   import { Month } from '@/types'
 
@@ -44,18 +44,24 @@
       },
     },
     emits: ['paginate'],
-    computed: {
-      prevMonth(): string {
-        return this.months[this.activeIndex].monthName
-      },
-      nextMonth(): string {
-        return this.months[this.activeIndex + 1].monthName
-      },
-    },
-    methods: {
-      paginate(operator: string) {
-        this.$emit('paginate', operator)
-      },
+    setup(props, { emit }) {
+      const prevMonth: ComputedRef<string> = computed(() => {
+        return props.months[props.activeIndex].monthName
+      })
+
+      const nextMonth: ComputedRef<string> = computed(() => {
+        return props.months[props.activeIndex + 1].monthName
+      })
+
+      const paginate = (operator: string) => {
+        emit('paginate', operator)
+      }
+
+      return {
+        nextMonth,
+        paginate,
+        prevMonth,
+      }
     },
   })
 </script>
