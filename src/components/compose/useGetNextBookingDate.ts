@@ -1,19 +1,23 @@
-import { format } from 'fecha'
-import { addDays } from './helpers'
+import { format } from "fecha";
+import { addDays } from "~/components/helpers";
+import type { Ref } from "vue";
 
-import { Booking } from '../types/index'
-import { resetTimeDate, validateDateBetweenTwoDates } from './helpers'
+import type { Booking } from "~/types";
+import {
+  resetTimeDate,
+  validateDateBetweenTwoDates,
+} from "~/components/helpers";
 
 const validateDateBeforeDate = (fromDate: string, givenDate: string) => {
-  return resetTimeDate(givenDate) <= resetTimeDate(fromDate)
-}
+  return resetTimeDate(givenDate) <= resetTimeDate(fromDate);
+};
 
-const getNextBookingDate = (
+const useGetNextBookingDate = (
   bookingDates: Booking[],
   date: Date
 ): Date | undefined => {
   if (bookingDates.length > 0) {
-    const nextDateFormatted = format(addDays(date, 1))
+    const nextDateFormatted = format(addDays(date, 1));
     const nextBooking = bookingDates.find(
       (booking) =>
         validateDateBeforeDate(booking.checkInDate, nextDateFormatted) ||
@@ -22,12 +26,12 @@ const getNextBookingDate = (
           booking.checkOutDate,
           nextDateFormatted
         )
-    ) as Booking | undefined
+    ) as Booking | undefined;
 
     if (nextBooking && nextBooking.checkInDate) {
-      return new Date(nextBooking.checkInDate)
+      return new Date(nextBooking.checkInDate);
     }
   }
-}
+};
 
-export { getNextBookingDate }
+export { useGetNextBookingDate };

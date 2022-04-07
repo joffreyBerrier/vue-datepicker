@@ -1,63 +1,79 @@
-// Type definitions for vue-calendar 1.0.0
+// Type definitions for vue-calendar 1.1.0
 // Project: vue-calendar
 // Definitions by: Joffrey Berrier
 
-// Calendar
-interface CheckInOrCheckOut {
-  checkIn?: boolean
-  checkOut?: boolean
+interface Booking {
+  checkInDate: string;
+  checkOutDate: string;
+  type?: string;
+}
+interface BookingColor {
+  [key: string]: string;
+}
+interface HeaderDay {
+  key: number;
+  name: string;
 }
 interface CheckInCheckOutHalfDay {
-  [key: string]: CheckInOrCheckOut
+  [key: string]: {
+    checkOut?: boolean;
+    checkIn?: boolean;
+  };
+}
+interface FlatBooking {
+  color: string;
+  key: string;
+  value: string[];
 }
 interface Day {
-  belongsToThisMonth: boolean
-  date: Date
-  dayNumber: string
-  formatDay: string
+  belongsToThisMonth: boolean;
+  date: Date;
+  dayNumber: string;
+  formatDay: string;
+  style: {
+    [key: string]: string;
+  };
 }
 interface Month {
-  days: Day[]
-  monthKey: number
-  monthName: string
-  yearKey: number
-}
-interface Booking {
-  checkInDate: string
-  checkOutDate: string
-  type?: string
-}
-interface Placeholder {
-  checkIn: string
-  checkOut: string
+  days: Day[];
+  monthKey: number;
+  monthName: string;
+  yearKey: number;
 }
 
-// BaseIcon
+interface Placeholder {
+  checkIn: string;
+  checkOut: string;
+}
+
 interface Icon {
-  [key: string]: string
+  [key: string]: string;
 }
 
 interface Period {
-  startAt: string
-  endAt: string
-  minimumDuration: number
-  periodType: string
+  startAt: string;
+  endAt: string;
+  minimumDuration: number;
+  periodType: string;
 }
 interface CurrentPeriod {
-  startAt: string
-  endAt: string
-  minimumDuration: number
-  periodType: string
-  nextEnableDate: Date
+  startAt: string;
+  endAt: string;
+  minimumDuration: number;
+  periodType: string;
+  nextEnableDate: Date;
 }
 
 export {
   Booking,
+  BookingColor,
+  HeaderDay,
   CheckInCheckOutHalfDay,
-  CurrentPeriod,
+  FlatBooking,
   Day,
-  Icon,
   Month,
-  Period,
   Placeholder,
-}
+  Icon,
+  Period,
+  CurrentPeriod,
+};

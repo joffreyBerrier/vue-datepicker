@@ -1,77 +1,63 @@
 // Calendar
-interface Booking {
-  checkInDate: string
-  checkOutDate: string
-  type?: string
+export interface Booking {
+  checkInDate: string;
+  checkOutDate: string;
+  type?: string;
 }
-interface BookingColor {
-  [key: string]: string
+export interface BookingColor {
+  [key: string]: string;
 }
-interface HeaderDay {
-  key: number
-  name: string
+export interface HeaderDay {
+  key: number;
+  name: string;
 }
-interface CheckInCheckOutHalfDay {
+export interface CheckInCheckOutHalfDay {
   [key: string]: {
-    checkOut?: boolean
-    checkIn?: boolean
-  }
+    checkOut?: boolean;
+    checkIn?: boolean;
+  };
 }
-interface FlatBooking {
-  color: string
-  key: string
-  value: string[]
+export interface FlatBooking {
+  color: string;
+  key: string;
+  value: string[];
 }
-interface Day {
-  belongsToThisMonth: boolean
-  date: Date
-  dayNumber: string
-  formatDay: string
+export interface Day {
+  belongsToThisMonth: boolean;
+  date: Date;
+  dayNumber: string;
+  formatDay: string;
   style: {
-    [key: string]: string
-  }
+    [key: string]: string;
+  };
 }
-interface Month {
-  days: Day[]
-  monthKey: number
-  monthName: string
-  yearKey: number
+export interface Month {
+  days: Day[];
+  monthKey: number;
+  monthName: string;
+  yearKey: number;
 }
 
-interface Placeholder {
-  checkIn: string
-  checkOut: string
+export interface Placeholder {
+  checkIn: string;
+  checkOut: string;
 }
 
 // BaseIcon
-interface Icon {
-  [key: string]: string
+export interface Icon {
+  [key: string]: string;
 }
 
-interface Period {
-  startAt: string
-  endAt: string
-  minimumDuration: number
-  periodType: string
+export interface Period {
+  startAt: string;
+  endAt: string;
+  minimumDuration: number;
+  periodType: string;
 }
-interface CurrentPeriod {
-  startAt: string
-  endAt: string
-  minimumDuration: number
-  periodType: string
-  nextEnableDate: Date
-}
-
-export {
-  Booking,
-  BookingColor,
-  CheckInCheckOutHalfDay,
-  CurrentPeriod,
-  Day,
-  FlatBooking,
-  HeaderDay,
-  Icon,
-  Month,
-  Period,
-  Placeholder,
+export interface CurrentPeriod {
+  startAt: string;
+  endAt: string;
+  minimumDuration: number;
+  periodType: string;
+  nextEnableDate: Date;
 }

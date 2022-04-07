@@ -24,17 +24,17 @@ yarn add vue-calendar-3
 ```
 
 ```javascript
-import { Calendar } from 'vue-calendar-3'
+import { Calendar } from "vue-calendar-3";
 // If you using vite
-import 'vue-calendar-3/style'
+import "vue-calendar-3/style";
 // If you not
-import 'vue-calendar-3/dist/library.css'
+import "vue-calendar-3/dist/library.css";
 
 export default {
   components: {
     Calendar,
   },
-}
+};
 ```
 
 ```html
@@ -59,6 +59,95 @@ Exemple : `v-model:checkOut=""`
 
 ## Props/Options
 
+### bookingColor
+
+- Type: `Object as PropType<BookingColor>`
+- Default: `{}`
+
+Allows you to define colors for your bookings, the name of the key must be equal to your type key in the booking object
+
+Exemple:
+
+```javascript
+bookedDates: {
+  admin: "#9dc1c9",
+  contract: "#a56a0b",
+};
+```
+
+### bookingDates
+
+- Type: `Array as PropType<string[]>`
+- Default: `[]`
+
+Allows you to define a date range (Booking)
+
+Exemple:
+
+```javascript
+bookingDates: [
+  {
+    checkInDate: "2022-07-01",
+    checkOutDate: "2022-07-10",
+    type: "admin",
+  },
+  {
+    checkInDate: "2022-08-01",
+    checkOutDate: "2022-08-20",
+    type: "contract",
+  },
+];
+```
+
+### disabledDaysBeforeDayDate
+
+- Type: `Boolean`
+- Default: `true`
+
+Disabled days before the current date
+
+### startDate
+
+- Type: `Date`
+- Default: `new Date(new Date().getFullYear() - 2, 0, 1)`
+
+Define the first Date in your calendar
+
+### endDate
+
+- Type: `Date`
+- Default: `new Date(new Date().getFullYear() + 2, 0, 1)`
+
+Define the last Date in your calendar
+
+### formatDate
+
+- Type: `String`
+- Default: `YYYY-MM-DD`
+
+Define the format of your date
+
+### placeholder
+
+- Type: `Object as PropType<Placeholder>`
+- Default: `{ checkIn: "Arrivée", checkOut: "Départ", }`
+
+Define the text of you input calendar
+
+### showYear
+
+- Type: `Boolean`
+- Default: `false`
+
+show the calendar in year mode
+
+### showInputCalendar
+
+- Type: `Boolean`
+- Default: `false`
+
+hide / show the input calendar
+
 ### BookedDates
 
 - Type: `string[]`
@@ -70,13 +159,13 @@ Exemple:
 
 ```javascript
 bookedDates: [
-  '2021-06-01',
-  '2021-06-02',
-  '2021-06-03',
-  '2021-06-23',
-  '2021-06-24',
-  '2021-06-25',
-]
+  "2021-06-01",
+  "2021-06-02",
+  "2021-06-03",
+  "2021-06-23",
+  "2021-06-24",
+  "2021-06-25",
+];
 ```
 
 ### PeriodDates
@@ -113,26 +202,26 @@ Exemple:
 periodDates: [
   // Nightly
   {
-    startAt: '2021-08-01',
-    endAt: '2021-08-31',
+    startAt: "2021-08-01",
+    endAt: "2021-08-31",
     minimumDuration: 4,
-    periodType: 'nightly',
+    periodType: "nightly",
   },
   // Weekly Saturday
   {
-    startAt: '2021-09-01',
-    endAt: '2021-09-30',
+    startAt: "2021-09-01",
+    endAt: "2021-09-30",
     minimumDuration: 2,
-    periodType: 'weekly_by_saturday',
+    periodType: "weekly_by_saturday",
   },
   // Weekly Sunday
   {
-    startAt: '2021-11-01',
-    endAt: '2021-11-29',
+    startAt: "2021-11-01",
+    endAt: "2021-11-29",
     minimumDuration: 1,
-    periodType: 'weekly_by_sunday',
+    periodType: "weekly_by_sunday",
   },
-]
+];
 ```
 
 ## Events
@@ -192,10 +281,13 @@ periodDates: [
 - Manage BookingDates 👊
 - Show checkIn checkOut date 👊
 - When click on checkIn checkOut date open calendar 👊
+- Refacto code, using setup syntax
+- Enable the calendar years view
 
 # To Do
 
 - Manage translations
+- Manage monday to monday and others days
 
 ## Contributing to development 💁‍♂️💁‍♀️
 

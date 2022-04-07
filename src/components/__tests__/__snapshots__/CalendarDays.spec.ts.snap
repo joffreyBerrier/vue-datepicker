@@ -1,0 +1,49 @@
+// Vitest Snapshot v1
+
+exports[`CalendarDays > must be a calendar-days list 1`] = `
+"<ul class=\\"calendar_wrapper_content-header-days\\">
+  <li class=\\"font-medium\\">Mo</li>
+  <li class=\\"font-medium\\">Tu</li>
+  <li class=\\"font-medium\\">We</li>
+  <li class=\\"font-medium\\">Th</li>
+  <li class=\\"font-medium\\">Fr</li>
+  <li class=\\"font-medium\\">Sa</li>
+  <li class=\\"font-medium\\">Su</li>
+</ul>"
+`;
+
+exports[`CalendarDays > must be a svg 1`] = `
+"<ul class=\\"calendar_wrapper_content-header-days\\" name=\\"chat\\">
+  <li class=\\"font-medium\\">Mo</li>
+  <li class=\\"font-medium\\">Tu</li>
+  <li class=\\"font-medium\\">We</li>
+  <li class=\\"font-medium\\">Th</li>
+  <li class=\\"font-medium\\">Fr</li>
+  <li class=\\"font-medium\\">Sa</li>
+  <li class=\\"font-medium\\">Su</li>
+</ul>"
+`;
+
+exports[`CalendarDays > renders CalendarDays properly 1`] = `
+"<ul class=\\"calendar_wrapper_content-header-days\\">
+  <li class=\\"font-medium\\">Mo</li>
+  <li class=\\"font-medium\\">Tu</li>
+  <li class=\\"font-medium\\">We</li>
+  <li class=\\"font-medium\\">Th</li>
+  <li class=\\"font-medium\\">Fr</li>
+  <li class=\\"font-medium\\">Sa</li>
+  <li class=\\"font-medium\\">Su</li>
+</ul>"
+`;
+
+exports[`CalendarDays > renders calendarHeader properly 1`] = `
+"<ul class=\\"calendar_wrapper_content-header-days\\">
+  <li class=\\"font-medium\\">Mo</li>
+  <li class=\\"font-medium\\">Tu</li>
+  <li class=\\"font-medium\\">We</li>
+  <li class=\\"font-medium\\">Th</li>
+  <li class=\\"font-medium\\">Fr</li>
+  <li class=\\"font-medium\\">Sa</li>
+  <li class=\\"font-medium\\">Su</li>
+</ul>"
+`;

@@ -1,56 +1,54 @@
-import { ref, watch, onBeforeMount, onUnmounted, nextTick } from 'vue'
+import { ref, watch, onBeforeMount, onUnmounted } from "vue";
 
 export const useToggleCalendar = (props) => {
-  const showCalendar = ref(true)
-  const calendarRef = ref(null)
+  const showCalendar = ref(props.showYear);
+  const calendarRef = ref(null);
 
   const handleClickOutside = (event: MouseEvent & { target: HTMLElement }) => {
-    const ignoredElement = calendarRef.value
+    const ignoredElement = calendarRef.value;
 
     if (ignoredElement && showCalendar.value) {
-      const isIgnoredElementClicked = ignoredElement.contains(event.target)
+      const isIgnoredElementClicked = ignoredElement.contains(event.target);
 
       if (!isIgnoredElementClicked) {
-        showCalendar.value = false
+        showCalendar.value = false;
       }
     }
-  }
+  };
 
   const addClickOusideListener = () => {
-    document.addEventListener('click', handleClickOutside, false)
-  }
+    document.addEventListener("click", handleClickOutside, false);
+  };
   const removeClickOusideListener = () => {
-    document.removeEventListener('click', handleClickOutside)
-  }
+    document.removeEventListener("click", handleClickOutside);
+  };
 
   const openCalendar = () => {
-    showCalendar.value = !showCalendar.value
-  }
+    showCalendar.value = !showCalendar.value;
+  };
 
   watch(
     () => props.showYear,
-    async (newVal) => {
+    (newVal) => {
       if (newVal) {
-        removeClickOusideListener()
-        await nextTick()
-
-        openCalendar()
+        removeClickOusideListener();
+        openCalendar();
       } else {
-        addClickOusideListener()
+        addClickOusideListener();
       }
     }
-  )
+  );
 
   onBeforeMount(() => {
-    if (!props.showYear) addClickOusideListener()
-  })
+    if (!props.showYear) addClickOusideListener();
+  });
   onUnmounted(() => {
-    if (!props.showYear) removeClickOusideListener()
-  })
+    if (!props.showYear) removeClickOusideListener();
+  });
 
   return {
     calendarRef,
     openCalendar,
     showCalendar,
-  }
-}
+  };
+};

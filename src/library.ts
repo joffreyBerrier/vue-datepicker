@@ -1,3 +1,3 @@
-import Calendar from './components/Calendar.vue'
+import Calendar from "./components/Calendar.vue";
 
-export { Calendar }
+export { Calendar };
