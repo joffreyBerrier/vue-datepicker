@@ -1,0 +1,10 @@
+// Vitest Snapshot v1
+
+exports[`CalendarInput > renders CalendarDays properly 1`] = `
+"<div data-testid=\\"calendar_input\\" class=\\"calendar_input\\">
+  <base-icon-stub name=\\"calendar\\" color=\\"calendar_input-calendar,[object Object]\\" size=\\"xs\\"></base-icon-stub>
+  <p class=\\"calendar_input-text\\"><span class=\\"calendar_input-text--checkIn\\"></span>
+    <base-icon-stub name=\\"arrowNarrowRight\\" color=\\"calendar_input-arrowRight,[object Object]\\" size=\\"xs\\"></base-icon-stub><span class=\\"calendar_input-text--checkIn\\"></span>
+  </p>
+</div>"
+`;

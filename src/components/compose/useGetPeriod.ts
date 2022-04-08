@@ -1,5 +1,5 @@
-import { Period } from '../../types'
-import { getDatesBetweenTwoDates } from '../helpers'
+import type { Period } from "~/types";
+import { getDatesBetweenTwoDates } from "~/components/helpers";
 
 export const useGetPeriod = (
   periodDates: Period[],
@@ -17,9 +17,9 @@ export const useGetPeriod = (
           new Date(p.startAt),
           new Date(p.endAt),
           formattingFormat
-        )
-      })[0]
+        );
+      })[0];
   }
 
-  return []
-}
+  return [];
+};

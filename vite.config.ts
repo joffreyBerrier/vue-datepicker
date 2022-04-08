@@ -1,25 +1,32 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import { fileURLToPath, URL } from "url";
 
-const path = require('path')
+const path = require("path");
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
+// https://vitejs.dev/config/
 export default defineConfig({
+  plugins: [vue()],
   build: {
     cssCodeSplit: true,
     lib: {
-      name: 'VueCalendar',
-      entry: path.resolve(__dirname, 'src/library.ts'),
+      entry: path.resolve(__dirname, "src/library.ts"),
+      name: "VueCalendar",
+      // fileName: (format) => `my-lib.${format}.js`
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ["vue"],
       output: {
         globals: {
-          vue: 'Vue',
+          vue: "Vue",
         },
       },
     },
   },
-  plugins: [vue()],
-})
+  resolve: {
+    alias: {
+      "~": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
+});
