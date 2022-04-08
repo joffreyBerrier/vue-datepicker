@@ -1,14 +1,26 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.vite-config.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.vitest.json"
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "ESNext",
+    "target": "ESNext",
+    "lib": ["DOM", "ESNext"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "vue-calendar-3": ["./src"],
     }
+  },
+  "include": [
+    "**/*.d.ts",
+  ],
+  "exclude": [
+    "**/dist/**",
+    "**/node_modules/**"
   ]
 }
