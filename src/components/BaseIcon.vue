@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+  name: "BaseIcon",
+};
+</script>
+
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import type { Ref, ComputedRef } from "vue";

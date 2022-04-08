@@ -1,5 +1,11 @@
+<script lang="ts">
+export default {
+  name: "VueCalendar",
+};
+</script>
+
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, onBeforeMount, onUnmounted } from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";
 
 import { format } from "fecha";
@@ -129,7 +135,16 @@ const countOfMonth = getMonthDiff(props.startDate, props.endDate) + 11;
 const multipleMonths = useCreateMultipleMonths(props.startDate, countOfMonth);
 months.value.push(...multipleMonths);
 
-const { calendarRef, openCalendar, showCalendar } = useToggleCalendar(props);
+const { addClickOusideListener, calendarRef, openCalendar, showCalendar } =
+  useToggleCalendar(props);
+
+onBeforeMount(() => {
+  if (!props.showYear) addClickOusideListener();
+});
+
+onUnmounted(() => {
+  if (!props.showYear) removeClickOusideListener();
+});
 
 // Create array of disabledDates for each types of period
 const saturdayWeeklyPeriods = computed(() => {
@@ -448,7 +463,7 @@ const getBookingType = (day: Day): string | null => {
 
 <template>
   <div ref="calendarRef" class="calendar">
-    <calendar-input
+    <CalendarInput
       v-if="showInputCalendar"
       :placeholder="placeholder"
       :check-in="checkIn"
@@ -479,7 +494,7 @@ const getBookingType = (day: Day): string | null => {
       v-if="showCalendar"
       :class="['calendar_wrapper', { 'calendar_wrapper--year': showYear }]"
     >
-      <calendar-header
+      <CalendarHeader
         v-if="!showYear"
         :active-index="activeIndex"
         :months="months"
@@ -490,7 +505,7 @@ const getBookingType = (day: Day): string | null => {
         <div v-for="month in slicedMonths" :key="month.monthKey">
           <span v-if="showYear" class="font-bold">{{ month.monthName }}</span>
 
-          <calendar-days />
+          <CalendarDays />
 
           <div class="calendar_wrapper_content-days">
             <div

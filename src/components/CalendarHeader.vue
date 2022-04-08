@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+  name: "CalendarHeader",
+};
+</script>
+
 <script setup lang="ts">
 import { computed } from "vue";
 import type { ComputedRef, PropType } from "vue";
