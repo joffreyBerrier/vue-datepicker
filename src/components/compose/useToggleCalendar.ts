@@ -1,4 +1,4 @@
-import { ref, watch, onBeforeMount, onUnmounted } from "vue";
+import { ref, watch } from "vue";
 
 export const useToggleCalendar = (props) => {
   const showCalendar = ref(props.showYear);
@@ -39,14 +39,8 @@ export const useToggleCalendar = (props) => {
     }
   );
 
-  onBeforeMount(() => {
-    if (!props.showYear) addClickOusideListener();
-  });
-  onUnmounted(() => {
-    if (!props.showYear) removeClickOusideListener();
-  });
-
   return {
+    addClickOusideListener,
     calendarRef,
     openCalendar,
     showCalendar,
