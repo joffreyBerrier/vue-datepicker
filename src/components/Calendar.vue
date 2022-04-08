@@ -618,10 +618,6 @@ const getBookingType = (day: Day): string | null => {
 </template>
 
 <style>
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 .calendar {
   @apply w-full relative select-none;
 }
