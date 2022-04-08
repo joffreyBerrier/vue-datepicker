@@ -1,9 +1,3 @@
-<script lang="ts">
-export default {
-  name: "VueCalendar",
-};
-</script>
-
 <script setup lang="ts">
 import { computed, ref, onBeforeMount, onUnmounted } from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";

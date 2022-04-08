@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { Calendar } from "vue-datepicker";
+import { Calendar } from "vue-calendar-3";
 
 import type { Ref } from "vue";
-import type { Booking, Period } from "vue-datepicker";
+import type { Booking, Period } from "vue-calendar-3";
 
 const bookedDates = ref([]);
 const bookingColor = ref({
