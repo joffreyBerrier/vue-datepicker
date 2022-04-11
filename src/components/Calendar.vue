@@ -135,8 +135,13 @@ const countOfMonth = getMonthDiff(props.startDate, props.endDate) + 11;
 const multipleMonths = useCreateMultipleMonths(props.startDate, countOfMonth);
 months.value.push(...multipleMonths);
 
-const { addClickOusideListener, calendarRef, openCalendar, showCalendar } =
-  useToggleCalendar(props);
+const {
+  addClickOusideListener,
+  calendarRef,
+  openCalendar,
+  removeClickOusideListener,
+  showCalendar,
+} = useToggleCalendar(props);
 
 onBeforeMount(() => {
   if (!props.showYear) addClickOusideListener();
@@ -359,8 +364,9 @@ const dayClicked = (day: Day): void => {
   } else if (props.checkIn && !props.checkOut) {
     // CheckIn + !ChecKout
     emit("update:checkOut", day.date);
-    nextDisableBookingDate.value = null;
     currentPeriod.value = null;
+    nextDisableBookingDate.value = null;
+    showCalendar.value = false;
   } else if (!props.checkIn) {
     // CheckIn
     emit("update:checkIn", day.date);

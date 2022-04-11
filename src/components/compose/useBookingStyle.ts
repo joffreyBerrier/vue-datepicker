@@ -2,7 +2,7 @@ import { ref } from "vue";
 import type { Ref } from "vue";
 
 import type { Booking, BookingColor } from "~/types";
-import { getDatesBetweenTwoDates } from "~/components/helpers";
+import { getDatesBetweenTwoDates } from "../helpers";
 
 export const useBookingStyle = (
   bookingDates: Booking[],

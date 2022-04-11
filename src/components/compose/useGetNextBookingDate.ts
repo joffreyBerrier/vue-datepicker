@@ -1,12 +1,9 @@
 import { format } from "fecha";
-import { addDays } from "~/components/helpers";
+import { addDays } from "../helpers";
 import type { Ref } from "vue";
 
 import type { Booking } from "~/types";
-import {
-  resetTimeDate,
-  validateDateBetweenTwoDates,
-} from "~/components/helpers";
+import { resetTimeDate, validateDateBetweenTwoDates } from "../helpers";
 
 const validateDateBeforeDate = (fromDate: string, givenDate: string) => {
   return resetTimeDate(givenDate) <= resetTimeDate(fromDate);

@@ -43,6 +43,7 @@ export const useToggleCalendar = (props) => {
     addClickOusideListener,
     calendarRef,
     openCalendar,
+    removeClickOusideListener,
     showCalendar,
   };
 };

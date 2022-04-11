@@ -2,7 +2,7 @@ import { ref } from "vue";
 import type { Ref } from "vue";
 
 import type { Booking, CheckInCheckOutHalfDay } from "~/types";
-import { getDayDiff, sortDates } from "~/components/helpers";
+import { getDayDiff, sortDates } from "../helpers";
 
 const createHalfDayDatesWithBookedDates = (
   dates: string[]
