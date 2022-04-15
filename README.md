@@ -1,4 +1,4 @@
-# vue-datepicker 1.1.0
+# vue-datepicker 1.1.2
 
 👊 An easier datePicker in Vue.js 👊
 
@@ -28,7 +28,7 @@ import { Calendar } from "vue-calendar-3";
 // If you using vite
 import "vue-calendar-3/style";
 // If you not
-import "vue-calendar-3/dist/library.css";
+import "vue-calendar-3/dist/index.css";
 
 export default {
   components: {
@@ -38,7 +38,18 @@ export default {
 ```
 
 ```html
-<Calendar />
+<script setup lang="ts">
+  import { ref } from "vue";
+  import { Calendar } from "vue-calendar-3";
+  import "vue-calendar-3/style";
+
+  const checkIn = ref(null);
+  const checkOut = ref(null);
+</script>
+
+<template>
+  <Calendar v-model:checkIn="checkIn" v-model:checkOut="checkOut" />
+</template>
 ```
 
 ## Data binding

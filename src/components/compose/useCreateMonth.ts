@@ -2,8 +2,8 @@ import { format } from "fecha";
 
 import { addDays } from "../helpers";
 import {
-  getFirstDayOfMonth,
   getFirstDayOfFirstWeekOfMonth,
+  getFirstDayOfMonth,
   getMonthName,
 } from "../generateMonth";
 

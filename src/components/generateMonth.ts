@@ -79,9 +79,9 @@ const createMultipleMonth = (dates: Date[]): Month[] => {
 };
 
 export {
-  getFirstDayOfMonth,
+  createMultipleMonth,
   getFirstDayOfFirstWeekOfMonth,
+  getFirstDayOfMonth,
   getMonthName,
   getNextMonth,
-  createMultipleMonth,
 };
