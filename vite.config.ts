@@ -1,9 +1,6 @@
-import { fileURLToPath, URL } from "url";
-
-const path = require("path");
-
-import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { defineConfig } from "vite";
+import { resolve } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,9 +8,8 @@ export default defineConfig({
   build: {
     cssCodeSplit: true,
     lib: {
-      entry: path.resolve(__dirname, "src/library.ts"),
-      name: "VueCalendar",
-      // fileName: (format) => `my-lib.${format}.js`
+      entry: resolve(__dirname, "src/index.ts"),
+      name: "vue-calendar-3",
     },
     rollupOptions: {
       external: ["vue"],
@@ -23,11 +19,5 @@ export default defineConfig({
         },
       },
     },
-  },
-  resolve: {
-    alias: {
-      "~": fileURLToPath(new URL("./src", import.meta.url)),
-    },
-    // preserveSymlinks: true,
   },
 });

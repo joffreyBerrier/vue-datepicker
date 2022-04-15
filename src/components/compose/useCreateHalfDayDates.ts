@@ -12,7 +12,7 @@ import {
   getDatesBetweenTwoDates,
   sortDates,
   sortDatesObj,
-} from "~/components/helpers";
+} from "../helpers";
 
 const createHalfDayDatesWithBookedDates = (
   dates: string[]

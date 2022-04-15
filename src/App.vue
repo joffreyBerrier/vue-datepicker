@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-
-// import { Calendar } from "../dist/vue-calendar-3.es.js";
-// import "../dist/library.css";
-
 import Calendar from "./components/Calendar.vue";
 
 import type { Ref } from "vue";
