@@ -153,26 +153,18 @@ onUnmounted(() => {
 
 // Create array of disabledDates for each types of period
 const saturdayWeeklyPeriods = computed(() => {
-  return useGetPeriod(
-    props.periodDates,
-    "weekly_by_saturday",
-    formattingFormat.value
-  );
+  return useGetPeriod(props.periodDates, "weekly_by_saturday", formattingFormat.value);
 });
 const sundayWeeklyPeriods = computed(() => {
-  return useGetPeriod(
-    props.periodDates,
-    "weekly_by_sunday",
-    formattingFormat.value
-  );
+  return useGetPeriod(props.periodDates, "weekly_by_sunday", formattingFormat.value);
 });
 const nightlyPeriods = computed(() => {
   return useGetPeriod(props.periodDates, "nightly", formattingFormat.value);
 });
 
-const bookingDatesT = props.bookingDates as unknown as Booking[];
-const bookedDatesT = props.bookedDates as unknown as string[];
-const bookingColorT = props.bookingColor as unknown as BookingColor;
+const bookingDatesT = (props.bookingDates as unknown) as Booking[];
+const bookedDatesT = (props.bookedDates as unknown) as string[];
+const bookingColorT = (props.bookingColor as unknown) as BookingColor;
 
 let { disabledDates, newBookingDates } = useCreateHalfDayDates(
   bookingDatesT,
@@ -180,20 +172,9 @@ let { disabledDates, newBookingDates } = useCreateHalfDayDates(
   bookingColorT,
   formattingFormat
 );
-const bookingStyle = useBookingStyle(
-  bookingDatesT,
-  bookingColorT,
-  formattingFormat
-);
-const flatBookingDates = useFlatBooking(
-  bookingDatesT,
-  bookingColorT,
-  formattingFormat
-);
-const checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
-  bookingDatesT,
-  bookedDatesT
-);
+const bookingStyle = useBookingStyle(bookingDatesT, bookingColorT, formattingFormat);
+const flatBookingDates = useFlatBooking(bookingDatesT, bookingColorT, formattingFormat);
+const checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(bookingDatesT, bookedDatesT);
 
 // Add style on days
 months.value.forEach((m) => {
@@ -210,15 +191,16 @@ const currentYear: ComputedRef<number> = computed(() => {
   return months.value[activeIndex.value].yearKey;
 });
 
-const disabledPagination: ComputedRef<{ left: boolean; right: boolean }> =
-  computed(() => {
+const disabledPagination: ComputedRef<{ left: boolean; right: boolean }> = computed(
+  () => {
     const diff = props.showYear ? 12 : 2;
 
     return {
-      left: activeIndex.value === 0,
+      left: activeIndex.value <= 0,
       right: activeIndex.value >= months.value.length - diff,
     };
-  });
+  }
+);
 
 const paginate = (operator: string) => {
   const count = props.showYear ? 12 : 1;
@@ -248,7 +230,7 @@ const paginate = (operator: string) => {
 // Old data
 const currentPeriod: Ref<CurrentPeriod | null> = ref(null);
 const hoveringDates: Ref<string[]> = ref([]);
-const hoveringDay: Ref<Date> = ref(new Date());
+const hoveringDay: Ref<Date | null> = ref(new Date());
 const hoveringPeriod: Ref<CurrentPeriod> | null = ref(null);
 const nextDisableBookingDate: Ref<Date | null> = ref(null);
 
@@ -290,10 +272,8 @@ const dayFormat = (date: Date): string => {
 // Trigger each time the mouseOver is triggered
 const inWeeklyPeriods = (day: Day) => {
   return (
-    (saturdayWeeklyPeriods.value.includes(day.formatDay) &&
-      day.date.getDay() !== 6) ||
-    (sundayWeeklyPeriods.value.includes(day.formatDay) &&
-      day.date.getDay() !== 0)
+    (saturdayWeeklyPeriods.value.includes(day.formatDay) && day.date.getDay() !== 6) ||
+    (sundayWeeklyPeriods.value.includes(day.formatDay) && day.date.getDay() !== 0)
   );
 };
 
@@ -361,12 +341,15 @@ const dayClicked = (day: Day): void => {
     nextDisableBookingDate.value = null;
     currentPeriod.value = null;
     hoveringDates.value = [];
+    hoveringDay.value = null;
   } else if (props.checkIn && !props.checkOut) {
     // CheckIn + !ChecKout
     emit("update:checkOut", day.date);
     currentPeriod.value = null;
     nextDisableBookingDate.value = null;
-    showCalendar.value = false;
+    hoveringDay.value = null;
+
+    if (!props.showYear) showCalendar.value = false;
   } else if (!props.checkIn) {
     // CheckIn
     emit("update:checkIn", day.date);
@@ -389,10 +372,7 @@ const getNextBookingDate = (day: Day) => {
       newDate = addDays(day.date, 1);
     }
 
-    nextDisableBookingDate.value = useGetNextBookingDate(
-      newBookingDates,
-      newDate
-    );
+    nextDisableBookingDate.value = useGetNextBookingDate(newBookingDates, newDate);
   }
 };
 
@@ -401,11 +381,7 @@ const getCurrentPeriod = (day: Day) => {
     if (
       period.endAt !== day.formatDay &&
       (period.startAt === day.formatDay ||
-        validateDateBetweenTwoDates(
-          period.startAt,
-          period.endAt,
-          day.formatDay
-        ))
+        validateDateBetweenTwoDates(period.startAt, period.endAt, day.formatDay))
     ) {
       return period;
     }
@@ -480,6 +456,7 @@ const getBookingType = (day: Day): string | null => {
 
     <div v-if="showYear" class="calendar_paginate-wrapper">
       <button
+        type="button"
         :disabled="disabledPagination.left"
         class="calendar_paginate-button"
         @click="paginate('-')"
@@ -488,6 +465,7 @@ const getBookingType = (day: Day): string | null => {
       </button>
       <span class="calendar_paginate-year">{{ currentYear }}</span>
       <button
+        type="button"
         :disabled="disabledPagination.right"
         class="calendar_paginate-button"
         @click="paginate('+')"
@@ -532,9 +510,7 @@ const getBookingType = (day: Day): string | null => {
             >
               <div
                 v-if="
-                  day.belongsToThisMonth &&
-                  hoveringDay === day.date &&
-                  hoveringPeriod
+                  day.belongsToThisMonth && hoveringDay === day.date && hoveringPeriod
                 "
                 class="calendar_tooltip"
                 v-html="tooltipText"
@@ -572,14 +548,11 @@ const getBookingType = (day: Day): string | null => {
                   // Hovering date
                   {
                     'calendar_day--hovering':
-                      (!checkIn &&
-                        checkIn !== day.date &&
-                        hoveringDay === day.date) ||
+                      (!checkIn && checkIn !== day.date && hoveringDay === day.date) ||
                       hoveringDates.includes(day.formatDay),
                   },
                   {
-                    'calendar_day--hovering-checkIn':
-                      checkIn && hoveringDay === day.date,
+                    'calendar_day--hovering-checkIn': checkIn && hoveringDay === day.date,
                   },
                   // Inactive saturday period
                   {
@@ -587,8 +560,7 @@ const getBookingType = (day: Day): string | null => {
                   },
                   // CheckIn saturday / sunday period
                   {
-                    'calendar_day--in-period-checkIn':
-                      inWeeklyPeriodsCheckin(day),
+                    'calendar_day--in-period-checkIn': inWeeklyPeriodsCheckin(day),
                   },
                   // CheckIn nightly period
                   {
@@ -610,8 +582,7 @@ const getBookingType = (day: Day): string | null => {
                       'calendar_day_haldDay--checkIn':
                         isInCheckinHalfDayAndCheckin(day) ||
                         isInCheckinHalfDayAndNotCheckin(day),
-                      'calendar_day_haldDay--checkOut':
-                        isInCheckoutHalfDay(day),
+                      'calendar_day_haldDay--checkOut': isInCheckoutHalfDay(day),
                     },
                   ]"
                 />
@@ -630,6 +601,37 @@ const getBookingType = (day: Day): string | null => {
 </template>
 
 <style>
+body {
+  --calendar-wrapper: #fff;
+  --calendar-tooltip-bg: #fff;
+  --calendar-tooltip-border: #ececec;
+
+  --calendar-input-bg: #fff;
+  --calendar-input-border: #eee;
+
+  --calendar-paginate-bg: rgb(236 252 203);
+  --calendar-paginate-text-color: rgb(163 230 53);
+  --calendar-paginate-border-color: rgb(163 230 53);
+
+  --calendar-paginate-hover-bg: rgb(163 230 53);
+  --calendar-paginate-hover-border: rgb(163 230 53);
+  --calendar-paginate-hover-text: #ffffff;
+
+  --calendar-paginate-disabled-bg: rgba(101, 163, 13, 0.5);
+  --calendar-paginate-disabled-border: rgb(101 163 13);
+  --calendar-paginate-disabled-text: #ffffff;
+
+  --day-disabled: rgb(241 245 249);
+
+  --day-border: rgb(226 232 240);
+  --day-range-days: rgb(236 252 203);
+  --day-hovering-with-checkIn: rgb(163 230 53);
+
+  --day-checkIn-checkOut: rgb(190 242 100);
+
+  --day-today: rgb(217 249 157);
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -638,7 +640,8 @@ const getBookingType = (day: Day): string | null => {
   @apply w-full relative select-none;
 }
 .calendar_wrapper {
-  @apply bg-white w-full md:w-[600px];
+  @apply w-full md:w-[600px];
+  background-color: var(--calendar-wrapper);
 }
 .calendar_wrapper:not(.calendar_wrapper--year) {
   @apply p-4 shadow-md absolute top-[100%];
@@ -650,7 +653,8 @@ const getBookingType = (day: Day): string | null => {
   @apply grid grid-cols-7;
 }
 .calendar_day-wrap {
-  @apply relative h-0 pb-[100%] border-[.5px] border-gray-200;
+  @apply relative h-0 pb-[100%] border-[.5px];
+  border-color: var(--day-border);
 }
 .calendar_day-wrap--no-border {
   @apply border-0 pointer-events-none;
@@ -659,25 +663,29 @@ const getBookingType = (day: Day): string | null => {
   @apply pointer-events-none;
 }
 .calendar_tooltip {
-  @apply absolute top-full bg-white left-1/2 transform -translate-x-1/2 shadow-sm border border-gray-200 p-3 text-xs z-20 text-center w-max;
+  @apply absolute top-full left-1/2 transform -translate-x-1/2 shadow-sm border p-3 text-xs z-20 text-center w-max;
+  border-color: var(--calendar-tooltip-border);
+  background-color: var(--calendar-tooltip-bg);
 }
 .calendar_day {
   @apply w-full left-0 right-0 h-full text-sm absolute focus:outline-none overflow-hidden;
 }
 .calendar_day--today {
-  @apply border-2 border-blue-500;
+  @apply border-2;
+  border-color: var(--day-today);
 }
-.calendar_day--checkIn-checkOut {
-  @apply bg-blue-500;
+.calendar_day--checkIn-checkOut.calendar_day--hovering {
+  background-color: var(--day-checkIn-checkOut);
 }
 .calendar_day--disabled {
-  @apply bg-gray-100 pointer-events-none font-extralight;
+  background-color: var(--day-disabled);
+  @apply pointer-events-none font-extralight;
 }
 .calendar_day--hovering {
-  @apply bg-blue-300;
+  background-color: var(--day-range-days);
 }
 .calendar_day--hovering-checkIn {
-  @apply bg-blue-500;
+  background-color: var(--day-hovering-with-checkIn);
 }
 .calendar_day--in-period {
   @apply pointer-events-none font-extralight;
@@ -703,7 +711,22 @@ const getBookingType = (day: Day): string | null => {
   @apply mb-4;
 }
 .calendar_paginate-button {
-  @apply p-4 border border-gray-200 hover:bg-gray-100 duration-300 disabled:bg-gray-100 disabled:text-gray-400;
+  @apply p-4 duration-300;
+  border-width: 1px;
+  border-style: solid;
+  background-color: var(--calendar-paginate-bg);
+  border-color: var(--calendar-paginate-border-color);
+  color: var(--calendar-paginate-text-color);
+}
+.calendar_paginate-button:hover {
+  background-color: var(--calendar-paginate-hover-bg);
+  border-color: var(--calendar-paginate-hover-border);
+  color: var(--calendar-paginate-hover-text);
+}
+.calendar_paginate-button:disabled {
+  background-color: var(--calendar-paginate-disabled-bg);
+  border-color: var(--calendar-paginate-disabled-border);
+  color: var(--calendar-paginate-disabled-text);
 }
 .calendar_paginate-year {
   @apply w-20 inline-block text-center font-bold;

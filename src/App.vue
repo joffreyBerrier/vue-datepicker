@@ -61,12 +61,13 @@ const renderNextMonth = () => {
     </div>
 
     <Calendar
-      v-model:checkIn="checkIn"
-      v-model:checkOut="checkOut"
       :booked-dates="bookedDates"
       :booking-color="bookingColor"
       :booking-dates="bookingDates"
       :disabled-days-before-day-date="!showYear"
+      formatDate="DD-MM-YYYY"
+      v-model:checkIn="checkIn"
+      v-model:checkOut="checkOut"
       :period-dates="periodDates"
       :show-input-calendar="!showYear"
       :show-year="showYear"

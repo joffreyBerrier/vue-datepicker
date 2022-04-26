@@ -52,6 +52,41 @@ export default {
 </template>
 ```
 
+## Colors
+
+Use css variable
+
+```css
+--calendar-wrapper: #fff;
+--calendar-tooltip-bg: #fff;
+--calendar-tooltip-border: #ececec;
+
+--calendar-input-bg: #fff;
+--calendar-input-border: #eee;
+
+--calendar-paginate-bg: rgb(236 252 203);
+--calendar-paginate-text-color: rgb(163 230 53);
+--calendar-paginate-border-color: rgb(163 230 53);
+
+--calendar-paginate-hover-bg: rgb(163 230 53);
+--calendar-paginate-hover-border: rgb(163 230 53);
+--calendar-paginate-hover-text: #ffffff;
+
+--calendar-paginate-disabled-bg: rgba(101, 163, 13, 0.5);
+--calendar-paginate-disabled-border: rgb(101 163 13);
+--calendar-paginate-disabled-text: #ffffff;
+
+--day-disabled: rgb(241 245 249);
+
+--day-border: rgb(226 232 240);
+--day-range-days: rgb(236 252 203);
+--day-hovering-with-checkIn: rgb(163 230 53);
+
+--day-checkIn-checkOut: rgb(190 242 100);
+
+--day-today: rgb(217 249 157);
+```
+
 ## Data binding
 
 ### CheckIn
