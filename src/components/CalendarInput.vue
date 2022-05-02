@@ -36,11 +36,7 @@ const openCalendar = () => {
 </script>
 
 <template>
-  <div
-    data-testid="calendar_input"
-    class="calendar_input"
-    @click="openCalendar"
-  >
+  <div data-testid="calendar_input" class="calendar_input" @click="openCalendar">
     <base-icon
       name="calendar"
       :color="[
@@ -99,7 +95,9 @@ const openCalendar = () => {
 
 <style>
 .calendar_input {
-  @apply flex items-center h-[50px] cursor-pointer px-4 border border-gray-200;
+  background-color: var(--calendar-input-bg);
+  border-color: var(--calendar-input-border);
+  @apply flex items-center h-[50px] cursor-pointer px-4 border;
 }
 .calendar_input-calendar {
   @apply mr-4;
