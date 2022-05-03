@@ -1,4 +1,4 @@
-import { format } from "fecha";
+import { format } from "../../plugins/day";
 
 import { addDays } from "../helpers";
 import {

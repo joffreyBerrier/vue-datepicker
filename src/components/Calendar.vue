@@ -8,8 +8,7 @@ export default {
 import { computed, ref, onBeforeMount, onUnmounted } from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";
 
-import { format } from "fecha";
-
+import { format } from "../plugins/day";
 import BaseIcon from "./BaseIcon.vue";
 import CalendarDays from "./CalendarDays.vue";
 import CalendarHeader from "./CalendarHeader.vue";
@@ -332,9 +331,11 @@ const dayMouseLeave = () => {
 
 // Trigger each time the click on day is triggered
 const dayClicked = (day: Day): void => {
-  if (isInBookingDates(day)) {
-    emit("select-booking-date", day, getBooking(day));
-  } else if (props.checkIn === day.date) {
+  emit("select-booking-date", day, getBooking(day));
+
+  if (isInBookingDates(day) && !isInCheckinHalfDayAndCheckin(day)) return;
+
+  if (props.checkIn === day.date) {
     // CheckIn when already CheckIn
     emit("update:checkIn", null);
     emit("update:checkOut", null);
@@ -342,7 +343,10 @@ const dayClicked = (day: Day): void => {
     currentPeriod.value = null;
     hoveringDates.value = [];
     hoveringDay.value = null;
-  } else if (props.checkIn && !props.checkOut) {
+  } else if (
+    (props.checkIn && !props.checkOut) ||
+    (isInBookingDates(day) && isInCheckinHalfDayAndCheckin(day) && props.checkIn)
+  ) {
     // CheckIn + !ChecKout
     emit("update:checkOut", day.date);
     currentPeriod.value = null;
@@ -413,14 +417,20 @@ const isInBookingDates = (day: Day) => {
     !isInCheckoutHalfDay(day)
   );
 };
-const isInCheckinHalfDayAndCheckin = (day: Day) => {
-  return checkIncheckOutHalfDay.value[day.formatDay]?.checkIn && props.checkIn;
+const isInCheckinHalfDayAndCheckin = (day: Day): boolean => {
+  return (
+    Boolean(checkIncheckOutHalfDay.value[day.formatDay]?.checkIn) &&
+    Boolean(props.checkIn)
+  );
 };
-const isInCheckinHalfDayAndNotCheckin = (day: Day) => {
-  return checkIncheckOutHalfDay.value[day.formatDay]?.checkIn && !props.checkIn;
+const isInCheckinHalfDayAndNotCheckin = (day: Day): boolean => {
+  return (
+    Boolean(checkIncheckOutHalfDay.value[day.formatDay]?.checkIn) &&
+    Boolean(!props.checkIn)
+  );
 };
-const isInCheckoutHalfDay = (day: Day) => {
-  return checkIncheckOutHalfDay.value[day.formatDay]?.checkOut;
+const isInCheckoutHalfDay = (day: Day): boolean => {
+  return Boolean(checkIncheckOutHalfDay.value[day.formatDay]?.checkOut);
 };
 const getBooking = (day: Day): FlatBooking | null => {
   if (
@@ -501,8 +511,7 @@ const getBookingType = (day: Day): string | null => {
                 `calendar_day--${getBookingType(day)}`,
                 { 'calendar_day-wrap--no-border': !day.belongsToThisMonth },
                 {
-                  'calendar_day-wrap--disabled':
-                    inDisabledDay(day) && !isInBookingDates(day),
+                  'calendar_day-wrap--disabled': inDisabledDay(day),
                 },
               ]"
               @mouseenter="dayMouseOver(day)"
@@ -542,8 +551,7 @@ const getBookingType = (day: Day): string | null => {
                   },
                   // Disabled date
                   {
-                    'calendar_day--disabled':
-                      inDisabledDay(day) && !isInBookingDates(day),
+                    'calendar_day--disabled': inDisabledDay(day),
                   },
                   // Hovering date
                   {
@@ -674,6 +682,7 @@ body {
   @apply border-2;
   border-color: var(--day-today);
 }
+.calendar_day--checkIn-checkOut,
 .calendar_day--checkIn-checkOut.calendar_day--hovering {
   background-color: var(--day-checkIn-checkOut);
 }
@@ -704,7 +713,7 @@ body {
   @apply w-full;
 }
 .calendar_wrapper--year .calendar_wrapper_content {
-  @apply grid grid-cols-4 gap-x-6 gap-y-2;
+  @apply grid grid-cols-4 gap-x-6 gap-y-6;
 }
 
 .calendar_paginate-wrapper {

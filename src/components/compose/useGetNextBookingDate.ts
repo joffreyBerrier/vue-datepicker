@@ -1,6 +1,5 @@
-import { format } from "fecha";
+import { format } from "../../plugins/day";
 import { addDays } from "../helpers";
-import type { Ref } from "vue";
 
 import type { Booking } from "~/types";
 import { resetTimeDate, validateDateBetweenTwoDates } from "../helpers";
