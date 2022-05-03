@@ -1,6 +1,6 @@
 {
   "name": "vue-calendar-3",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "repository": "https://github.com/joffreyBerrier/vue-datepicker",
   "funding": "https://github.com/sponsors/joffreyBerrier",
   "author": "Joffrey Berrier <joffrey.berrier@gmail.com>",
@@ -34,7 +34,7 @@
     "vue": "^3.2.31"
   },
   "dependencies": {
-    "fecha": "^4.2.1"
+    "dayjs": "^1.11.1"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",

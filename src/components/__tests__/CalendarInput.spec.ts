@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { format } from "fecha";
+import { format } from "../plugins/day";
 
 import { mount } from "@vue/test-utils";
 import CalendarInput from "~/components/CalendarInput.vue";
