@@ -13,11 +13,11 @@ import BaseIcon from "./BaseIcon.vue";
 const emit = defineEmits(["open-calendar"]);
 defineProps({
   checkIn: {
-    type: Date,
+    type: [Date, String],
     default: null,
   },
   checkOut: {
-    type: Date,
+    type: [Date, String],
     default: null,
   },
   dayFormat: {

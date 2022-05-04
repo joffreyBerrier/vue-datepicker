@@ -1,7 +1,7 @@
-import * as dayjs from "dayjs";
+import { default as dayjs } from "dayjs";
 
 // Format DayJs
-const format = (date: Date, format: string): Date => {
+const format = (date: Date, format: string): string => {
   const d = dayjs(date);
 
   return d.format(format);

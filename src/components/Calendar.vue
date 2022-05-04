@@ -60,11 +60,11 @@ const props = defineProps({
     default: (): Booking[] => [],
   },
   checkIn: {
-    type: Date,
+    type: [Date, String],
     default: null,
   },
   checkOut: {
-    type: Date,
+    type: [Date, String],
     default: null,
   },
   disabledDaysBeforeDayDate: {
@@ -230,7 +230,7 @@ const paginate = (operator: string) => {
 const currentPeriod: Ref<CurrentPeriod | null> = ref(null);
 const hoveringDates: Ref<string[]> = ref([]);
 const hoveringDay: Ref<Date | null> = ref(new Date());
-const hoveringPeriod: Ref<CurrentPeriod> | null = ref(null);
+const hoveringPeriod: Ref<CurrentPeriod> | Ref<null> = ref(null);
 const nextDisableBookingDate: Ref<Date | null> = ref(null);
 
 // Old computed

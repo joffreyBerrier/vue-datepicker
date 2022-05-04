@@ -5,7 +5,6 @@ export default {
 </script>
 
 <script setup lang="ts">
-import locale from "./locale";
 import { ref } from "vue";
 import type { Ref } from "vue";
 
