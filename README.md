@@ -115,7 +115,7 @@ Allows you to define colors for your bookings, the name of the key must be equal
 Exemple:
 
 ```javascript
-bookedDates: {
+bookingColor: {
   admin: "#9dc1c9",
   contract: "#a56a0b",
 };
