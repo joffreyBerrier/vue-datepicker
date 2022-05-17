@@ -13,7 +13,7 @@ const useGetNextBookingDate = (
   date: Date
 ): Date | undefined => {
   if (bookingDates.length > 0) {
-    const nextDateFormatted = format(addDays(date, 1));
+    const nextDateFormatted = format(addDays(date, 1), "YYYY-MM-DD");
     const nextBooking = bookingDates.find(
       (booking) =>
         validateDateBeforeDate(booking.checkInDate, nextDateFormatted) ||

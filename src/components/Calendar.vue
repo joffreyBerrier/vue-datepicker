@@ -157,6 +157,9 @@ const saturdayWeeklyPeriods = computed(() => {
 const sundayWeeklyPeriods = computed(() => {
   return useGetPeriod(props.periodDates, "weekly_by_sunday", formattingFormat.value);
 });
+const mondayWeeklyPeriods = computed(() => {
+  return useGetPeriod(props.periodDates, "weekly_by_monday", formattingFormat.value);
+});
 const nightlyPeriods = computed(() => {
   return useGetPeriod(props.periodDates, "nightly", formattingFormat.value);
 });
@@ -245,6 +248,9 @@ const tooltipText: ComputedRef<string> = computed(() => {
     if (periodType === "weekly_by_sunday") {
       return "Du dimanche au dimanche<br/> uniquement";
     }
+    if (periodType === "weekly_by_monday") {
+      return "Du lundi au lundi<br/> uniquement";
+    }
     if (periodType === "nightly") {
       return `Un minimum de ${minimumDuration}<br/> nuit est requis.`;
     }
@@ -272,7 +278,8 @@ const dayFormat = (date: Date): string => {
 const inWeeklyPeriods = (day: Day) => {
   return (
     (saturdayWeeklyPeriods.value.includes(day.formatDay) && day.date.getDay() !== 6) ||
-    (sundayWeeklyPeriods.value.includes(day.formatDay) && day.date.getDay() !== 0)
+    (sundayWeeklyPeriods.value.includes(day.formatDay) && day.date.getDay() !== 0) ||
+    (mondayWeeklyPeriods.value.includes(day.formatDay) && day.date.getDay() !== 1)
   );
 };
 
@@ -281,10 +288,12 @@ const inWeeklyPeriodsCheckin = (day: Day) => {
     props.checkIn !== day.date &&
     currentPeriod.value?.nextEnableDate > day.date &&
     (currentPeriod.value?.periodType === "weekly_by_saturday" ||
-      currentPeriod.value?.periodType === "weekly_by_sunday") &&
+      currentPeriod.value?.periodType === "weekly_by_sunday" ||
+      currentPeriod.value?.periodType === "weekly_by_monday") &&
     (saturdayWeeklyPeriods.value.includes(day.formatDay) ||
-      sundayWeeklyPeriods.value.includes(day.formatDay)) &&
-    (day.date.getDay() === 6 || day.date.getDay() === 0)
+      sundayWeeklyPeriods.value.includes(day.formatDay) ||
+      mondayWeeklyPeriods.value.includes(day.formatDay)) &&
+    (day.date.getDay() === 6 || day.date.getDay() === 0 || day.date.getDay() === 1)
   );
 };
 
@@ -359,6 +368,7 @@ const dayClicked = (day: Day): void => {
     emit("update:checkIn", day.date);
     getNextBookingDate(day);
     currentPeriod.value = getCurrentPeriod(day);
+    hoveringPeriod.value = getCurrentPeriod(day);
   } else {
     // CheckIn + CheckOut
     emit("update:checkIn", day.date);
@@ -394,7 +404,8 @@ const getCurrentPeriod = (day: Day) => {
   if (currentPeriod) {
     const durationType =
       currentPeriod.periodType === "weekly_by_saturday" ||
-      currentPeriod.periodType === "weekly_by_sunday"
+      currentPeriod.periodType === "weekly_by_sunday" ||
+      currentPeriod.periodType === "weekly_by_monday"
         ? "week"
         : "day";
     const minimumDuration =
@@ -568,11 +579,8 @@ const getBookingType = (day: Day): string | null => {
                   },
                   // CheckIn saturday / sunday period
                   {
-                    'calendar_day--in-period-checkIn': inWeeklyPeriodsCheckin(day),
-                  },
-                  // CheckIn nightly period
-                  {
-                    'calendar_day--in-period-checkIn': inNightlyPeriod(day),
+                    'calendar_day--in-period-checkIn':
+                      inWeeklyPeriodsCheckin(day) || inNightlyPeriod(day),
                   },
                 ]"
                 @click="dayClicked(day)"

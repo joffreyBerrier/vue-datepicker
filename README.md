@@ -233,14 +233,14 @@ Corresponds to the start of your periods with the format `YYYY-MM-DD`
 
 #### The **periodType**:
 
-- Corresponds to the day you want to block the period, `nightly`,` weekly_by_saturday` or `weekly_by_sunday`
+- Corresponds to the day you want to block the period, `nightly`,` weekly_by_saturday`, `weekly_by_sunday` or `weekly_by_monday`
 
 #### The **minimumDuration**:
 
 - Corresponds to the number of the days where you want to block the period.
 
 - If the periodType is `nightly` the count corresponds the number of days
-- If the periodType is `weekly_by_saturday` or `weekly_by_sunday` the count corresponds to the number of weeks
+- If the periodType is `weekly_by_saturday`, `weekly_by_sunday` or `weekly_by_monday` the count corresponds to the number of weeks
 
 Exemple:
 
