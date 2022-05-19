@@ -133,14 +133,22 @@ const today = ref(new Date());
 const months = ref([]) as Ref<Month[]>;
 
 const createStartActiveIndex = () => {
-  const start = props.checkIn ? new Date(props.checkIn) : props.startDate;
-  const todayMonth = new Date();
-
   if (props.showYear) {
-    return getMonthDiff(start, todayMonth) - todayMonth.getMonth();
-  }
+    const a = new Date(props.startDate).getFullYear();
+    const b = new Date(new Date()).getFullYear();
 
-  return getMonthDiff(start, todayMonth);
+    return (b - a) * 12;
+  } else {
+    const startDate = props.checkIn ? new Date(props.checkIn) : props.startDate;
+    const todayMonth = props.checkIn ? new Date(props.checkOut) : new Date();
+    const startIndex = getMonthDiff(startDate, todayMonth);
+
+    if (!props.checkIn) {
+      return startIndex;
+    } else {
+      return startIndex + getMonthDiff(props.startDate, startDate);
+    }
+  }
 };
 
 const activeIndex = ref(createStartActiveIndex());

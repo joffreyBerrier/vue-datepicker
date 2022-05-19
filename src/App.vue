@@ -125,8 +125,8 @@ const periodDates: Ref<Period[]> = ref([
     minimumDuration: 1,
   },
 ]);
-const checkIn = ref(null);
-const checkOut = ref(null);
+const checkIn = ref(new Date("2022-07-01"));
+const checkOut = ref(new Date("2022-07-10"));
 const nextBookedDates: Ref<Booking[]> = ref([]);
 
 const showYear = ref(false);
