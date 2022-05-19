@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { format } from "../plugins/day";
+import { format } from "../../plugins/day";
 
 import { mount } from "@vue/test-utils";
-import CalendarInput from "~/components/CalendarInput.vue";
+import CalendarInput from "../CalendarInput.vue";
 
 let wrapper: any;
 

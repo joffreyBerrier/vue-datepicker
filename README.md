@@ -105,6 +105,13 @@ Exemple : `v-model:checkOut=""`
 
 ## Props/Options
 
+### alwaysVisible
+
+- Type: `Boolean`
+- Default: `false`
+
+Show calendar by default
+
 ### bookingColor
 
 - Type: `Object as PropType<BookingColor>`
@@ -213,6 +220,13 @@ bookedDates: [
   "2021-06-25",
 ];
 ```
+
+### periodManagementRule
+
+- Type: `Boolean`
+- Default: `false`
+
+Active the period management rules :
 
 ### PeriodDates
 

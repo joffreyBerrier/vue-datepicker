@@ -7,7 +7,7 @@ const format = (date: Date, format: string): string => {
   return d.format(format);
 };
 
-const addDays = (date: Date, quantity: number): Date => {
+const addDays = (date: Date | string, quantity: number): Date => {
   const d = dayjs(date);
 
   return d.add(quantity, "day").toDate();

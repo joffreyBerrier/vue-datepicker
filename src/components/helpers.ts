@@ -5,7 +5,7 @@ const isDateAfter = (time1: Date, time2: Date): boolean => {
   return new Date(time1) > new Date(time2);
 };
 
-const isDateBefore = (time1: Date, time2: Date): boolean => {
+const isDateBefore = (time1: string | Date, time2: string | Date): boolean => {
   return new Date(time1) < new Date(time2);
 };
 
@@ -80,15 +80,71 @@ const sortDates = (dates: string[]): string[] => {
   });
 };
 
+const getDaysArray = (start: Date | string, end: Date | string): Date[] => {
+  for (
+    // eslint-disable-next-line no-var
+    var arr = [], dt = new Date(start);
+    dt <= end;
+    dt.setDate(dt.getDate() + 1)
+  ) {
+    arr.push(new Date(dt));
+  }
+
+  // eslint-disable-next-line block-scoped-var
+  return arr;
+};
+
+const isDateBeforeOrEqual = (
+  time1: Date | string,
+  time2: Date | string
+): boolean => {
+  return new Date(time1) <= new Date(time2);
+};
+
+const substractDays = (date: Date | string, quantity: number): Date => {
+  const result = new Date(date);
+
+  result.setDate(result.getDate() - quantity);
+
+  return result;
+};
+
+const getNextMonth = (date: Date): Date => {
+  let nextMonth;
+
+  if (date.getMonth() === 11) {
+    nextMonth = new Date(date.getFullYear() + 1, 0, 1);
+  } else {
+    nextMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+  }
+
+  return nextMonth;
+};
+
+const getNextDay = (date: Date, dayIndex: number): Date => {
+  const currentDate = date;
+
+  currentDate.setDate(
+    currentDate.getDate() + ((dayIndex - 1 - currentDate.getDay() + 7) % 7) + 1
+  );
+
+  return currentDate;
+};
+
 export {
   addDays,
   getDatesBetweenTwoDates,
   getDayDiff,
+  getDaysArray,
   getMonthDiff,
+  getNextDay,
+  getNextMonth,
   isDateAfter,
   isDateBefore,
+  isDateBeforeOrEqual,
   resetTimeDate,
   sortDates,
   sortDatesObj,
+  substractDays,
   validateDateBetweenTwoDates,
 };

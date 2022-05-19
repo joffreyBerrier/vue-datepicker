@@ -130,6 +130,7 @@ const checkOut = ref(null);
 const nextBookedDates: Ref<Booking[]> = ref([]);
 
 const showYear = ref(false);
+const alwaysVisible = ref(false);
 
 const toggleCalendar = () => {
   showYear.value = !showYear.value;
@@ -168,6 +169,7 @@ const renderNextMonth = () => {
       :period-dates="periodDates"
       :show-input-calendar="!showYear"
       :show-year="showYear"
+      :alwaysVisible="alwaysVisible"
       @render-next-month="renderNextMonth"
       @select-booking-date="clickOnDate"
     />

@@ -1,7 +1,9 @@
 import { ref, watch } from "vue";
 
 export const useToggleCalendar = (props) => {
-  const showCalendar = ref(props.showYear);
+  const showCalendar = props.showYear
+    ? ref(props.showYear)
+    : ref(props.alwaysVisible);
   const calendarRef = ref(null);
 
   const handleClickOutside = (event: MouseEvent & { target: HTMLElement }) => {

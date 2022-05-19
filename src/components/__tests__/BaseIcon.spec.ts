@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { mount } from "@vue/test-utils";
-import BaseIcon from "~/components/BaseIcon.vue";
+import BaseIcon from "../BaseIcon.vue";
 
 let wrapper: any;
 

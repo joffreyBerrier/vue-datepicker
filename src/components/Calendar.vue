@@ -17,9 +17,13 @@ import CalendarInput from "./CalendarInput.vue";
 import {
   addDays,
   getDatesBetweenTwoDates,
+  getDaysArray,
   getMonthDiff,
+  getNextDay,
   isDateAfter,
   isDateBefore,
+  isDateBeforeOrEqual,
+  substractDays,
   validateDateBetweenTwoDates,
 } from "./helpers";
 
@@ -47,6 +51,10 @@ import type {
 } from "~/types";
 
 const props = defineProps({
+  alwaysVisible: {
+    type: Boolean,
+    default: false,
+  },
   bookingColor: {
     type: Object as PropType<BookingColor>,
     default: () => ({}),
@@ -71,10 +79,6 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  startDate: {
-    type: Date,
-    default: new Date(new Date().getFullYear() - 2, 0, 1),
-  },
   endDate: {
     type: Date,
     default: new Date(new Date().getFullYear() + 2, 0, 1),
@@ -94,6 +98,14 @@ const props = defineProps({
       checkOut: "Départ",
     }),
   },
+  minNights: {
+    type: Number,
+    default: 1,
+  },
+  periodManagementRule: {
+    type: Boolean,
+    default: false,
+  },
   showYear: {
     type: Boolean,
     default: false,
@@ -101,6 +113,10 @@ const props = defineProps({
   showInputCalendar: {
     type: Boolean,
     default: true,
+  },
+  startDate: {
+    type: Date,
+    default: new Date(new Date().getFullYear() - 2, 0, 1),
   },
 });
 
@@ -117,11 +133,14 @@ const today = ref(new Date());
 const months = ref([]) as Ref<Month[]>;
 
 const createStartActiveIndex = () => {
+  const start = props.checkIn ? new Date(props.checkIn) : props.startDate;
+  const todayMonth = new Date();
+
   if (props.showYear) {
-    return getMonthDiff(props.startDate, new Date()) - new Date().getMonth();
+    return getMonthDiff(start, todayMonth) - todayMonth.getMonth();
   }
 
-  return getMonthDiff(props.startDate, new Date()) - 1;
+  return getMonthDiff(start, todayMonth);
 };
 
 const activeIndex = ref(createStartActiveIndex());
@@ -150,23 +169,62 @@ onUnmounted(() => {
   if (!props.showYear) removeClickOusideListener();
 });
 
+// Sorted periods
+const sortedPeriodDates: ComputedRef<Period[]> = computed(() => {
+  if (props.periodDates) {
+    const periodDates = [...props.periodDates];
+
+    return periodDates
+      .sort((a, b) => {
+        const aa = a.startAt.split("/").reverse().join();
+        const bb = b.startAt.split("/").reverse().join();
+
+        // eslint-disable-next-line no-nested-ternary
+        return aa < bb ? -1 : aa > bb ? 1 : 0;
+      })
+      .map((period) => {
+        const minimumDurationNights = period.periodType.includes("weekly")
+          ? period.minimumDuration * 7
+          : period.minimumDuration;
+
+        return {
+          ...period,
+          minimumDurationNights,
+        };
+      });
+  }
+
+  return [];
+});
 // Create array of disabledDates for each types of period
 const saturdayWeeklyPeriods = computed(() => {
-  return useGetPeriod(props.periodDates, "weekly_by_saturday", formattingFormat.value);
+  return useGetPeriod(
+    sortedPeriodDates,
+    "weekly_by_saturday",
+    formattingFormat.value
+  );
 });
 const sundayWeeklyPeriods = computed(() => {
-  return useGetPeriod(props.periodDates, "weekly_by_sunday", formattingFormat.value);
+  return useGetPeriod(
+    sortedPeriodDates,
+    "weekly_by_sunday",
+    formattingFormat.value
+  );
 });
 const mondayWeeklyPeriods = computed(() => {
-  return useGetPeriod(props.periodDates, "weekly_by_monday", formattingFormat.value);
+  return useGetPeriod(
+    sortedPeriodDates,
+    "weekly_by_monday",
+    formattingFormat.value
+  );
 });
 const nightlyPeriods = computed(() => {
-  return useGetPeriod(props.periodDates, "nightly", formattingFormat.value);
+  return useGetPeriod(sortedPeriodDates, "nightly", formattingFormat.value);
 });
 
-const bookingDatesT = (props.bookingDates as unknown) as Booking[];
-const bookedDatesT = (props.bookedDates as unknown) as string[];
-const bookingColorT = (props.bookingColor as unknown) as BookingColor;
+const bookingDatesT = props.bookingDates as unknown as Booking[];
+const bookedDatesT = props.bookedDates as unknown as string[];
+const bookingColorT = props.bookingColor as unknown as BookingColor;
 
 let { disabledDates, newBookingDates } = useCreateHalfDayDates(
   bookingDatesT,
@@ -174,9 +232,20 @@ let { disabledDates, newBookingDates } = useCreateHalfDayDates(
   bookingColorT,
   formattingFormat
 );
-const bookingStyle = useBookingStyle(bookingDatesT, bookingColorT, formattingFormat);
-const flatBookingDates = useFlatBooking(bookingDatesT, bookingColorT, formattingFormat);
-const checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(bookingDatesT, bookedDatesT);
+const bookingStyle = useBookingStyle(
+  bookingDatesT,
+  bookingColorT,
+  formattingFormat
+);
+const flatBookingDates = useFlatBooking(
+  bookingDatesT,
+  bookingColorT,
+  formattingFormat
+);
+const checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
+  bookingDatesT,
+  bookedDatesT
+);
 
 // Add style on days
 months.value.forEach((m) => {
@@ -193,16 +262,15 @@ const currentYear: ComputedRef<number> = computed(() => {
   return months.value[activeIndex.value].yearKey;
 });
 
-const disabledPagination: ComputedRef<{ left: boolean; right: boolean }> = computed(
-  () => {
+const disabledPagination: ComputedRef<{ left: boolean; right: boolean }> =
+  computed(() => {
     const diff = props.showYear ? 12 : 2;
 
     return {
       left: activeIndex.value <= 0,
       right: activeIndex.value >= months.value.length - diff,
     };
-  }
-);
+  });
 
 const paginate = (operator: string) => {
   const count = props.showYear ? 12 : 1;
@@ -229,14 +297,192 @@ const paginate = (operator: string) => {
   }
 };
 
-// Old data
 const currentPeriod: Ref<CurrentPeriod | null> = ref(null);
 const hoveringDates: Ref<string[]> = ref([]);
 const hoveringDay: Ref<Date | null> = ref(new Date());
 const hoveringPeriod: Ref<CurrentPeriod> | Ref<null> = ref(null);
 const nextDisableBookingDate: Ref<Date | null> = ref(null);
 
-// Old computed
+const nextPeriod: Ref<CurrentPeriod | null> = ref(null);
+const lastEnableDaysOfPeriod = ref(null);
+const nextPeriodDisableDates = ref([]);
+const dynamicNightCounts = ref(0);
+const checkInPeriod = ref(null);
+
+const minNightCount = computed(() => {
+  return dynamicNightCounts.value || props.minNights;
+});
+
+const setMinimumDuration = (date: Date) => {
+  nextPeriod.value = null;
+  lastEnableDaysOfPeriod.value = null;
+
+  if (sortedPeriodDates.value.length) {
+    const nextPeriodIsPriority = (
+      currentPeriod: CurrentPeriod,
+      minimumDurationNights: number
+    ) => {
+      if (nextPeriod.value?.minimumDurationNights) {
+        // If NextPeriod is a weekly period
+        if (
+          currentPeriod?.periodType === "nightly" &&
+          nextPeriod.value.periodType.includes("weekly")
+        ) {
+          return true;
+        }
+
+        // If NextPeriod is a nightly period
+        return nextPeriod.value.minimumDurationNights > minimumDurationNights;
+      }
+
+      // If NextPeriod doesn't exist
+      return false;
+    };
+
+    const getEnableNextDate = () => {
+      let enableNextDate = addDays(date, dynamicNightCounts.value - 1);
+
+      if (
+        nextPeriod.value?.periodType.includes("weekly") &&
+        !isDateBeforeOrEqual(date, lastEnableDaysOfPeriod.value)
+      ) {
+        // weekly by sunday
+        let constraintPeriod = 0;
+
+        if (nextPeriod.value.periodType === "weekly_by_saturday")
+          constraintPeriod = 6;
+        if (nextPeriod.value.periodType === "weekly_by_monday")
+          constraintPeriod = 1;
+
+        enableNextDate = substractDays(
+          getNextDay(enableNextDate, constraintPeriod),
+          1
+        );
+      }
+
+      return enableNextDate;
+    };
+
+    const setDisabledDays = () => {
+      const startDateCheckin = addDays(date, 1);
+      const enableNextDate = getEnableNextDate();
+      let nextPeriodDisabledDates: string[] = [];
+      const newDisablesDates = getDaysArray(
+        startDateCheckin,
+        enableNextDate
+      ).map((d) => format(d, formattingFormat.value));
+
+      nextPeriodDisableDates.value.push(...newDisablesDates);
+
+      // CheckIn + nextPeriod.minimumDuration + contrainte
+      if (nextPeriod.value?.periodType.includes("weekly")) {
+        let nextPeriodEnableDay = addDays(
+          date,
+          nextPeriod.value.minimumDurationNights
+        );
+        // weekly by sunday
+        let constraintPeriod = 0;
+
+        if (nextPeriod.value.periodType === "weekly_by_saturday")
+          constraintPeriod = 6;
+        if (nextPeriod.value.periodType === "weekly_by_monday")
+          constraintPeriod = 1;
+
+        if (nextPeriodEnableDay.getDay() !== constraintPeriod) {
+          nextPeriodEnableDay = getNextDay(
+            nextPeriodEnableDay,
+            constraintPeriod
+          );
+
+          nextPeriodDisabledDates = getDaysArray(
+            addDays(nextPeriod.value.startAt, 1),
+            substractDays(nextPeriodEnableDay, 1)
+          ).map((d) => format(d, formattingFormat.value));
+        }
+      }
+
+      // Filled nextPeriodDisabledDates
+      nextPeriodDisableDates.value.push(
+        ...newDisablesDates,
+        ...nextPeriodDisabledDates
+      );
+      nextPeriodDisableDates.value = [...new Set(nextPeriodDisableDates.value)];
+      nextPeriodDisableDates.value = nextPeriodDisableDates.value.map(
+        (x) => new Date(x)
+      );
+      nextPeriodDisableDates.value = nextPeriodDisableDates.value.map((x) =>
+        format(x, formattingFormat.value)
+      );
+    };
+
+    const getPeriod = (currentDate: Date): CurrentPeriod | null => {
+      const compareDate = format(currentDate, formattingFormat.value);
+      let day = null;
+
+      sortedPeriodDates.value.forEach((d) => {
+        if (
+          d.endAt !== compareDate &&
+          (d.startAt === compareDate ||
+            validateDateBetweenTwoDates(d.startAt, d.endAt, currentDate))
+        ) {
+          day = d;
+        }
+      });
+
+      return day;
+    };
+
+    const currentPeriod = getPeriod(date);
+
+    // If currentPeriod
+    if (currentPeriod) {
+      lastEnableDaysOfPeriod.value = substractDays(
+        currentPeriod.endAt,
+        currentPeriod.minimumDurationNights
+      );
+
+      const currentPeriodIndex = sortedPeriodDates.value.findIndex(
+        (p) => p.startAt === currentPeriod.startAt
+      );
+
+      if (sortedPeriodDates.value.length > currentPeriodIndex) {
+        nextPeriod.value = sortedPeriodDates.value[currentPeriodIndex + 1];
+      }
+
+      // Calculate dynamic minimum nights with nextPeriod
+      if (
+        !isDateBeforeOrEqual(date, lastEnableDaysOfPeriod.value) &&
+        nextPeriodIsPriority(currentPeriod, currentPeriod.minimumDurationNights)
+      ) {
+        dynamicNightCounts.value = nextPeriod.value.minimumDurationNights;
+        checkInPeriod.value = { ...nextPeriod.value };
+        setDisabledDays();
+      } else {
+        checkInPeriod.value = { ...currentPeriod };
+        dynamicNightCounts.value = currentPeriod.minimumDurationNights;
+        setDisabledDays();
+      }
+
+      // Else !currentPeriod
+    } else {
+      const checkInWithMinimumDuration = addDays(date, minNightCount.value - 1);
+
+      nextPeriod.value = getPeriod(checkInWithMinimumDuration);
+
+      if (nextPeriodIsPriority({}, minNightCount.value)) {
+        dynamicNightCounts.value = nextPeriod.value.minimumDurationNights;
+        checkInPeriod.value = { ...nextPeriod.value };
+
+        setDisabledDays();
+      } else {
+        dynamicNightCounts.value = 0;
+      }
+    }
+
+    console.log(nextPeriodDisableDates.value);
+  }
+};
+
 const tooltipText: ComputedRef<string> = computed(() => {
   if (hoveringPeriod.value) {
     const { periodType } = hoveringPeriod.value;
@@ -275,11 +521,18 @@ const dayFormat = (date: Date): string => {
 };
 
 // Trigger each time the mouseOver is triggered
+const inNextPeriodDisabledDates = (day: Day): boolean => {
+  return nextPeriodDisableDates.value.includes(day.formatDay);
+};
+
 const inWeeklyPeriods = (day: Day) => {
   return (
-    (saturdayWeeklyPeriods.value.includes(day.formatDay) && day.date.getDay() !== 6) ||
-    (sundayWeeklyPeriods.value.includes(day.formatDay) && day.date.getDay() !== 0) ||
-    (mondayWeeklyPeriods.value.includes(day.formatDay) && day.date.getDay() !== 1)
+    (saturdayWeeklyPeriods.value.includes(day.formatDay) &&
+      day.date.getDay() !== 6) ||
+    (sundayWeeklyPeriods.value.includes(day.formatDay) &&
+      day.date.getDay() !== 0) ||
+    (mondayWeeklyPeriods.value.includes(day.formatDay) &&
+      day.date.getDay() !== 1)
   );
 };
 
@@ -293,7 +546,9 @@ const inWeeklyPeriodsCheckin = (day: Day) => {
     (saturdayWeeklyPeriods.value.includes(day.formatDay) ||
       sundayWeeklyPeriods.value.includes(day.formatDay) ||
       mondayWeeklyPeriods.value.includes(day.formatDay)) &&
-    (day.date.getDay() === 6 || day.date.getDay() === 0 || day.date.getDay() === 1)
+    (day.date.getDay() === 6 ||
+      day.date.getDay() === 0 ||
+      day.date.getDay() === 1)
   );
 };
 
@@ -311,7 +566,9 @@ const inDisabledDay = (day: Day) => {
     (props.disabledDaysBeforeDayDate &&
       day.formatDay !== formatToday.value &&
       today.value > day.date) ||
-    isDateBefore(day.date, props.checkIn) ||
+    (props.checkIn &&
+      !props.checkOut &&
+      isDateBefore(day.date, props.checkIn)) ||
     (disabledDates.value.includes(day.formatDay) &&
       !checkIncheckOutHalfDay.value[day.formatDay]) ||
     (props.checkIn &&
@@ -333,6 +590,7 @@ const dayMouseOver = (day: Day) => {
     );
   }
 };
+
 const dayMouseLeave = () => {
   hoveringDay.value = new Date();
   hoveringPeriod.value = null;
@@ -354,7 +612,9 @@ const dayClicked = (day: Day): void => {
     hoveringDay.value = null;
   } else if (
     (props.checkIn && !props.checkOut) ||
-    (isInBookingDates(day) && isInCheckinHalfDayAndCheckin(day) && props.checkIn)
+    (isInBookingDates(day) &&
+      isInCheckinHalfDayAndCheckin(day) &&
+      props.checkIn)
   ) {
     // CheckIn + !ChecKout
     emit("update:checkOut", day.date);
@@ -367,6 +627,7 @@ const dayClicked = (day: Day): void => {
     // CheckIn
     emit("update:checkIn", day.date);
     getNextBookingDate(day);
+    if (props.periodManagementRule) setMinimumDuration(day.date);
     currentPeriod.value = getCurrentPeriod(day);
     hoveringPeriod.value = getCurrentPeriod(day);
   } else {
@@ -386,7 +647,10 @@ const getNextBookingDate = (day: Day) => {
       newDate = addDays(day.date, 1);
     }
 
-    nextDisableBookingDate.value = useGetNextBookingDate(newBookingDates, newDate);
+    nextDisableBookingDate.value = useGetNextBookingDate(
+      newBookingDates,
+      newDate
+    );
   }
 };
 
@@ -395,7 +659,11 @@ const getCurrentPeriod = (day: Day) => {
     if (
       period.endAt !== day.formatDay &&
       (period.startAt === day.formatDay ||
-        validateDateBetweenTwoDates(period.startAt, period.endAt, day.formatDay))
+        validateDateBetweenTwoDates(
+          period.startAt,
+          period.endAt,
+          day.formatDay
+        ))
     ) {
       return period;
     }
@@ -477,6 +745,7 @@ const getBookingType = (day: Day): string | null => {
 
     <div v-if="showYear" class="calendar_paginate-wrapper">
       <button
+        data-testid="calendar_paginate-prev--button"
         type="button"
         :disabled="disabledPagination.left"
         class="calendar_paginate-button"
@@ -486,6 +755,7 @@ const getBookingType = (day: Day): string | null => {
       </button>
       <span class="calendar_paginate-year">{{ currentYear }}</span>
       <button
+        data-testid="calendar_paginate-next--button"
         type="button"
         :disabled="disabledPagination.right"
         class="calendar_paginate-button"
@@ -525,12 +795,15 @@ const getBookingType = (day: Day): string | null => {
                   'calendar_day-wrap--disabled': inDisabledDay(day),
                 },
               ]"
+              :data-testid="`daywrap-${format(day.date, formattingFormat)}`"
               @mouseenter="dayMouseOver(day)"
               @mouseleave="dayMouseLeave"
             >
               <div
                 v-if="
-                  day.belongsToThisMonth && hoveringDay === day.date && hoveringPeriod
+                  day.belongsToThisMonth &&
+                  hoveringDay === day.date &&
+                  hoveringPeriod
                 "
                 class="calendar_tooltip"
                 v-html="tooltipText"
@@ -567,15 +840,19 @@ const getBookingType = (day: Day): string | null => {
                   // Hovering date
                   {
                     'calendar_day--hovering':
-                      (!checkIn && checkIn !== day.date && hoveringDay === day.date) ||
+                      (!checkIn &&
+                        checkIn !== day.date &&
+                        hoveringDay === day.date) ||
                       hoveringDates.includes(day.formatDay),
                   },
                   {
-                    'calendar_day--hovering-checkIn': checkIn && hoveringDay === day.date,
+                    'calendar_day--hovering-checkIn':
+                      checkIn && hoveringDay === day.date,
                   },
                   // Inactive saturday period
                   {
-                    'calendar_day--in-period': inWeeklyPeriods(day),
+                    'calendar_day--in-period':
+                      inWeeklyPeriods(day) || inNextPeriodDisabledDates(day),
                   },
                   // CheckIn saturday / sunday period
                   {
@@ -583,6 +860,7 @@ const getBookingType = (day: Day): string | null => {
                       inWeeklyPeriodsCheckin(day) || inNightlyPeriod(day),
                   },
                 ]"
+                :data-testid="`day-${format(day.date, formattingFormat)}`"
                 @click="dayClicked(day)"
               >
                 <i
@@ -598,7 +876,8 @@ const getBookingType = (day: Day): string | null => {
                       'calendar_day_haldDay--checkIn':
                         isInCheckinHalfDayAndCheckin(day) ||
                         isInCheckinHalfDayAndNotCheckin(day),
-                      'calendar_day_haldDay--checkOut': isInCheckoutHalfDay(day),
+                      'calendar_day_haldDay--checkOut':
+                        isInCheckoutHalfDay(day),
                     },
                   ]"
                 />
