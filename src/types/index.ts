@@ -52,12 +52,14 @@ export interface Period {
   startAt: string;
   endAt: string;
   minimumDuration: number;
+  minimumDurationNights: number;
   periodType: string;
 }
 export interface CurrentPeriod {
   startAt: string;
   endAt: string;
   minimumDuration: number;
+  minimumDurationNights: number;
   periodType: string;
   nextEnableDate: Date;
 }

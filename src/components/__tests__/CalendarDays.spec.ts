@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { mount } from "@vue/test-utils";
-import CalendarDays from "~/components/CalendarDays.vue";
+import CalendarDays from "../CalendarDays.vue";
 
 let wrapper: any;
 

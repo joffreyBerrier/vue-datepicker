@@ -54,12 +54,14 @@ interface Period {
   startAt: string;
   endAt: string;
   minimumDuration: number;
+  minimumDurationNights: number;
   periodType: string;
 }
 interface CurrentPeriod {
   startAt: string;
   endAt: string;
   minimumDuration: number;
+  minimumDurationNights: number;
   periodType: string;
   nextEnableDate: Date;
 }
