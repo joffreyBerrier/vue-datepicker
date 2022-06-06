@@ -118,7 +118,43 @@ const props = defineProps({
     type: Date,
     default: new Date(new Date().getFullYear() - 2, 0, 1),
   },
+  locale: {
+    type: String,
+    default: "fr",
+  },
+  translations: {
+    type: Object,
+    default: () => ({
+      fr: {
+        periodType: {
+          weeklyBySaturday: "Du samedi au samedi uniquement",
+          weeklyBySunday: "Du dimanche au dimanche uniquement",
+          weeklyByMonday: "Du lundi au lundi uniquement",
+          nightly: `Un minimum de %{minimumDuration} nuit est requis.`,
+        },
+      },
+      en: {
+        periodType: {
+          weeklyBySaturday: "From Saturday to Saturday",
+          weeklyBySunday: "From Sunday to Sunday",
+          weeklyByMonday: "From Monday to Monday",
+          nightly: `A minimum of %{minimumDuration} night is required.`,
+        },
+      },
+    }),
+  },
 });
+
+const t = (key: string, ...args: any[]) => {
+  const translation = props.translations[props.locale];
+
+  if (key.includes(".")) {
+    const a = key.split(".");
+    return translation[a[0]][a[1]];
+  } else {
+    return translation[key];
+  }
+};
 
 const emit = defineEmits([
   "update:checkIn",
@@ -509,16 +545,16 @@ const tooltipText: ComputedRef<string> = computed(() => {
     const { minimumDuration } = hoveringPeriod.value;
 
     if (periodType === "weekly_by_saturday") {
-      return "Du samedi au samedi<br/> uniquement";
+      return t("periodType.weeklyBySaturday");
     }
     if (periodType === "weekly_by_sunday") {
-      return "Du dimanche au dimanche<br/> uniquement";
+      return t("periodType.weeklyBySunday");
     }
     if (periodType === "weekly_by_monday") {
-      return "Du lundi au lundi<br/> uniquement";
+      return t("periodType.weeklyByMonday");
     }
     if (periodType === "nightly") {
-      return `Un minimum de ${minimumDuration}<br/> nuit est requis.`;
+      return t("periodType.nightly", minimumDuration);
     }
   }
 
@@ -611,9 +647,12 @@ const dayMouseOver = (day: Day) => {
   }
 };
 
+const removeTooltip = () => {
+  hoveringPeriod.value = null;
+};
 const dayMouseLeave = () => {
   hoveringDay.value = new Date();
-  hoveringPeriod.value = null;
+  removeTooltip();
 };
 
 // Trigger each time the click on day is triggered
@@ -648,13 +687,15 @@ const dayClicked = (day: Day): void => {
     emit("update:checkIn", day.date);
     getNextBookingDate(day);
     if (props.periodManagementRule) setMinimumDuration(day.date);
-    currentPeriod.value = getCurrentPeriod(day);
-    hoveringPeriod.value = getCurrentPeriod(day);
+    const cp = getCurrentPeriod(day);
+    currentPeriod.value = cp;
+    hoveringPeriod.value = cp;
   } else {
     // CheckIn + CheckOut
     emit("update:checkIn", day.date);
     emit("update:checkOut", null);
     getNextBookingDate(day);
+    console.log("dayClicked else");
     currentPeriod.value = getCurrentPeriod(day);
     hoveringDates.value = [];
   }
@@ -828,8 +869,11 @@ const getBookingType = (day: Day): string | null => {
                   hoveringPeriod
                 "
                 class="calendar_tooltip"
-                v-html="tooltipText"
-              />
+                @mouseenter="removeTooltip"
+              >
+                {{ tooltipText }}
+              </div>
+
               <button
                 v-if="day.belongsToThisMonth"
                 type="button"
@@ -987,6 +1031,8 @@ body {
 }
 .calendar_tooltip {
   @apply absolute top-full left-1/2 transform -translate-x-1/2 shadow-sm border p-3 text-xs z-20 text-center w-max;
+  width: max-content;
+  max-width: 150px;
   border-color: var(--calendar-tooltip-border);
   background-color: var(--calendar-tooltip-bg);
 }
