@@ -19,7 +19,8 @@ export const useGetPeriod = (
           new Date(p.endAt),
           formattingFormat
         );
-      })[0];
+      })
+      .flat();
   }
 
   return [];
