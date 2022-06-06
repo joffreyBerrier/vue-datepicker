@@ -321,6 +321,18 @@ const minNightCount = computed(() => {
   return dynamicNightCounts.value || props.minNights;
 });
 
+const datesBetweenCheckInCheckOutDates: ComputedRef<string[]> = computed(() => {
+  if (props.checkIn && props.checkOut) {
+    return getDatesBetweenTwoDates(
+      addDays(props.checkIn, 1),
+      substractDays(props.checkOut, 1),
+      formattingFormat.value
+    );
+  }
+
+  return [];
+});
+
 const setMinimumDuration = (date: Date) => {
   nextPeriod.value = null;
   lastEnableDaysOfPeriod.value = null;
@@ -797,9 +809,11 @@ const getBookingType = (day: Day): string | null => {
               :class="[
                 'calendar_day-wrap',
                 // Color date
-                `calendar_day--${getBookingType(day)}`,
-                { 'calendar_day-wrap--no-border': !day.belongsToThisMonth },
+                getBookingType(day)
+                  ? `calendar_day--${getBookingType(day)}`
+                  : '',
                 {
+                  'calendar_day-wrap--no-border': !day.belongsToThisMonth,
                   'calendar_day-wrap--disabled': inDisabledDay(day),
                 },
               ]"
@@ -816,7 +830,6 @@ const getBookingType = (day: Day): string | null => {
                 class="calendar_tooltip"
                 v-html="tooltipText"
               />
-
               <button
                 v-if="day.belongsToThisMonth"
                 type="button"
@@ -831,7 +844,10 @@ const getBookingType = (day: Day): string | null => {
                   // CheckIn or CheckOut
                   {
                     'calendar_day--checkIn-checkOut':
-                      checkIn === day.date || checkOut === day.date,
+                      format(checkIn, formattingFormat) ===
+                        format(day.date, formattingFormat) ||
+                      format(checkOut, formattingFormat) ===
+                        format(day.date, formattingFormat),
                   },
                   // Booking date
                   {
@@ -852,6 +868,10 @@ const getBookingType = (day: Day): string | null => {
                         checkIn !== day.date &&
                         hoveringDay === day.date) ||
                       hoveringDates.includes(day.formatDay),
+                  },
+                  {
+                    'calendar_day_between--checkIn-checkOut':
+                      datesBetweenCheckInCheckOutDates.includes(day.formatDay),
                   },
                   {
                     'calendar_day--hovering-checkIn':
@@ -985,7 +1005,8 @@ body {
   background-color: var(--day-disabled);
   @apply pointer-events-none font-extralight;
 }
-.calendar_day--hovering {
+.calendar_day--hovering,
+.calendar_day_between--checkIn-checkOut {
   background-color: var(--day-range-days);
 }
 .calendar_day--hovering-checkIn {
