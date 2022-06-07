@@ -924,14 +924,8 @@ describe("Calendar", () => {
     });
 
     it("Should define checkInPeriod equal to nextPeriod.minimumDurationNights", () => {
-      console.log(wrapper.vm.checkInPeriod.minimumDurationNights);
-
       expect(wrapper.vm.checkInPeriod.minimumDurationNights).toBe(7);
     });
-
-    // it("Should render correct text for tooltip", () => {
-    //   expect(wrapper.vm.customTooltip).toBe("1 week minimum.");
-    // });
 
     it("Should define dynamicNightCounts to 7", () => {
       expect(wrapper.vm.dynamicNightCounts).toBe(7);

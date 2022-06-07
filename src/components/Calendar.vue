@@ -145,12 +145,18 @@ const props = defineProps({
   },
 });
 
-const t = (key: string, ...args: any[]) => {
+const t = (key: string, minimumDuration = null): string => {
   const translation = props.translations[props.locale];
 
   if (key.includes(".")) {
     const a = key.split(".");
-    return translation[a[0]][a[1]];
+
+    const translationValue = translation[a[0]][a[1]];
+    if (translationValue.includes("%{minimumDuration}")) {
+      return translationValue.replace("%{minimumDuration}", minimumDuration);
+    }
+
+    return translationValue;
   } else {
     return translation[key];
   }
@@ -534,15 +540,12 @@ const setMinimumDuration = (date: Date) => {
         dynamicNightCounts.value = 0;
       }
     }
-
-    console.log(nextPeriodDisableDates.value);
   }
 };
 
 const tooltipText: ComputedRef<string> = computed(() => {
   if (hoveringPeriod.value) {
-    const { periodType } = hoveringPeriod.value;
-    const { minimumDuration } = hoveringPeriod.value;
+    const { minimumDuration, periodType } = hoveringPeriod.value;
 
     if (periodType === "weekly_by_saturday") {
       return t("periodType.weeklyBySaturday");
@@ -695,7 +698,6 @@ const dayClicked = (day: Day): void => {
     emit("update:checkIn", day.date);
     emit("update:checkOut", null);
     getNextBookingDate(day);
-    console.log("dayClicked else");
     currentPeriod.value = getCurrentPeriod(day);
     hoveringDates.value = [];
   }
