@@ -152,6 +152,13 @@ bookingDates: [
 ];
 ```
 
+### disabledDaysAfterDayDate
+
+- Type: `Boolean`
+- Default: `false`
+
+Disabled days after the current date
+
 ### disabledDaysBeforeDayDate
 
 - Type: `Boolean`

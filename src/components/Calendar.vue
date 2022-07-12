@@ -75,6 +75,10 @@ const props = defineProps({
     type: [Date, String],
     default: null,
   },
+  disabledDaysAfterDayDate: {
+    type: Boolean,
+    default: false,
+  },
   disabledDaysBeforeDayDate: {
     type: Boolean,
     default: true,
@@ -625,6 +629,9 @@ const inDisabledDay = (day: Day) => {
     (props.disabledDaysBeforeDayDate &&
       day.formatDay !== formatToday.value &&
       today.value > day.date) ||
+    (props.disabledDaysAfterDayDate &&
+      day.formatDay !== formatToday.value &&
+      today.value < day.date) ||
     (props.checkIn &&
       !props.checkOut &&
       isDateBefore(day.date, props.checkIn)) ||
