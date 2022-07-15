@@ -36,7 +36,11 @@ const openCalendar = () => {
 </script>
 
 <template>
-  <div data-testid="calendar_input" class="calendar_input" @click="openCalendar">
+  <div
+    data-testid="calendar_input"
+    class="calendar_input"
+    @click="openCalendar"
+  >
     <base-icon
       name="calendar"
       :color="[

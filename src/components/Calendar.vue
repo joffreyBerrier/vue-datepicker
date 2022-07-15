@@ -361,7 +361,7 @@ const nextPeriod: Ref<CurrentPeriod | null> = ref(null);
 const lastEnableDaysOfPeriod = ref(null);
 const nextPeriodDisableDates = ref([]);
 const dynamicNightCounts = ref(0);
-const checkInPeriod = ref(null);
+const checkInPeriod = ref({});
 
 const minNightCount = computed(() => {
   return dynamicNightCounts.value || props.minNights;
@@ -1012,85 +1012,85 @@ body {
 @tailwind components;
 @tailwind utilities;
 
-.calendar {
+body .calendar {
   @apply w-full relative select-none;
 }
-.calendar_wrapper {
+body .calendar_wrapper {
   @apply w-full md:w-[600px];
   background-color: var(--calendar-wrapper);
 }
-.calendar_wrapper:not(.calendar_wrapper--year) {
+body .calendar_wrapper:not(.calendar_wrapper--year) {
   @apply p-4 shadow-md absolute top-[100%];
 }
-.calendar_wrapper_content {
+body .calendar_wrapper_content {
   @apply grid grid-cols-2 gap-4;
 }
-.calendar_wrapper_content-days {
+body .calendar_wrapper_content-days {
   @apply grid grid-cols-7;
 }
-.calendar_day-wrap {
+body .calendar_day-wrap {
   @apply relative h-0 pb-[100%] border-[.5px];
   border-color: var(--day-border);
 }
-.calendar_day-wrap--no-border {
+body .calendar_day-wrap--no-border {
   @apply border-0 pointer-events-none;
 }
-.calendar_day-wrap--disabled {
+body .calendar_day-wrap--disabled {
   @apply pointer-events-none;
 }
-.calendar_tooltip {
+body .calendar_tooltip {
   @apply absolute top-full left-1/2 transform -translate-x-1/2 shadow-sm border p-3 text-xs z-20 text-center w-max;
   width: max-content;
   max-width: 150px;
   border-color: var(--calendar-tooltip-border);
   background-color: var(--calendar-tooltip-bg);
 }
-.calendar_day {
+body .calendar_day {
   @apply w-full left-0 right-0 h-full text-sm absolute focus:outline-none overflow-hidden;
 }
-.calendar_day--today {
+body .calendar_day--today {
   @apply border-2;
   border-color: var(--day-today);
 }
 .calendar_day--checkIn-checkOut,
-.calendar_day--checkIn-checkOut.calendar_day--hovering {
+body .calendar_day--checkIn-checkOut.calendar_day--hovering {
   background-color: var(--day-checkIn-checkOut);
 }
-.calendar_day--disabled {
+body .calendar_day--disabled {
   background-color: var(--day-disabled);
   @apply pointer-events-none font-extralight;
 }
 .calendar_day--hovering,
-.calendar_day_between--checkIn-checkOut {
+body .calendar_day_between--checkIn-checkOut {
   background-color: var(--day-range-days);
 }
-.calendar_day--hovering-checkIn {
+body .calendar_day--hovering-checkIn {
   background-color: var(--day-hovering-with-checkIn);
 }
-.calendar_day--in-period {
+body .calendar_day--in-period {
   @apply pointer-events-none font-extralight;
 }
-.calendar_day--in-period-checkIn {
+body .calendar_day--in-period-checkIn {
   @apply pointer-events-none font-extralight;
 }
-.calendar_day--day-number {
+body .calendar_day--day-number {
   @apply absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
 }
-.event-none {
+body .event-none {
   @apply pointer-events-none;
 }
 /* Year calendar */
-.calendar_wrapper--year {
+body .calendar_wrapper--year {
   @apply w-full;
 }
-.calendar_wrapper--year .calendar_wrapper_content {
+body .calendar_wrapper--year .calendar_wrapper_content {
   @apply grid grid-cols-4 gap-x-6 gap-y-6;
 }
 
-.calendar_paginate-wrapper {
+body .calendar_paginate-wrapper {
   @apply mb-4;
 }
-.calendar_paginate-button {
+body .calendar_paginate-button {
   @apply p-4 duration-300;
   border-width: 1px;
   border-style: solid;
@@ -1098,32 +1098,32 @@ body {
   border-color: var(--calendar-paginate-border-color);
   color: var(--calendar-paginate-text-color);
 }
-.calendar_paginate-button:hover {
+body .calendar_paginate-button:hover {
   background-color: var(--calendar-paginate-hover-bg);
   border-color: var(--calendar-paginate-hover-border);
   color: var(--calendar-paginate-hover-text);
 }
-.calendar_paginate-button:disabled {
+body .calendar_paginate-button:disabled {
   background-color: var(--calendar-paginate-disabled-bg);
   border-color: var(--calendar-paginate-disabled-border);
   color: var(--calendar-paginate-disabled-text);
 }
-.calendar_paginate-year {
+body .calendar_paginate-year {
   @apply w-20 inline-block text-center font-bold;
 }
 
-.calendar_day--booking {
+body .calendar_day--booking {
   @apply opacity-80;
 }
 /* New */
-.calendar_day_haldDay {
+body .calendar_day_haldDay {
   @apply w-[200%] h-[200%] absolute transform rotate-45;
 }
-.calendar_day_haldDay--checkIn {
+body .calendar_day_haldDay--checkIn {
   top: 0px;
   right: -140%;
 }
-.calendar_day_haldDay--checkOut {
+body .calendar_day_haldDay--checkOut {
   top: -140%;
   right: 0;
 }

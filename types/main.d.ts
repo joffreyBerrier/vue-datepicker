@@ -1,6 +1,7 @@
 // Type definitions for vue-calendar 1.1.0
 // Project: vue-calendar
 // Definitions by: Joffrey Berrier
+import type { ComputedRef } from "vue";
 
 interface Booking {
   checkInDate: string;
@@ -42,8 +43,8 @@ interface Month {
 }
 
 interface Placeholder {
-  checkIn: string;
-  checkOut: string;
+  checkIn: string | ComputedRef<string>;
+  checkOut: string | ComputedRef<string>;
 }
 
 interface Icon {

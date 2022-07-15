@@ -1,17 +1,18 @@
 {
   "name": "vue-calendar-3",
-  "version": "1.2.43",
+  "version": "1.3.0",
   "repository": "https://github.com/joffreyBerrier/vue-datepicker",
   "funding": "https://github.com/sponsors/joffreyBerrier",
   "author": "Joffrey Berrier <joffrey.berrier@gmail.com>",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "run-p type-check build-only",
+    "build-only": "vite build",
     "build:library": "vite build",
-    "preview": "vite preview --port 5050",
-    "test:unit": "vitest --environment jsdom",
-    "typecheck": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
+    "preview": "vite preview --port 4173",
+    "test:unit": "vitest --environment jsdom --coverage",
+    "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "main": "./dist/vue-calendar-3.umd.js",
@@ -31,28 +32,30 @@
   ],
   "types": "./types/main.d.ts",
   "peerDependencies": {
-    "vue": "^3.2.31"
+    "vue": "^3.2.37"
   },
   "devDependencies": {
-    "@rushstack/eslint-patch": "^1.1.3",
+    "@rushstack/eslint-patch": "^1.1.0",
     "@types/jsdom": "^16.2.14",
     "@types/node": "^17.0.40",
     "@vitejs/plugin-vue": "^2.3.3",
     "@vue/eslint-config-prettier": "^7.0.0",
-    "@vue/eslint-config-typescript": "^10.0.0",
-    "@vue/test-utils": "^2.0.0",
+    "@vue/eslint-config-typescript": "^11.0.0",
+    "@vue/test-utils": "^2.0.2",
     "@vue/tsconfig": "^0.1.3",
     "autoprefixer": "^10.4.7",
+    "c8": "^7.11.3",
     "dayjs": "^1.11.3",
-    "eslint": "^8.17.0",
     "eslint-plugin-vue": "^9.1.0",
-    "jsdom": "^19.0.0",
+    "eslint": "^8.5.0",
+    "jsdom": "^20.0.0",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8.4.14",
-    "prettier": "^2.6.2",
-    "tailwindcss": "^3.0.24",
-    "typescript": "~4.7.3",
-    "vite": "^2.9.9",
-    "vitest": "0.14.1",
-    "vue-tsc": "0.36.1"
+    "prettier": "^2.5.1",
+    "tailwindcss": "^3.1.6",
+    "typescript": "~4.7.4",
+    "vite": "^2.9.14",
+    "vitest": "^0.18.0",
+    "vue-tsc": "^0.38.4"
   }
 }
