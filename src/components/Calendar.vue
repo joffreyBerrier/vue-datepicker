@@ -1052,7 +1052,7 @@ body .calendar_day--today {
   @apply border-2;
   border-color: var(--day-today);
 }
-.calendar_day--checkIn-checkOut,
+body .calendar_day--checkIn-checkOut,
 body .calendar_day--checkIn-checkOut.calendar_day--hovering {
   background-color: var(--day-checkIn-checkOut);
 }
@@ -1060,7 +1060,7 @@ body .calendar_day--disabled {
   background-color: var(--day-disabled);
   @apply pointer-events-none font-extralight;
 }
-.calendar_day--hovering,
+body .calendar_day--hovering,
 body .calendar_day_between--checkIn-checkOut {
   background-color: var(--day-range-days);
 }
