@@ -1,4 +1,6 @@
 // Calendar
+import type { ComputedRef } from "vue";
+
 export interface Booking {
   checkInDate: string;
   checkOutDate: string;
@@ -39,8 +41,8 @@ export interface Month {
 }
 
 export interface Placeholder {
-  checkIn: string;
-  checkOut: string;
+  checkIn: string | ComputedRef<string>;
+  checkOut: string | ComputedRef<string>;
 }
 
 // BaseIcon

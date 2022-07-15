@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { mount } from "@vue/test-utils";
 import BaseIcon from "../BaseIcon.vue";
@@ -6,11 +6,9 @@ import BaseIcon from "../BaseIcon.vue";
 let wrapper: any;
 
 beforeEach(() => {
-  wrapper = mount(BaseIcon);
-});
+  expect(BaseIcon).toBeTruthy();
 
-afterEach(() => {
-  wrapper.unmount();
+  wrapper = mount(BaseIcon);
 });
 
 describe("BaseIcon", () => {
