@@ -803,7 +803,7 @@ const getBookingType = (day: Day): string | null => {
 </script>
 
 <template>
-  <div ref="calendarRef" class="calendar">
+  <div id="vue-calendar" ref="calendarRef" class="vue-calendar">
     <CalendarInput
       v-if="showInputCalendar"
       :placeholder="placeholder"
@@ -977,7 +977,7 @@ const getBookingType = (day: Day): string | null => {
 </template>
 
 <style>
-body {
+#vue-calendar {
   --calendar-wrapper: #fff;
   --calendar-tooltip-bg: #fff;
   --calendar-tooltip-border: #ececec;
@@ -1012,85 +1012,85 @@ body {
 @tailwind components;
 @tailwind utilities;
 
-body .calendar {
+#vue-calendar {
   @apply w-full relative select-none;
 }
-body .calendar_wrapper {
+#vue-calendar .calendar_wrapper {
   @apply w-full md:w-[600px];
   background-color: var(--calendar-wrapper);
 }
-body .calendar_wrapper:not(.calendar_wrapper--year) {
+#vue-calendar .calendar_wrapper:not(.calendar_wrapper--year) {
   @apply p-4 shadow-md absolute top-[100%];
 }
-body .calendar_wrapper_content {
+#vue-calendar .calendar_wrapper_content {
   @apply grid grid-cols-2 gap-4;
 }
-body .calendar_wrapper_content-days {
+#vue-calendar .calendar_wrapper_content-days {
   @apply grid grid-cols-7;
 }
-body .calendar_day-wrap {
+#vue-calendar .calendar_day-wrap {
   @apply relative h-0 pb-[100%] border-[.5px];
   border-color: var(--day-border);
 }
-body .calendar_day-wrap--no-border {
+#vue-calendar .calendar_day-wrap--no-border {
   @apply border-0 pointer-events-none;
 }
-body .calendar_day-wrap--disabled {
+#vue-calendar .calendar_day-wrap--disabled {
   @apply pointer-events-none;
 }
-body .calendar_tooltip {
+#vue-calendar .calendar_tooltip {
   @apply absolute top-full left-1/2 transform -translate-x-1/2 shadow-sm border p-3 text-xs z-20 text-center w-max;
   width: max-content;
   max-width: 150px;
   border-color: var(--calendar-tooltip-border);
   background-color: var(--calendar-tooltip-bg);
 }
-body .calendar_day {
+#vue-calendar .calendar_day {
   @apply w-full left-0 right-0 h-full text-sm absolute focus:outline-none overflow-hidden;
 }
-body .calendar_day--today {
+#vue-calendar .calendar_day--today {
   @apply border-2;
   border-color: var(--day-today);
 }
-body .calendar_day--checkIn-checkOut,
-body .calendar_day--checkIn-checkOut.calendar_day--hovering {
+#vue-calendar .calendar_day--checkIn-checkOut,
+#vue-calendar .calendar_day--checkIn-checkOut.calendar_day--hovering {
   background-color: var(--day-checkIn-checkOut);
 }
-body .calendar_day--disabled {
+#vue-calendar .calendar_day--disabled {
   background-color: var(--day-disabled);
   @apply pointer-events-none font-extralight;
 }
-body .calendar_day--hovering,
-body .calendar_day_between--checkIn-checkOut {
+#vue-calendar .calendar_day--hovering,
+#vue-calendar .calendar_day_between--checkIn-checkOut {
   background-color: var(--day-range-days);
 }
-body .calendar_day--hovering-checkIn {
+#vue-calendar .calendar_day--hovering-checkIn {
   background-color: var(--day-hovering-with-checkIn);
 }
-body .calendar_day--in-period {
+#vue-calendar .calendar_day--in-period {
   @apply pointer-events-none font-extralight;
 }
-body .calendar_day--in-period-checkIn {
+#vue-calendar .calendar_day--in-period-checkIn {
   @apply pointer-events-none font-extralight;
 }
-body .calendar_day--day-number {
+#vue-calendar .calendar_day--day-number {
   @apply absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
 }
-body .event-none {
+#vue-calendar .event-none {
   @apply pointer-events-none;
 }
 /* Year calendar */
-body .calendar_wrapper--year {
+#vue-calendar .calendar_wrapper--year {
   @apply w-full;
 }
-body .calendar_wrapper--year .calendar_wrapper_content {
+#vue-calendar .calendar_wrapper--year .calendar_wrapper_content {
   @apply grid grid-cols-4 gap-x-6 gap-y-6;
 }
 
-body .calendar_paginate-wrapper {
+#vue-calendar .calendar_paginate-wrapper {
   @apply mb-4;
 }
-body .calendar_paginate-button {
+#vue-calendar .calendar_paginate-button {
   @apply p-4 duration-300;
   border-width: 1px;
   border-style: solid;
@@ -1098,32 +1098,32 @@ body .calendar_paginate-button {
   border-color: var(--calendar-paginate-border-color);
   color: var(--calendar-paginate-text-color);
 }
-body .calendar_paginate-button:hover {
+#vue-calendar .calendar_paginate-button:hover {
   background-color: var(--calendar-paginate-hover-bg);
   border-color: var(--calendar-paginate-hover-border);
   color: var(--calendar-paginate-hover-text);
 }
-body .calendar_paginate-button:disabled {
+#vue-calendar .calendar_paginate-button:disabled {
   background-color: var(--calendar-paginate-disabled-bg);
   border-color: var(--calendar-paginate-disabled-border);
   color: var(--calendar-paginate-disabled-text);
 }
-body .calendar_paginate-year {
+#vue-calendar .calendar_paginate-year {
   @apply w-20 inline-block text-center font-bold;
 }
 
-body .calendar_day--booking {
+#vue-calendar .calendar_day--booking {
   @apply opacity-80;
 }
 /* New */
-body .calendar_day_haldDay {
+#vue-calendar .calendar_day_haldDay {
   @apply w-[200%] h-[200%] absolute transform rotate-45;
 }
-body .calendar_day_haldDay--checkIn {
+#vue-calendar .calendar_day_haldDay--checkIn {
   top: 0px;
   right: -140%;
 }
-body .calendar_day_haldDay--checkOut {
+#vue-calendar .calendar_day_haldDay--checkOut {
   top: -140%;
   right: 0;
 }
