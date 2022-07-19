@@ -159,19 +159,19 @@ const renderNextMonth = () => {
     </div>
 
     <Calendar
+      :alwaysVisible="alwaysVisible"
       :booked-dates="bookedDates"
       :booking-color="bookingColor"
       :booking-dates="bookingDates"
       :disabled-days-before-day-date="!showYear"
-      formatDate="DD-MM-YYYY"
-      v-model:checkIn="checkIn"
-      v-model:checkOut="checkOut"
       :period-dates="periodDates"
       :show-input-calendar="!showYear"
       :show-year="showYear"
-      :alwaysVisible="alwaysVisible"
       @render-next-month="renderNextMonth"
       @select-booking-date="clickOnDate"
+      formatDate="DD-MM-YYYY"
+      v-model:checkIn="checkIn"
+      v-model:checkOut="checkOut"
     />
   </div>
 </template>
