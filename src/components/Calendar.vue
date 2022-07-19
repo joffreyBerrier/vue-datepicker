@@ -8,7 +8,7 @@ export default {
 import { computed, ref, onBeforeMount, onUnmounted } from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";
 
-import { format } from "../plugins/day";
+import { format, formatUtc } from "../plugins/day";
 import BaseIcon from "./BaseIcon.vue";
 import CalendarDays from "./CalendarDays.vue";
 import CalendarHeader from "./CalendarHeader.vue";
@@ -106,10 +106,6 @@ const props = defineProps({
     type: Number,
     default: 1,
   },
-  periodManagementRule: {
-    type: Boolean,
-    default: false,
-  },
   showYear: {
     type: Boolean,
     default: false,
@@ -177,6 +173,12 @@ const emit = defineEmits([
 const formattingFormat = ref("YYYY-MM-DD");
 const today = ref(new Date());
 const months = ref([]) as Ref<Month[]>;
+
+// Format checkIn, checkOut with correct UTC
+if (props.checkIn && props.checkOut) {
+  emit("update:checkIn", formatUtc(props.checkIn));
+  emit("update:checkOut", formatUtc(props.checkOut));
+}
 
 const createStartActiveIndex = () => {
   if (props.showYear) {
@@ -379,9 +381,14 @@ const datesBetweenCheckInCheckOutDates: ComputedRef<string[]> = computed(() => {
   return [];
 });
 
-const setMinimumDuration = (date: Date) => {
+const clearMinimumDurationDate = () => {
   nextPeriod.value = null;
   lastEnableDaysOfPeriod.value = null;
+  nextPeriodDisableDates.value = [];
+};
+
+const setMinimumDuration = (date: Date) => {
+  clearMinimumDurationDate();
 
   if (sortedPeriodDates.value.length) {
     const nextPeriodIsPriority = (
@@ -409,6 +416,7 @@ const setMinimumDuration = (date: Date) => {
       let enableNextDate = addDays(date, dynamicNightCounts.value - 1);
 
       if (
+        lastEnableDaysOfPeriod.value &&
         nextPeriod.value?.periodType.includes("weekly") &&
         !isDateBeforeOrEqual(date, lastEnableDaysOfPeriod.value)
       ) {
@@ -433,7 +441,7 @@ const setMinimumDuration = (date: Date) => {
       const startDateCheckin = addDays(date, 1);
       const enableNextDate = getEnableNextDate();
       let nextPeriodDisabledDates: string[] = [];
-      const newDisablesDates = getDaysArray(
+      const newDisablesDates: string[] = getDaysArray(
         startDateCheckin,
         enableNextDate
       ).map((d) => format(d, formattingFormat.value));
@@ -517,6 +525,7 @@ const setMinimumDuration = (date: Date) => {
 
       // Calculate dynamic minimum nights with nextPeriod
       if (
+        lastEnableDaysOfPeriod.value &&
         !isDateBeforeOrEqual(date, lastEnableDaysOfPeriod.value) &&
         nextPeriodIsPriority(currentPeriod, currentPeriod.minimumDurationNights)
       ) {
@@ -675,6 +684,7 @@ const dayClicked = (day: Day): void => {
     // CheckIn when already CheckIn
     emit("update:checkIn", null);
     emit("update:checkOut", null);
+    clearMinimumDurationDate();
     nextDisableBookingDate.value = null;
     currentPeriod.value = null;
     hoveringDates.value = [];
@@ -696,7 +706,7 @@ const dayClicked = (day: Day): void => {
     // CheckIn
     emit("update:checkIn", day.date);
     getNextBookingDate(day);
-    if (props.periodManagementRule) setMinimumDuration(day.date);
+    setMinimumDuration(day.date);
     const cp = getCurrentPeriod(day);
     currentPeriod.value = cp;
     hoveringPeriod.value = cp;

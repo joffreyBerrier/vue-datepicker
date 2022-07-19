@@ -2,10 +2,10 @@ import { format } from "../../plugins/day";
 import { addDays } from "../helpers";
 
 import type { Booking } from "~/types";
-import { resetTimeDate, validateDateBetweenTwoDates } from "../helpers";
+import { isDateBefore, validateDateBetweenTwoDates } from "../helpers";
 
 const validateDateBeforeDate = (fromDate: string, givenDate: string) => {
-  return resetTimeDate(givenDate) <= resetTimeDate(fromDate);
+  return isDateBefore(givenDate, fromDate);
 };
 
 const useGetNextBookingDate = (
