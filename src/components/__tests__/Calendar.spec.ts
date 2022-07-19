@@ -364,13 +364,14 @@ describe("Calendar", () => {
     });
   });
 
-  describe("souss case 3 (duration min night < duration Sunday to Sunday): Sunday to Sunday then 3 nights min > I can select from 25/12 to 02/01", () => {
+  describe("case 3 (duration min night < duration Sunday to Sunday): Sunday to Sunday then 3 nights min > I can select from 25/12 to 02/01", () => {
     beforeEach(async () => {
       wrapper = await mount(Calendar, {
         propsData: {
+          showYear: true,
+          countOfDesktopMonth: 2,
+          firstDayOfWeek: 1,
           minNights: 3,
-          alwaysVisible: true,
-          startDate: new Date("2022-12-01"),
           periodDates: [
             {
               startAt: "2022-12-18",
@@ -385,10 +386,12 @@ describe("Calendar", () => {
               minimumDuration: 3,
             },
           ],
+          startDate: new Date("2022-12-01"),
         },
       });
 
       const checkInDay = wrapper.get('[data-testid="day-2022-12-25"]');
+
       await checkInDay.trigger("click");
     });
 
@@ -850,76 +853,83 @@ describe("Calendar", () => {
     });
   });
 
-  // describe.only("case 6 (1 period then no period): Saturday to Saturday (min 1 weeks and default minimumDuration) > I can select from 05/03 to 08/03", () => {
-  //   beforeEach(async () => {
-  //     wrapper = await mount(Calendar, {
-  //       propsData: {
-  //         alwaysVisible: true,
-  //         minNights: 3,
-  //         periodDates,
-  //         startDate: new Date("2023-03-01"),
-  //       },
-  //     });
+  describe("case 6 (1 period then no period): Saturday to Saturday (min 1 weeks and default minimumDuration) > I can select from 05/03 to 08/03", () => {
+    beforeEach(async () => {
+      wrapper = await mount(Calendar, {
+        propsData: {
+          showYear: true,
+          minNights: 3,
+          startDate: new Date(new Date().getFullYear() - 2, 0, 1),
+          endDate: new Date(new Date().getFullYear() + 2, 0, 1),
+          periodDates,
+        },
+      });
 
-  //     const checkInDay = wrapper.get('[data-testid="day-2023-03-05"]');
-  //     await checkInDay.trigger("click");
+      const paginateNext = wrapper.get(
+        '[data-testid="calendar_paginate-next--button"]'
+      );
+      await paginateNext.trigger("click");
 
-  //     await flushPromises();
+      const checkInDay = wrapper.get('[data-testid="day-2023-03-05"]');
+      await checkInDay.trigger("click");
+    });
 
-  //     console.log("checkIn", wrapper.vm.checkIn);
-  //   });
+    it("Should define checkInPeriod equal to nextPeriod.minimumDurationNights", () => {
+      expect(wrapper.vm.checkInPeriod).toStrictEqual({});
+    });
 
-  //   it("Should define checkInPeriod equal to nextPeriod.minimumDurationNights", () => {
-  //     console.log("wrapper.vm.checkIn", wrapper.vm.checkIn);
+    // it("Should render correct text for tooltip", () => {
+    //   expect(wrapper.vm.customTooltip).toBe("3 Nights minimum.");
+    // });
 
-  //     expect(wrapper.vm.checkInPeriod.minimumDurationNights).toBe(3);
-  //   });
+    it("Should define dynamicNightCounts to 0", () => {
+      expect(wrapper.vm.dynamicNightCounts).toBe(0);
+    });
 
-  //   // it("Should render correct text for tooltip", () => {
-  //   //   expect(wrapper.vm.customTooltip).toBe("3 Nights minimum.");
-  //   // });
+    it("Should define nextPeriodDisableDates to []", () => {
+      expect(wrapper.vm.nextPeriodDisableDates).toEqual([]);
+    });
 
-  //   it("Should define dynamicNightCounts to 0", () => {
-  //     expect(wrapper.vm.dynamicNightCounts).toBe(0);
-  //   });
+    it("Should define nextPeriod.minimumDuration equal to 0", () => {
+      expect(wrapper.vm.dynamicNightCounts).toBe(0);
+    });
 
-  //   it("Should define nextPeriodDisableDates to []", () => {
-  //     expect(wrapper.vm.nextPeriodDisableDates).toEqual([]);
-  //   });
+    it("Should define nextPeriodDisableDates length equal to 0", () => {
+      expect(wrapper.vm.nextPeriodDisableDates.length).toBe(0);
+    });
 
-  //   it("Should define nextPeriod.minimumDuration equal to 0", () => {
-  //     expect(wrapper.vm.dynamicNightCounts).toBe(0);
-  //   });
+    it("Should define disabled and not-allowed class on day before possible checkout", () => {
+      const beforeDay = wrapper.get('[data-testid="day-2023-03-07"]');
 
-  //   it("Should define nextPeriodDisableDates length equal to 0", () => {
-  //     expect(wrapper.vm.nextPeriodDisableDates.length).toBe(0);
-  //   });
+      expect(beforeDay.classes()).not.toContain("calendar_day--in-period");
+    });
 
-  //   it("Should define disabled and not-allowed class on day before possible checkout", () => {
-  //     const beforeDay = wrapper.get('[data-testid="day-2023-03-07"]');
+    it("Should define valid class on possible checkout day", () => {
+      const possibleCheckout = wrapper.get('[data-testid="day-2023-03-08"]');
 
-  //     expect(beforeDay.classes()).toContain("calendar_day--in-period");
-  //   });
-
-  //   it("Should define valid class on possible checkout day", () => {
-  //     const possibleCheckout = wrapper.get('[data-testid="day-2023-03-08"]');
-
-  //     expect(possibleCheckout.classes()).toContain("calendar_day");
-  //   });
-  // });
+      expect(possibleCheckout.classes()).toContain("calendar_day");
+    });
+  });
 
   describe("case 7 (1 period then no period): Monday to Monday (min 1 weeks and default minimumDuration) > I can select from 04/12 to 11/12", () => {
     beforeEach(async () => {
       wrapper = await mount(Calendar, {
         propsData: {
-          alwaysVisible: true,
+          showYear: true,
           minNights: 3,
+          startDate: new Date(new Date().getFullYear() - 2, 0, 1),
+          endDate: new Date(new Date().getFullYear() + 2, 0, 1),
           periodDates,
-          startDate: new Date("2023-11-01"),
         },
       });
 
+      const paginateNext = wrapper.get(
+        '[data-testid="calendar_paginate-next--button"]'
+      );
+      await paginateNext.trigger("click");
+
       const checkInDay = wrapper.get('[data-testid="day-2023-12-04"]');
+
       await checkInDay.trigger("click");
     });
 
