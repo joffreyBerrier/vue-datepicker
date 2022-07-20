@@ -98,38 +98,38 @@ const openCalendar = () => {
 </template>
 
 <style>
-#vue-calendar .calendar_input {
+.vue-calendar .calendar_input {
   background-color: var(--calendar-input-bg);
   border-color: var(--calendar-input-border);
   @apply flex items-center h-[50px] cursor-pointer px-4 border;
 }
-#vue-calendar .calendar_input-calendar {
+.vue-calendar .calendar_input-calendar {
   @apply mr-4;
 }
-#vue-calendar .calendar_input-calendar--hasnt-checkIn {
+.vue-calendar .calendar_input-calendar--hasnt-checkIn {
   @apply text-gray-300;
 }
-#vue-calendar .calendar_input-calendar--checkIn {
+.vue-calendar .calendar_input-calendar--checkIn {
   @apply text-gray-700;
 }
 
-#vue-calendar .calendar_input-text {
+.vue-calendar .calendar_input-text {
   @apply flex items-center m-0;
 }
-#vue-calendar .calendar_input-text--hasnt-checkIn {
+.vue-calendar .calendar_input-text--hasnt-checkIn {
   @apply text-gray-300;
 }
-#vue-calendar .calendar_input-text--checkIn {
+.vue-calendar .calendar_input-text--checkIn {
   @apply text-gray-700;
 }
 
-#vue-calendar .calendar_input-arrowRight {
+.vue-calendar .calendar_input-arrowRight {
   @apply mx-4;
 }
-#vue-calendar .calendar_input-arrowRight--hasnt-checkIn {
+.vue-calendar .calendar_input-arrowRight--hasnt-checkIn {
   @apply text-gray-300;
 }
-#vue-calendar .calendar_input-arrowRight--checkIn {
+.vue-calendar .calendar_input-arrowRight--checkIn {
   @apply text-gray-700;
 }
 </style>

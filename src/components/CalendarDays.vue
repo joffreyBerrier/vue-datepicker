@@ -30,7 +30,7 @@ const days: Ref<HeaderDay[]> = ref([
 </template>
 
 <style>
-#vue-calendar .calendar_wrapper_content-header-days {
+.vue-calendar .calendar_wrapper_content-header-days {
   @apply grid grid-cols-7 text-center py-6 text-sm;
 }
 </style>
