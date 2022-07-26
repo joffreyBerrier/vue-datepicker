@@ -8,7 +8,7 @@ export default {
 import { computed, ref, onBeforeMount, onUnmounted } from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";
 
-import { format, formatUtc } from "../plugins/day";
+import { format, formatUtc, isAfterOrEqual } from "../plugins/day";
 import BaseIcon from "./BaseIcon.vue";
 import CalendarDays from "./CalendarDays.vue";
 import CalendarHeader from "./CalendarHeader.vue";
@@ -609,25 +609,42 @@ const inWeeklyPeriods = (day: Day) => {
 };
 
 const inWeeklyPeriodsCheckin = (day: Day) => {
-  return (
-    props.checkIn !== day.date &&
-    currentPeriod.value?.nextEnableDate > day.date &&
-    (currentPeriod.value?.periodType === "weekly_by_saturday" ||
-      currentPeriod.value?.periodType === "weekly_by_sunday" ||
-      currentPeriod.value?.periodType === "weekly_by_monday") &&
-    (saturdayWeeklyPeriods.value.includes(day.formatDay) ||
-      sundayWeeklyPeriods.value.includes(day.formatDay) ||
-      mondayWeeklyPeriods.value.includes(day.formatDay)) &&
-    (day.date.getDay() === 6 ||
-      day.date.getDay() === 0 ||
-      day.date.getDay() === 1)
+  const isAfterNexteEnableDate = isAfterOrEqual(
+    day.date,
+    currentPeriod.value?.nextEnableDate
   );
+
+  if (props.checkIn !== day.date && !isAfterNexteEnableDate) {
+    if (currentPeriod.value?.periodType === "weekly_by_saturday") {
+      return (
+        saturdayWeeklyPeriods.value.includes(day.formatDay) &&
+        day.date.getDay() === 6
+      );
+    } else if (currentPeriod.value?.periodType === "weekly_by_sunday") {
+      return (
+        sundayWeeklyPeriods.value.includes(day.formatDay) &&
+        day.date.getDay() === 0
+      );
+    } else if (currentPeriod.value?.periodType === "weekly_by_monday") {
+      return (
+        mondayWeeklyPeriods.value.includes(day.formatDay) &&
+        day.date.getDay() === 1
+      );
+    }
+  }
+
+  return false;
 };
 
 const inNightlyPeriod = (day: Day) => {
+  const isAfterNexteEnableDate = isAfterOrEqual(
+    day.date,
+    currentPeriod.value?.nextEnableDate
+  );
+
   return (
     props.checkIn !== day.date &&
-    currentPeriod.value?.nextEnableDate > day.date &&
+    !isAfterNexteEnableDate &&
     currentPeriod.value?.periodType === "nightly" &&
     nightlyPeriods.value.includes(day.formatDay)
   );
@@ -637,10 +654,10 @@ const inDisabledDay = (day: Day) => {
   return (
     (props.disabledDaysBeforeDayDate &&
       day.formatDay !== formatToday.value &&
-      today.value > day.date) ||
+      isDateBeforeOrEqual(day.date, today.value)) ||
     (props.disabledDaysAfterDayDate &&
       day.formatDay !== formatToday.value &&
-      today.value < day.date) ||
+      isDateAfter(day.date, today.value)) ||
     (props.checkIn &&
       !props.checkOut &&
       isDateBefore(day.date, props.checkIn)) ||
@@ -674,6 +691,16 @@ const dayMouseLeave = () => {
   removeTooltip();
 };
 
+const setCheckIn = (day) => {
+  emit("update:checkIn", day.date);
+  getNextBookingDate(day);
+  setMinimumDuration(day.date);
+  const cp = getCurrentPeriod(day);
+  currentPeriod.value = cp;
+  hoveringDates.value = [];
+  hoveringPeriod.value = cp;
+};
+
 // Trigger each time the click on day is triggered
 const dayClicked = (day: Day): void => {
   emit("select-booking-date", day, getBooking(day));
@@ -704,19 +731,11 @@ const dayClicked = (day: Day): void => {
     if (!props.showYear) showCalendar.value = false;
   } else if (!props.checkIn) {
     // CheckIn
-    emit("update:checkIn", day.date);
-    getNextBookingDate(day);
-    setMinimumDuration(day.date);
-    const cp = getCurrentPeriod(day);
-    currentPeriod.value = cp;
-    hoveringPeriod.value = cp;
+    setCheckIn(day);
   } else {
     // CheckIn + CheckOut
-    emit("update:checkIn", day.date);
+    setCheckIn(day);
     emit("update:checkOut", null);
-    getNextBookingDate(day);
-    currentPeriod.value = getCurrentPeriod(day);
-    hoveringDates.value = [];
   }
 };
 // // Récupère la prochaine date de booking
@@ -921,12 +940,9 @@ const getBookingType = (day: Day): string | null => {
                       !isInCheckoutHalfDay(day),
                   },
                   // Disabled date
-                  {
-                    'calendar_day--disabled': inDisabledDay(day),
-                  },
                   // Hovering date
                   {
-                    'calendar_day--hovering':
+                    'calendar_day--hovering tamere':
                       (!checkIn &&
                         checkIn !== day.date &&
                         hoveringDay === day.date) ||
@@ -945,9 +961,9 @@ const getBookingType = (day: Day): string | null => {
                     'calendar_day--in-period':
                       inWeeklyPeriods(day) || inNextPeriodDisabledDates(day),
                   },
-                  // CheckIn saturday / sunday period
+                  // CheckIn saturday / sunday / monday period
                   {
-                    'calendar_day--in-period-checkIn':
+                    'calendar_day--in-period-checkIn bg-red-300':
                       inWeeklyPeriodsCheckin(day) || inNightlyPeriod(day),
                   },
                 ]"
@@ -1048,6 +1064,10 @@ const getBookingType = (day: Day): string | null => {
 .vue-calendar .calendar_day-wrap--disabled {
   @apply pointer-events-none;
 }
+.vue-calendar .calendar_day-wrap--disabled .calendar_day {
+  background-color: var(--day-disabled);
+  @apply pointer-events-none font-extralight;
+}
 .vue-calendar .calendar_tooltip {
   @apply absolute top-full left-1/2 transform -translate-x-1/2 shadow-sm border p-3 text-xs z-20 text-center w-max;
   width: max-content;
@@ -1065,10 +1085,6 @@ const getBookingType = (day: Day): string | null => {
 .vue-calendar .calendar_day--checkIn-checkOut,
 .vue-calendar .calendar_day--checkIn-checkOut.calendar_day--hovering {
   background-color: var(--day-checkIn-checkOut);
-}
-.vue-calendar .calendar_day--disabled {
-  background-color: var(--day-disabled);
-  @apply pointer-events-none font-extralight;
 }
 .vue-calendar .calendar_day--hovering,
 .vue-calendar .calendar_day_between--checkIn-checkOut {
