@@ -1,12 +1,14 @@
 import { default as dayjs } from "dayjs";
 import type { UnitType, ManipulateType } from "dayjs";
-import { default as utc } from "dayjs/plugin/utc";
 import { default as isBetween } from "dayjs/plugin/isBetween";
+import { default as isSameOrAfter } from "dayjs/plugin/isSameOrAfter";
 import { default as isSameOrBefore } from "dayjs/plugin/isSameOrBefore";
+import { default as utc } from "dayjs/plugin/utc";
 
-dayjs.extend(utc);
 dayjs.extend(isBetween);
+dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
+dayjs.extend(utc);
 
 // Format DayJs
 const format = (date: Date, format: string): string => {
@@ -25,14 +27,25 @@ const isAfter = (time1: Date, time2: Date): boolean => {
   const d1 = dayjs(time1).utc(true);
   const d2 = dayjs(time2).utc(true);
 
-  return d1.isAfter(d2);
+  return d1.isAfter(d2, "day");
+};
+
+const isAfterOrEqual = (
+  time1: string | Date,
+  time2: string | Date
+): boolean => {
+  const d1 = dayjs(time1).utc(true);
+  const d2 = dayjs(time2).utc(true);
+
+  // return d1 => d2;
+  return d1.isSameOrAfter(d2, "day");
 };
 
 const isBefore = (time1: string | Date, time2: string | Date): boolean => {
   const d1 = dayjs(time1).utc(true);
   const d2 = dayjs(time2).utc(true);
 
-  return d1.isBefore(d2);
+  return d1.isBefore(d2, "day");
 };
 
 const isBeforeOrEqual = (
@@ -42,7 +55,7 @@ const isBeforeOrEqual = (
   const d1 = dayjs(time1).utc(true);
   const d2 = dayjs(time2).utc(true);
 
-  return d1.isSameOrBefore(d2);
+  return d1.isSameOrBefore(d2, "day");
 };
 
 const getDateDiff = (
@@ -125,6 +138,7 @@ export {
   getDatesBetweenTwoDates,
   getNextDate,
   isAfter,
+  isAfterOrEqual,
   isBefore,
   isBeforeOrEqual,
   isBetweenDate,

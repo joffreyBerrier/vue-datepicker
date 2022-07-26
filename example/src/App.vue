@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import Calendar from "./components/Calendar.vue";
+import BaseCalendar from "./components";
 
 import type { Ref } from "vue";
-import type { Booking, Period } from "./types";
+import type { Booking, Period } from "../../src/types";
 
 const bookedDates = ref(["2022-05-13", "2022-05-12"]);
 const bookingColor = ref({
@@ -27,6 +27,7 @@ const bookingDates: Ref<Booking[]> = ref([
     type: "contract",
   },
 ]);
+
 const periodDates: Ref<Period[]> = ref([
   {
     startAt: "2022-08-06",
@@ -130,7 +131,6 @@ const checkOut = ref(new Date("2022-07-10"));
 const nextBookedDates: Ref<Booking[]> = ref([]);
 
 const showYear = ref(false);
-const alwaysVisible = ref(false);
 
 const toggleCalendar = () => {
   showYear.value = !showYear.value;
@@ -149,6 +149,9 @@ const renderNextMonth = () => {
 
 <template>
   <div class="p-4">
+    <p class="text-blue-400">
+      What you see comes from the <strong>example folder</strong>
+    </p>
     <h1 class="text-4xl font-bold text-center mb-4">VueCalendar</h1>
 
     <div class="flex items-center mb-4">
@@ -158,20 +161,16 @@ const renderNextMonth = () => {
       </button>
     </div>
 
-    <Calendar
-      :alwaysVisible="alwaysVisible"
-      :booked-dates="bookedDates"
+    <BaseCalendar
       :booking-color="bookingColor"
       :booking-dates="bookingDates"
-      :disabled-days-before-day-date="!showYear"
       :period-dates="periodDates"
-      :show-input-calendar="!showYear"
       :show-year="showYear"
-      @render-next-month="renderNextMonth"
-      @select-booking-date="clickOnDate"
-      formatDate="DD-MM-YYYY"
+      @toggleCalendar="toggleCalendar"
       v-model:checkIn="checkIn"
       v-model:checkOut="checkOut"
+      @clickOnDate="clickOnDate"
+      @renderNextMonth="renderNextMonth"
     />
   </div>
 </template>
