@@ -176,8 +176,8 @@ const months = ref([]) as Ref<Month[]>;
 
 // Format checkIn, checkOut with correct UTC
 if (props.checkIn && props.checkOut) {
-  emit("update:checkIn", formatUtc(props.checkIn));
-  emit("update:checkOut", formatUtc(props.checkOut));
+  emit("update:checkIn", formatUtc(props.checkIn), false);
+  emit("update:checkOut", formatUtc(props.checkOut), false);
 }
 
 const createStartActiveIndex = () => {
