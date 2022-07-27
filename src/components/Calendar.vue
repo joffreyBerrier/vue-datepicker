@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, ref, onBeforeMount, onUnmounted } from "vue";
+import { computed, ref, onBeforeMount, onUnmounted, watch, toRef } from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";
 
 import { format, formatUtc, isAfterOrEqual } from "../plugins/day";
@@ -381,6 +381,15 @@ const datesBetweenCheckInCheckOutDates: ComputedRef<string[]> = computed(() => {
   return [];
 });
 
+// Watch checkIn and checkOut props dates
+const checkInDate = toRef(props, "checkIn");
+const checkOutDate = toRef(props, "checkOut");
+watch([checkInDate, checkOutDate], () => {
+  if (!checkInDate.value && !checkOutDate.value) {
+    clearDataWhenDateIsNull();
+  }
+});
+
 const clearMinimumDurationDate = () => {
   nextPeriod.value = null;
   lastEnableDaysOfPeriod.value = null;
@@ -701,6 +710,19 @@ const setCheckIn = (day) => {
   hoveringPeriod.value = cp;
 };
 
+const clearHoveringDates = () => {
+  hoveringPeriod.value = [];
+  hoveringDates.value = [];
+  hoveringDay.value = null;
+};
+
+const clearDataWhenDateIsNull = () => {
+  clearMinimumDurationDate();
+  currentPeriod.value = null;
+  clearHoveringDates();
+  nextDisableBookingDate.value = null;
+};
+
 // Trigger each time the click on day is triggered
 const dayClicked = (day: Day): void => {
   emit("select-booking-date", day, getBooking(day));
@@ -711,11 +733,7 @@ const dayClicked = (day: Day): void => {
     // CheckIn when already CheckIn
     emit("update:checkIn", null);
     emit("update:checkOut", null);
-    clearMinimumDurationDate();
-    nextDisableBookingDate.value = null;
-    currentPeriod.value = null;
-    hoveringDates.value = [];
-    hoveringDay.value = null;
+    clearDataWhenDateIsNull();
   } else if (
     (props.checkIn && !props.checkOut) ||
     (isInBookingDates(day) &&

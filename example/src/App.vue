@@ -132,6 +132,16 @@ const nextBookedDates: Ref<Booking[]> = ref([]);
 
 const showYear = ref(false);
 
+const placeholder = {
+  checkIn: "Check-in",
+  checkOut: "Check-out",
+};
+
+const clearDates = () => {
+  checkIn.value = null;
+  checkOut.value = null;
+};
+
 const toggleCalendar = () => {
   showYear.value = !showYear.value;
 };
@@ -155,9 +165,18 @@ const renderNextMonth = () => {
     <h1 class="text-4xl font-bold text-center mb-4">VueCalendar</h1>
 
     <div class="flex items-center mb-4">
-      <p class="font-bold pr-2">Show year:</p>
-      <button class="p-2 bg-blue-100" @click="toggleCalendar">
-        {{ showYear ? "No" : "Yes" }}
+      <button
+        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2 mr-4"
+        @click="toggleCalendar"
+      >
+        {{ showYear ? "Show by month" : "Show by year" }}
+      </button>
+
+      <button
+        @click="clearDates"
+        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2"
+      >
+        Clear dates
       </button>
     </div>
 
@@ -169,6 +188,7 @@ const renderNextMonth = () => {
       @toggleCalendar="toggleCalendar"
       v-model:checkIn="checkIn"
       v-model:checkOut="checkOut"
+      :placeholder="placeholder"
       @clickOnDate="clickOnDate"
       @renderNextMonth="renderNextMonth"
     />
