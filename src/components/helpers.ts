@@ -1,5 +1,6 @@
 import {
   addDate,
+  format,
   getDateDiff,
   getDatesBetweenTwoDates,
   getNextDate,
@@ -59,21 +60,39 @@ const getNextDay = (date: Date, dayIndex: number): Date => {
 };
 
 const sortDatesObj = (dates: Booking[]): Booking[] => {
-  return dates.sort((a, b) => {
-    const aa = a.checkInDate.split("-").reverse().join();
-    const bb = b.checkInDate.split("-").reverse().join();
-
-    return aa < bb ? -1 : aa > bb ? 1 : 0;
+  dates.map((d) => {
+    return {
+      ...d,
+      checkInDate: format(d.checkInDate, "YYYY/MM/DD"),
+    };
   });
+
+  return dates
+    .sort((a, b) => {
+      const aa = a.checkInDate.split("/").reverse().join();
+      const bb = b.checkInDate.split("/").reverse().join();
+
+      return aa < bb ? -1 : aa > bb ? 1 : 0;
+    })
+    .map((d) => {
+      return {
+        ...d,
+        checkInDate: format(d.checkInDate, "YYYY-MM-DD"),
+      };
+    });
 };
 
 const sortDates = (dates: string[]): string[] => {
-  return dates.sort((a, b) => {
-    const aa = a.split("-").reverse().join();
-    const bb = b.split("-").reverse().join();
+  dates.map((d) => format(d, "YYYY/MM/DD"));
 
-    return aa < bb ? -1 : aa > bb ? 1 : 0;
-  });
+  return dates
+    .sort((a, b) => {
+      const aa = a.split("/").reverse().join();
+      const bb = b.split("/").reverse().join();
+
+      return aa < bb ? -1 : aa > bb ? 1 : 0;
+    })
+    .map((d) => format(d, "YYYY-MM-DD"));
 };
 
 const getDaysArray = (start: Date | string, end: Date | string): Date[] => {

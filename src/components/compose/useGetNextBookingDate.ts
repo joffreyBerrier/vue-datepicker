@@ -1,7 +1,9 @@
-import { format } from "../../plugins/day";
+import { format, formatDateUtc } from "../../plugins/day";
 import { addDays } from "../helpers";
 
+import type { ComputedRef } from "vue";
 import type { Booking } from "~/types";
+
 import { isDateBefore, validateDateBetweenTwoDates } from "../helpers";
 
 const validateDateBeforeDate = (fromDate: string, givenDate: string) => {
@@ -9,12 +11,12 @@ const validateDateBeforeDate = (fromDate: string, givenDate: string) => {
 };
 
 const useGetNextBookingDate = (
-  bookingDates: Booking[],
+  bookingDates: ComputedRef<Booking[]>,
   date: Date
 ): Date | undefined => {
-  if (bookingDates.length > 0) {
+  if (bookingDates.value.length > 0) {
     const nextDateFormatted = format(addDays(date, 1), "YYYY-MM-DD");
-    const nextBooking = bookingDates.find(
+    const nextBooking = bookingDates.value.find(
       (booking) =>
         validateDateBeforeDate(booking.checkInDate, nextDateFormatted) ||
         validateDateBetweenTwoDates(
@@ -25,7 +27,7 @@ const useGetNextBookingDate = (
     ) as Booking | undefined;
 
     if (nextBooking && nextBooking.checkInDate) {
-      return new Date(nextBooking.checkInDate);
+      return formatDateUtc(nextBooking.checkInDate);
     }
   }
 };

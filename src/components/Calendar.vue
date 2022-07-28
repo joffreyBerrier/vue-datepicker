@@ -5,7 +5,15 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, ref, onBeforeMount, onUnmounted, watch, toRef } from "vue";
+import {
+  computed,
+  ref,
+  onBeforeMount,
+  onUnmounted,
+  watch,
+  watchEffect,
+  toRef,
+} from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";
 
 import { format, formatUtc, isAfterOrEqual } from "../plugins/day";
@@ -42,6 +50,7 @@ import {
 import type {
   Booking,
   BookingColor,
+  CheckInCheckOutHalfDay,
   CurrentPeriod,
   Day,
   FlatBooking,
@@ -285,71 +294,58 @@ const bookingColorT = toRef(
   "bookingColor"
 ) as unknown as Ref<BookingColor>;
 
-let { disabledDates, newBookingDates } = useCreateHalfDayDates(
-  bookingDatesT.value,
-  bookedDatesT.value,
-  bookingColorT.value,
-  formattingFormat
-);
-let bookingStyle = useBookingStyle(
-  bookingDatesT.value,
-  bookingColorT.value,
-  formattingFormat
-);
-let flatBookingDates = useFlatBooking(
-  bookingDatesT.value,
-  bookingColorT.value,
-  formattingFormat
-);
-let checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
-  bookingDatesT.value,
-  bookedDatesT.value
-);
-
-watch(
-  [bookingDatesT],
-  () => {
-    updateBookingsStyle();
-  },
-  { deep: true }
-);
-
-const updateBookingsStyle = () => {
-  console.log("updateBookingsStyle");
-
-  const res = useCreateHalfDayDates(
+const disabledDates = computed(() => {
+  return useCreateHalfDayDates(
     bookingDatesT.value,
     bookedDatesT.value,
     bookingColorT.value,
     formattingFormat
+  ).disabledDates;
+});
+const newBookingDates = computed(() => {
+  return useCreateHalfDayDates(
+    bookingDatesT.value,
+    bookedDatesT.value,
+    bookingColorT.value,
+    formattingFormat
+  ).newBookingDates;
+});
+const flatBookingDates = computed(() => {
+  return useFlatBooking(
+    bookingDatesT.value,
+    bookingColorT.value,
+    formattingFormat
   );
+});
 
-  disabledDates = res.disabledDates;
-  newBookingDates = res.newBookingDates;
-  bookingStyle = useBookingStyle(
+let checkIncheckOutHalfDay = ref({}) as Ref<CheckInCheckOutHalfDay>;
+checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
+  bookingDatesT.value,
+  bookedDatesT.value
+);
+
+const bookingStyle = computed(() => {
+  return useBookingStyle(
     bookingDatesT.value,
     bookingColorT.value,
     formattingFormat
   );
-  flatBookingDates = useFlatBooking(
-    bookingDatesT.value,
-    bookingColorT.value,
-    formattingFormat
-  );
+});
+
+watchEffect(() => {
   checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
     bookingDatesT.value,
     bookedDatesT.value
   );
-};
 
-// Add style on days
-months.value.forEach((m) => {
-  m.days.forEach((day: Day) => {
-    day.style = {
-      background: !checkIncheckOutHalfDay.value[day.formatDay]
-        ? bookingStyle.value[day.formatDay]
-        : "",
-    };
+  months.value.forEach((m) => {
+    m.days.forEach((day: Day) => {
+      day.style = {
+        background: !checkIncheckOutHalfDay.value[day.formatDay]
+          ? bookingStyle.value.value[day.formatDay]
+          : "",
+      };
+    });
   });
 });
 
@@ -377,18 +373,6 @@ const paginate = (operator: string) => {
   if (operator === "+") {
     activeIndex.value += count;
     emit("renderNextMonth");
-  }
-
-  if (operator === "+" || props.showYear) {
-    const res = useCreateHalfDayDates(
-      bookingDatesT.value,
-      bookedDatesT.value,
-      bookingColorT.value,
-      formattingFormat
-    );
-
-    disabledDates = res.disabledDates;
-    newBookingDates = res.newBookingDates;
   }
 };
 
@@ -711,7 +695,7 @@ const inDisabledDay = (day: Day) => {
     (props.checkIn &&
       !props.checkOut &&
       isDateBefore(day.date, props.checkIn)) ||
-    (disabledDates.value.includes(day.formatDay) &&
+    (disabledDates.value.value.includes(day.formatDay) &&
       !checkIncheckOutHalfDay.value[day.formatDay]) ||
     (props.checkIn &&
       nextDisableBookingDate.value &&
@@ -799,7 +783,7 @@ const dayClicked = (day: Day): void => {
 };
 // // Récupère la prochaine date de booking
 const getNextBookingDate = (day: Day) => {
-  if (newBookingDates.length > 0) {
+  if (newBookingDates.value.length > 0) {
     let newDate = day.date;
     if (checkIncheckOutHalfDay.value[day.formatDay]?.checkOut) {
       newDate = addDays(day.date, 1);
@@ -849,7 +833,7 @@ const getCurrentPeriod = (day: Day) => {
 };
 const isInBookingDates = (day: Day) => {
   return (
-    flatBookingDates.value.some((x) => x.value.includes(day.formatDay)) &&
+    flatBookingDates.value.value.some((x) => x.value.includes(day.formatDay)) &&
     day.belongsToThisMonth &&
     !isInCheckoutHalfDay(day)
   );
@@ -871,10 +855,10 @@ const isInCheckoutHalfDay = (day: Day): boolean => {
 };
 const getBooking = (day: Day): FlatBooking | null => {
   if (
-    flatBookingDates.value.some((b) => b.value.includes(day.formatDay)) &&
+    flatBookingDates.value.value.some((b) => b.value.includes(day.formatDay)) &&
     day.belongsToThisMonth
   ) {
-    const flatBooking = flatBookingDates.value.find((b) =>
+    const flatBooking = flatBookingDates.value.value.find((b) =>
       b.value.includes(day.formatDay)
     );
 
@@ -901,26 +885,30 @@ const getBookingType = (day: Day): string | null => {
       @open-calendar="openCalendar"
     />
 
-    <div v-if="showYear" class="calendar_paginate-wrapper">
-      <button
-        data-testid="calendar_paginate-prev--button"
-        type="button"
-        :disabled="disabledPagination.left"
-        class="calendar_paginate-button"
-        @click="paginate('-')"
-      >
-        <base-icon name="chevronLeft" />
-      </button>
-      <span class="calendar_paginate-year">{{ currentYear }}</span>
-      <button
-        data-testid="calendar_paginate-next--button"
-        type="button"
-        :disabled="disabledPagination.right"
-        class="calendar_paginate-button"
-        @click="paginate('+')"
-      >
-        <base-icon name="chevronRight" />
-      </button>
+    <div>
+      <div v-if="showYear" class="calendar_paginate-wrapper">
+        <button
+          data-testid="calendar_paginate-prev--button"
+          type="button"
+          :disabled="disabledPagination.left"
+          class="calendar_paginate-button"
+          @click="paginate('-')"
+        >
+          <base-icon name="chevronLeft" />
+        </button>
+        <span class="calendar_paginate-year">{{ currentYear }}</span>
+        <button
+          data-testid="calendar_paginate-next--button"
+          type="button"
+          :disabled="disabledPagination.right"
+          class="calendar_paginate-button"
+          @click="paginate('+')"
+        >
+          <base-icon name="chevronRight" />
+        </button>
+      </div>
+
+      <slot name="header" />
     </div>
 
     <div
@@ -1034,7 +1022,7 @@ const getBookingType = (day: Day): string | null => {
                     isInCheckinHalfDayAndCheckin(day) ||
                     isInCheckinHalfDayAndNotCheckin(day)
                   "
-                  :style="{ background: bookingStyle[day.formatDay] }"
+                  :style="{ background: bookingStyle.value[day.formatDay] }"
                   :class="[
                     'calendar_day_haldDay',
                     {

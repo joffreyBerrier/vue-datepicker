@@ -9,6 +9,7 @@ const bookedDates = ref(["2022-05-13", "2022-05-12"]);
 const bookingColor = ref({
   admin: "#9dc1c9",
   contract: "#a56a0b",
+  test: "#f5a623",
 });
 const bookingDates: Ref<Booking[]> = ref([
   {

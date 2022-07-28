@@ -11,7 +11,7 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(utc);
 
 // Format DayJs
-const format = (date: Date, format: string): string => {
+const format = (date: Date | string, format: string): string => {
   const d = dayjs(date).utc(true);
 
   return d.format(format);
@@ -21,6 +21,12 @@ const formatUtc = (date: Date | string): string => {
   const d = dayjs(date);
 
   return d.utc(true).format();
+};
+
+const formatDateUtc = (date: Date | string): Date => {
+  const d = dayjs(date);
+
+  return d.utc(true).toDate();
 };
 
 const isAfter = (time1: Date, time2: Date): boolean => {
@@ -133,6 +139,7 @@ const getDatesBetweenTwoDates = (
 export {
   addDate,
   format,
+  formatDateUtc,
   formatUtc,
   getDateDiff,
   getDatesBetweenTwoDates,
