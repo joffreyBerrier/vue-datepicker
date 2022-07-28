@@ -11,16 +11,20 @@ export const useGetPeriod = (
     periodDates.value.length > 0 &&
     periodDates.value.some((p: Period) => p.periodType === period)
   ) {
-    return periodDates.value
-      .filter((p: Period) => p.periodType === period)
-      .map((p: Period) => {
-        return getDatesBetweenTwoDates(
-          new Date(p.startAt),
-          new Date(p.endAt),
-          formattingFormat
-        );
-      })
-      .flat();
+    return [
+      ...new Set(
+        periodDates.value
+          .filter((p: Period) => p.periodType === period)
+          .map((p: Period) => {
+            return getDatesBetweenTwoDates(
+              new Date(p.startAt),
+              new Date(p.endAt),
+              formattingFormat
+            );
+          })
+          .flat()
+      ),
+    ];
   }
 
   return [];

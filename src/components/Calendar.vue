@@ -307,7 +307,7 @@ let checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
 );
 
 watch(
-  [bookingDatesT, bookedDatesT],
+  [bookingDatesT],
   () => {
     updateBookingsStyle();
   },
@@ -641,9 +641,11 @@ const dayFormat = (date: Date): string => {
 };
 
 // Trigger each time the mouseOver is triggered
-const inNextPeriodDisabledDates = (day: Day): boolean => {
-  return nextPeriodDisableDates.value.includes(day.formatDay);
-};
+// const inNextPeriodDisabledDates = (day: Day): boolean => {
+//   console.log(nextPeriodDisableDates.value);
+
+//   return nextPeriodDisableDates.value.includes(day.formatDay);
+// };
 
 const inWeeklyPeriods = (day: Day) => {
   return (
@@ -999,7 +1001,7 @@ const getBookingType = (day: Day): string | null => {
                   // Disabled date
                   // Hovering date
                   {
-                    'calendar_day--hovering tamere':
+                    'calendar_day--hovering':
                       (!checkIn &&
                         checkIn !== day.date &&
                         hoveringDay === day.date) ||
@@ -1015,12 +1017,11 @@ const getBookingType = (day: Day): string | null => {
                   },
                   // Inactive saturday period
                   {
-                    'calendar_day--in-period':
-                      inWeeklyPeriods(day) || inNextPeriodDisabledDates(day),
+                    'calendar_day--in-period': inWeeklyPeriods(day),
                   },
                   // CheckIn saturday / sunday / monday period
                   {
-                    'calendar_day--in-period-checkIn bg-red-300':
+                    'calendar_day--in-period-checkIn':
                       inWeeklyPeriodsCheckin(day) || inNightlyPeriod(day),
                   },
                 ]"
