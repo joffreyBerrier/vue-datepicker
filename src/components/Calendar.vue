@@ -278,30 +278,69 @@ const nightlyPeriods = computed(() => {
   return useGetPeriod(sortedPeriodDates, "nightly", formattingFormat.value);
 });
 
-const bookingDatesT = props.bookingDates as unknown as Booking[];
-const bookedDatesT = props.bookedDates as unknown as string[];
-const bookingColorT = props.bookingColor as unknown as BookingColor;
+const bookingDatesT = toRef(props, "bookingDates") as unknown as Ref<Booking[]>;
+const bookedDatesT = toRef(props, "bookedDates") as unknown as Ref<string[]>;
+const bookingColorT = toRef(
+  props,
+  "bookingColor"
+) as unknown as Ref<BookingColor>;
 
 let { disabledDates, newBookingDates } = useCreateHalfDayDates(
-  bookingDatesT,
-  bookedDatesT,
-  bookingColorT,
+  bookingDatesT.value,
+  bookedDatesT.value,
+  bookingColorT.value,
   formattingFormat
 );
-const bookingStyle = useBookingStyle(
-  bookingDatesT,
-  bookingColorT,
+let bookingStyle = useBookingStyle(
+  bookingDatesT.value,
+  bookingColorT.value,
   formattingFormat
 );
-const flatBookingDates = useFlatBooking(
-  bookingDatesT,
-  bookingColorT,
+let flatBookingDates = useFlatBooking(
+  bookingDatesT.value,
+  bookingColorT.value,
   formattingFormat
 );
-const checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
-  bookingDatesT,
-  bookedDatesT
+let checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
+  bookingDatesT.value,
+  bookedDatesT.value
 );
+
+watch(
+  [bookingDatesT, bookedDatesT],
+  () => {
+    updateBookingsStyle();
+  },
+  { deep: true }
+);
+
+const updateBookingsStyle = () => {
+  console.log("updateBookingsStyle");
+
+  const res = useCreateHalfDayDates(
+    bookingDatesT.value,
+    bookedDatesT.value,
+    bookingColorT.value,
+    formattingFormat
+  );
+
+  disabledDates = res.disabledDates;
+  newBookingDates = res.newBookingDates;
+  bookingStyle = useBookingStyle(
+    bookingDatesT.value,
+    bookingColorT.value,
+    formattingFormat
+  );
+  flatBookingDates = useFlatBooking(
+    bookingDatesT.value,
+    bookingColorT.value,
+    formattingFormat
+  );
+  checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
+    bookingDatesT.value,
+    bookedDatesT.value
+  );
+};
 
 // Add style on days
 months.value.forEach((m) => {
@@ -342,9 +381,9 @@ const paginate = (operator: string) => {
 
   if (operator === "+" || props.showYear) {
     const res = useCreateHalfDayDates(
-      bookingDatesT,
-      bookedDatesT,
-      bookingColorT,
+      bookingDatesT.value,
+      bookedDatesT.value,
+      bookingColorT.value,
       formattingFormat
     );
 

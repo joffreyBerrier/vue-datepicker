@@ -129,31 +129,39 @@ const periodDates: Ref<Period[]> = ref([
 const checkIn = ref(new Date("2022-07-01"));
 const checkOut = ref(new Date("2022-07-10"));
 const nextBookedDates: Ref<Booking[]> = ref([]);
-
 const showYear = ref(false);
-
 const placeholder = {
   checkIn: "Check-in",
   checkOut: "Check-out",
 };
-
 const clearDates = () => {
   checkIn.value = null;
   checkOut.value = null;
 };
-
 const toggleCalendar = () => {
   showYear.value = !showYear.value;
 };
-
 const clickOnDate = (day: Date, currentBooking: Booking) => {
   console.log(day, currentBooking);
 };
-
 const renderNextMonth = () => {
   if (bookedDates.value.length === 6) {
     bookedDates.value.push(...nextBookedDates);
   }
+};
+const pushBookingDates = () => {
+  bookingDates.value.push(
+    {
+      checkInDate: "2022-09-01",
+      checkOutDate: "2022-09-10",
+      type: "test",
+    },
+    {
+      checkInDate: "2022-09-24",
+      checkOutDate: "2022-09-30",
+      type: "test",
+    }
+  );
 };
 </script>
 
@@ -166,7 +174,7 @@ const renderNextMonth = () => {
 
     <div class="flex items-center mb-4">
       <button
-        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2 mr-4"
+        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2"
         @click="toggleCalendar"
       >
         {{ showYear ? "Show by month" : "Show by year" }}
@@ -174,9 +182,16 @@ const renderNextMonth = () => {
 
       <button
         @click="clearDates"
-        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2"
+        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2 mx-4"
       >
         Clear dates
+      </button>
+
+      <button
+        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2"
+        @click="pushBookingDates"
+      >
+        Push bookings
       </button>
     </div>
 
