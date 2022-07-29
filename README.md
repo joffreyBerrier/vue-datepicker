@@ -1,4 +1,4 @@
-# vue-datepicker 1.3.553
+# vue-datepicker 1.3.59
 
 👊 An easier datePicker in Vue.js 👊
 
@@ -293,7 +293,7 @@ periodDates: [
 
 ## Events
 
-`@renderNextMonth` : fires when the user clicks on paginate
+`@render-next-month` : fires when the user clicks on paginate
 
 #### Example :
 
@@ -335,6 +335,16 @@ periodDates: [
   checkIn: null,
   checkOut: null,
 ```
+
+`select-booking-date` : fires when the user clicks on a day
+Params:
+name | Description
+-------------------------------------|-------------------------
+day | Object on type Day
+booking | Selected Booking
+e | Mouse Event
+
+
 
 # 👊 Done 👊
 

@@ -3,14 +3,14 @@ import { ref } from "vue";
 import BaseCalendar from "./components";
 
 import type { Ref } from "vue";
-import type { Booking, Period } from "../../src/types";
+import type { Booking, Day, Period } from "../../src/types";
 
 const calendar = ref(null);
 const bookedDates = ref(["2022-05-13", "2022-05-12"]);
 const bookingColor = ref({
-  admin: "#9dc1c9",
-  contract: "#a56a0b",
-  test: "#f5a623",
+  admin: "#ACB2EE",
+  contract: "#E1BB84",
+  test: "#ACBA77",
 });
 const bookingDates: Ref<Booking[]> = ref([
   {
@@ -151,6 +151,9 @@ const renderNextMonth = () => {
     bookedDates.value.push(...nextBookedDates);
   }
 };
+const selectBookingDate = (day: Day, booking: Booking, e: Event) => {
+  console.log(day, booking, e);
+};
 const pushBookingDates = () => {
   bookingDates.value.push(
     {
@@ -188,6 +191,7 @@ const pushBookingDates = () => {
       @toggleCalendar="toggleCalendar"
       @clickOnDate="clickOnDate"
       @renderNextMonth="renderNextMonth"
+      @select-booking-date="selectBookingDate"
     >
       <template #header>
         <div class="flex items-center">

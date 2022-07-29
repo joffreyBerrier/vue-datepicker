@@ -32,6 +32,7 @@ import {
   getNextDay,
   isDateAfter,
   isDateBefore,
+  convertHexToRGBA,
   isDateBeforeOrEqual,
   substractDays,
   validateDateBetweenTwoDates,
@@ -353,7 +354,7 @@ watchEffect(() => {
     m.days.forEach((day: Day) => {
       day.style = {
         background: !checkIncheckOutHalfDay.value[day.formatDay]
-          ? bookingStyle.value.value[day.formatDay]
+          ? convertHexToRGBA(bookingStyle.value.value[day.formatDay], 50)
           : "",
       };
     });
@@ -773,8 +774,8 @@ const clearDataWhenDateIsNull = () => {
 };
 
 // Trigger each time the click on day is triggered
-const dayClicked = (day: Day): void => {
-  emit("select-booking-date", day, getBooking(day));
+const dayClicked = (day: Day, e: Event): void => {
+  emit("select-booking-date", day, getBooking(day), e);
 
   if (isInBookingDates(day) && !isInCheckinHalfDayAndCheckin(day)) return;
 
@@ -994,6 +995,7 @@ const getBookingType = (day: Day): string | null => {
             >
               <div
                 v-if="
+                  !isInBookingDates(day) &&
                   day.belongsToThisMonth &&
                   hoveringDay === day.date &&
                   hoveringPeriod
@@ -1010,7 +1012,7 @@ const getBookingType = (day: Day): string | null => {
                 :style="day.style"
                 :class="[
                   // Basic style
-                  'calendar_day z-10',
+                  'calendar_day z-5',
                   // Today
                   {
                     'calendar_day--today': formatToday === day.formatDay,
@@ -1031,7 +1033,6 @@ const getBookingType = (day: Day): string | null => {
                       !isInCheckinHalfDayAndNotCheckin(day) &&
                       !isInCheckoutHalfDay(day),
                   },
-                  // Disabled date
                   // Hovering date
                   {
                     'calendar_day--hovering':
@@ -1059,7 +1060,7 @@ const getBookingType = (day: Day): string | null => {
                   },
                 ]"
                 :data-testid="`day-${format(day.date, formattingFormat)}`"
-                @click="dayClicked(day)"
+                @click="dayClicked(day, $event)"
               >
                 <i
                   v-if="
@@ -1194,7 +1195,7 @@ const getBookingType = (day: Day): string | null => {
   @apply pointer-events-none font-extralight;
 }
 .vue-calendar .calendar_day--day-number {
-  @apply absolute z-[5] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+  @apply absolute z-[6] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
 }
 .vue-calendar .event-none {
   @apply pointer-events-none;
@@ -1240,8 +1241,8 @@ const getBookingType = (day: Day): string | null => {
   border-color: var(--calendar-paginate-hover-border);
   color: var(--calendar-today-text);
 }
-.vue-calendar .calendar_day--booking {
-  @apply opacity-80;
+.vue-calendar .calendar_day-wrap--disabled .calendar_day--booking {
+  @apply pointer-events-auto;
 }
 /* New */
 .vue-calendar .calendar_day_haldDay {
