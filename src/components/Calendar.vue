@@ -180,8 +180,8 @@ const emit = defineEmits([
   "update:checkIn",
   "update:checkOut",
   "select-booking-date",
-  "renderPreviousMonth",
-  "renderNextMonth",
+  "render-previous-month",
+  "render-next-month",
 ]);
 
 const formattingFormat = ref("YYYY-MM-DD");
@@ -194,26 +194,24 @@ if (props.checkIn && props.checkOut) {
   emit("update:checkOut", formatUtc(props.checkOut), false);
 }
 
-const createStartActiveIndex = () => {
-  if (props.showYear) {
-    const a = new Date(props.startDate).getFullYear();
-    const b = new Date(new Date()).getFullYear();
+const paginateToToday = (): void => {
+  const today = new Date();
+  const todayMonth = getMonth(today);
+  const currentYear = getYear(today);
+  const startYear = getYear(props.startDate);
 
-    return (b - a) * 12;
-  } else {
-    const startDate = props.checkIn ? new Date(props.checkIn) : props.startDate;
-    const todayMonth = props.checkIn ? new Date(props.checkOut) : new Date();
-    const startIndex = getMonthDiff(startDate, todayMonth);
+  const numberOfYears =
+    currentYear - startYear > 0 ? currentYear - startYear : 0;
 
-    if (!props.checkIn) {
-      return startIndex;
-    } else {
-      return startIndex + getMonthDiff(props.startDate, startDate);
-    }
-  }
+  const numberOfMonth = props.showYear
+    ? numberOfYears * 12
+    : numberOfYears * 12 + todayMonth;
+
+  activeIndex.value = Math.floor(numberOfMonth);
 };
 
-let activeIndex = ref(createStartActiveIndex());
+const activeIndex = ref(0);
+paginateToToday();
 
 // Current month of the current day
 months.value.push(useCreateMonth(props.startDate));
@@ -234,7 +232,7 @@ const {
 watch(
   () => props.showYear,
   () => {
-    activeIndex = ref(createStartActiveIndex());
+    paginateToToday();
   }
 );
 
@@ -340,9 +338,31 @@ const bookingStyle = computed(() => {
   return useBookingStyle(
     bookingDatesT.value,
     bookingColorT.value,
-    formattingFormat
+    formattingFormat,
+    checkIncheckOutHalfDay
   );
 });
+
+const setHalfDayStyle = (formatDay: string, key: string) => {
+  if (
+    bookingStyle.value.value[formatDay] &&
+    typeof bookingStyle.value.value[formatDay] === "object" &&
+    (bookingStyle.value.value[formatDay].checkIn ||
+      bookingStyle.value.value[formatDay].checkOut)
+  ) {
+    return {
+      background: bookingStyle.value.value[formatDay][key],
+      border: "1px solid white",
+    };
+  } else if (bookingStyle.value.value[formatDay]) {
+    return { background: bookingStyle.value.value[formatDay], border: "" };
+  } else {
+    return {
+      background: "",
+      border: "",
+    };
+  }
+};
 
 watchEffect(() => {
   checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
@@ -378,27 +398,14 @@ const disabledPagination: ComputedRef<{ left: boolean; right: boolean }> =
 const paginate = (operator: string) => {
   const count = props.showYear ? 12 : 1;
 
-  if (operator === "-") {
+  if (activeIndex.value > 0 && operator === "-") {
     activeIndex.value -= count;
-    emit("renderPreviousMonth");
+    emit("render-previous-month");
   }
   if (operator === "+") {
     activeIndex.value += count;
-    emit("renderNextMonth");
+    emit("render-next-month");
   }
-};
-
-const paginateToToday = (): number => {
-  const today = new Date();
-  const todayMonth = getMonth(today);
-  const currentYear = getYear(today);
-  const startYear = getYear(props.startDate);
-
-  const numberOfYears =
-    currentYear - startYear > 0 ? currentYear - startYear : 0;
-  const numberOfMonth = numberOfYears * 12 + todayMonth;
-
-  activeIndex.value = numberOfMonth;
 };
 
 const currentPeriod: Ref<CurrentPeriod | null> = ref(null);
@@ -777,7 +784,18 @@ const clearDataWhenDateIsNull = () => {
 const dayClicked = (day: Day, e: Event): void => {
   emit("select-booking-date", day, getBooking(day), e);
 
-  if (isInBookingDates(day) && !isInCheckinHalfDayAndCheckin(day)) return;
+  const disabledClicked =
+    Boolean(checkIncheckOutHalfDay.value[day.formatDay]?.checkIn) &&
+    Boolean(props.checkIn) &&
+    !props.checkOut;
+
+  const disabledClickedIfCheckInCheckOutHalfday =
+    checkIncheckOutHalfDay.value[day.formatDay]?.checkIn &&
+    checkIncheckOutHalfDay.value[day.formatDay]?.checkOut;
+
+  if (disabledClickedIfCheckInCheckOutHalfday) return;
+
+  if (isInBookingDates(day) && !disabledClicked) return;
 
   if (props.checkIn === day.date) {
     // CheckIn when already CheckIn
@@ -1064,17 +1082,25 @@ const getBookingType = (day: Day): string | null => {
               >
                 <i
                   v-if="
-                    isInCheckoutHalfDay(day) ||
                     isInCheckinHalfDayAndCheckin(day) ||
                     isInCheckinHalfDayAndNotCheckin(day)
                   "
-                  :style="{ background: bookingStyle.value[day.formatDay] }"
+                  :style="setHalfDayStyle(day.formatDay, 'checkIn')"
                   :class="[
                     'calendar_day_haldDay',
                     {
                       'calendar_day_haldDay--checkIn':
                         isInCheckinHalfDayAndCheckin(day) ||
                         isInCheckinHalfDayAndNotCheckin(day),
+                    },
+                  ]"
+                />
+                <i
+                  v-if="isInCheckoutHalfDay(day)"
+                  :style="setHalfDayStyle(day.formatDay, 'checkOut')"
+                  :class="[
+                    'calendar_day_haldDay',
+                    {
                       'calendar_day_haldDay--checkOut':
                         isInCheckoutHalfDay(day),
                     },

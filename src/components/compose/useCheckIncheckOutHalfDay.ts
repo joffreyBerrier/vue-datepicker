@@ -57,13 +57,30 @@ export const useCheckIncheckOutHalfDay = (
     createHalfDayDatesWithBookedDates(bookedDatesProps).checkIncheckOutHalfDay;
 
   bookingDates.forEach((booking: Booking) => {
-    checkIncheckOutHalfDay.value[booking.checkInDate] = {
-      checkIn: true,
-    };
-    checkIncheckOutHalfDay.value[booking.checkOutDate] = {
-      checkOut: true,
-    };
+    if (!checkIncheckOutHalfDay.value[booking.checkInDate]) {
+      checkIncheckOutHalfDay.value[booking.checkInDate] = {
+        checkIn: true,
+      };
+    } else {
+      checkIncheckOutHalfDay.value[booking.checkInDate] = {
+        checkIn: true,
+        checkOut: true,
+      };
+    }
+
+    if (!checkIncheckOutHalfDay.value[booking.checkOutDate]) {
+      checkIncheckOutHalfDay.value[booking.checkOutDate] = {
+        checkOut: true,
+      };
+    } else {
+      checkIncheckOutHalfDay.value[booking.checkOutDate] = {
+        checkIn: true,
+        checkOut: true,
+      };
+    }
   });
+
+  console.log(checkIncheckOutHalfDay);
 
   return checkIncheckOutHalfDay;
 };

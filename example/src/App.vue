@@ -20,12 +20,22 @@ const bookingDates: Ref<Booking[]> = ref([
   },
   {
     checkInDate: "2022-08-01",
-    checkOutDate: "2022-08-20",
+    checkOutDate: "2022-08-10",
     type: "contract",
   },
   {
+    checkInDate: "2022-08-10",
+    checkOutDate: "2022-08-20",
+    type: "admin",
+  },
+  {
+    checkInDate: "2022-08-20",
+    checkOutDate: "2022-08-30",
+    type: "test",
+  },
+  {
     checkInDate: "2022-10-01",
-    checkOutDate: "2022-10-20",
+    checkOutDate: "2022-10-22",
     type: "contract",
   },
 ]);
@@ -188,9 +198,9 @@ const pushBookingDates = () => {
       :placeholder="placeholder"
       :show-input-calendar="false"
       :show-year="showYear"
-      @toggleCalendar="toggleCalendar"
-      @clickOnDate="clickOnDate"
-      @renderNextMonth="renderNextMonth"
+      @toggle-calendar="toggleCalendar"
+      @click-on-date="clickOnDate"
+      @render-next-month="renderNextMonth"
       @select-booking-date="selectBookingDate"
     >
       <template #header>
