@@ -5,6 +5,7 @@ import BaseCalendar from "./components";
 import type { Ref } from "vue";
 import type { Booking, Period } from "../../src/types";
 
+const calendar = ref(null);
 const bookedDates = ref(["2022-05-13", "2022-05-12"]);
 const bookingColor = ref({
   admin: "#9dc1c9",
@@ -173,40 +174,45 @@ const pushBookingDates = () => {
     </p>
     <h1 class="text-4xl font-bold text-center mb-4">VueCalendar</h1>
 
-    <div class="flex items-center mb-4">
-      <button
-        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2"
-        @click="toggleCalendar"
-      >
-        {{ showYear ? "Show by month" : "Show by year" }}
-      </button>
-
-      <button
-        @click="clearDates"
-        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2 mx-4"
-      >
-        Clear dates
-      </button>
-
-      <button
-        class="border border-blue-400 bg-blue-200 rounded-full px-3 py-2"
-        @click="pushBookingDates"
-      >
-        Push bookings
-      </button>
-    </div>
-
     <BaseCalendar
+      ref="calendar"
+      v-model:checkIn="checkIn"
+      v-model:checkOut="checkOut"
+      :always-visible="true"
       :booking-color="bookingColor"
       :booking-dates="bookingDates"
       :period-dates="periodDates"
+      :placeholder="placeholder"
+      :show-input-calendar="false"
       :show-year="showYear"
       @toggleCalendar="toggleCalendar"
-      v-model:checkIn="checkIn"
-      v-model:checkOut="checkOut"
-      :placeholder="placeholder"
       @clickOnDate="clickOnDate"
       @renderNextMonth="renderNextMonth"
-    />
+    >
+      <template #header>
+        <div class="flex items-center">
+          <button
+            class="border border-blue-400 bg-blue-200 hover:bg-blue-500 duration-300 rounded-full px-3 py-2"
+            @click="toggleCalendar"
+          >
+            {{ showYear ? "Show by month" : "Show by year" }}
+          </button>
+
+          <button
+            @click="clearDates"
+            class="border border-blue-400 bg-blue-200 hover:bg-blue-500 duration-300 rounded-full px-3 py-2 mx-4"
+          >
+            Clear dates
+          </button>
+
+          <button
+            class="border border-blue-400 bg-blue-200 hover:bg-blue-500 duration-300 rounded-full px-3 py-2"
+            @click="pushBookingDates"
+          >
+            Push bookings
+          </button>
+        </div>
+      </template>
+    </BaseCalendar>
   </div>
 </template>

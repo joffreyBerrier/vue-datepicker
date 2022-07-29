@@ -17,6 +17,14 @@ const format = (date: Date | string, format: string): string => {
   return d.format(format);
 };
 
+const getMonth = (date: Date) => {
+  return dayjs(date).month();
+};
+
+const getYear = (date: Date) => {
+  return dayjs(date).year();
+};
+
 const formatUtc = (date: Date | string): string => {
   const d = dayjs(date);
 
@@ -143,7 +151,9 @@ export {
   formatUtc,
   getDateDiff,
   getDatesBetweenTwoDates,
+  getMonth,
   getNextDate,
+  getYear,
   isAfter,
   isAfterOrEqual,
   isBefore,

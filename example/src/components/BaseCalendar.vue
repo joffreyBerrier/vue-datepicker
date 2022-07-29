@@ -83,7 +83,11 @@ const handleCheckOut = (date: Date) => {
     v-bind="$attrs"
     @update:check-in="handleCheckIn"
     @update:check-out="handleCheckOut"
-  />
+  >
+    <template #header>
+      <slot name="header" />
+    </template>
+  </calendar>
 </template>
 
 <style>

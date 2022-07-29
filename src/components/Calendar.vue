@@ -22,6 +22,8 @@ import CalendarDays from "./CalendarDays.vue";
 import CalendarHeader from "./CalendarHeader.vue";
 import CalendarInput from "./CalendarInput.vue";
 
+import { getMonth, getYear } from "../plugins/day";
+
 import {
   addDays,
   getDatesBetweenTwoDates,
@@ -135,6 +137,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       fr: {
+        today: "Aujourd'hui",
         periodType: {
           weeklyBySaturday: "Du samedi au samedi uniquement",
           weeklyBySunday: "Du dimanche au dimanche uniquement",
@@ -143,6 +146,7 @@ const props = defineProps({
         },
       },
       en: {
+        today: "Today",
         periodType: {
           weeklyBySaturday: "From Saturday to Saturday",
           weeklyBySunday: "From Sunday to Sunday",
@@ -208,7 +212,7 @@ const createStartActiveIndex = () => {
   }
 };
 
-const activeIndex = ref(createStartActiveIndex());
+let activeIndex = ref(createStartActiveIndex());
 
 // Current month of the current day
 months.value.push(useCreateMonth(props.startDate));
@@ -226,12 +230,19 @@ const {
   showCalendar,
 } = useToggleCalendar(props);
 
+watch(
+  () => props.showYear,
+  () => {
+    activeIndex = ref(createStartActiveIndex());
+  }
+);
+
 onBeforeMount(() => {
-  if (!props.showYear) addClickOusideListener();
+  if (!props.alwaysVisible) addClickOusideListener();
 });
 
 onUnmounted(() => {
-  if (!props.showYear) removeClickOusideListener();
+  if (!props.alwaysVisible) removeClickOusideListener();
 });
 
 // Sorted periods
@@ -374,6 +385,19 @@ const paginate = (operator: string) => {
     activeIndex.value += count;
     emit("renderNextMonth");
   }
+};
+
+const paginateToToday = (): number => {
+  const today = new Date();
+  const todayMonth = getMonth(today);
+  const currentYear = getYear(today);
+  const startYear = getYear(props.startDate);
+
+  const numberOfYears =
+    currentYear - startYear > 0 ? currentYear - startYear : 0;
+  const numberOfMonth = numberOfYears * 12 + todayMonth;
+
+  activeIndex.value = numberOfMonth;
 };
 
 const currentPeriod: Ref<CurrentPeriod | null> = ref(null);
@@ -771,7 +795,7 @@ const dayClicked = (day: Day): void => {
     nextDisableBookingDate.value = null;
     hoveringDay.value = null;
 
-    if (!props.showYear) showCalendar.value = false;
+    if (!props.alwaysVisible) showCalendar.value = false;
   } else if (!props.checkIn) {
     // CheckIn
     setCheckIn(day);
@@ -886,45 +910,66 @@ const getBookingType = (day: Day): string | null => {
     />
 
     <div>
-      <div v-if="showYear" class="calendar_paginate-wrapper">
-        <button
-          data-testid="calendar_paginate-prev--button"
-          type="button"
-          :disabled="disabledPagination.left"
-          class="calendar_paginate-button"
-          @click="paginate('-')"
-        >
-          <base-icon name="chevronLeft" />
-        </button>
-        <span class="calendar_paginate-year">{{ currentYear }}</span>
-        <button
-          data-testid="calendar_paginate-next--button"
-          type="button"
-          :disabled="disabledPagination.right"
-          class="calendar_paginate-button"
-          @click="paginate('+')"
-        >
-          <base-icon name="chevronRight" />
-        </button>
-      </div>
+      <div v-if="alwaysVisible" class="calendar_paginate-wrapper">
+        <div class="calendar_paginate-wrapper--left-content">
+          <button
+            data-testid="calendar_paginate-prev--button"
+            type="button"
+            :disabled="disabledPagination.left"
+            class="calendar_paginate-button"
+            @click="paginate('-')"
+          >
+            <base-icon name="chevronLeft" />
+          </button>
+          <div class="calendar_paginate-year">
+            <span>{{ currentYear }}</span>
+          </div>
+          <button
+            data-testid="calendar_paginate-next--button"
+            type="button"
+            :disabled="disabledPagination.right"
+            class="calendar_paginate-button"
+            @click="paginate('+')"
+          >
+            <base-icon name="chevronRight" />
+          </button>
 
-      <slot name="header" />
+          <button
+            type="button"
+            class="calendar_today-button"
+            @click="paginateToToday"
+          >
+            {{ t("today") }}
+          </button>
+        </div>
+
+        <slot name="header"></slot>
+      </div>
     </div>
 
     <div
       v-if="showCalendar"
-      :class="['calendar_wrapper', { 'calendar_wrapper--year': showYear }]"
+      :class="['calendar_wrapper', { 'calendar_wrapper--year': alwaysVisible }]"
     >
       <CalendarHeader
-        v-if="!showYear"
+        v-if="!alwaysVisible"
         :active-index="activeIndex"
         :months="months"
         @paginate="paginate"
       />
 
-      <div class="calendar_wrapper_content">
+      <div
+        :class="[
+          'calendar_wrapper_content',
+          {
+            'calendar_wrapper_content--year': showYear,
+          },
+        ]"
+      >
         <div v-for="month in slicedMonths" :key="month.monthKey">
-          <span v-if="showYear" class="font-bold">{{ month.monthName }}</span>
+          <span v-if="alwaysVisible" class="font-bold">
+            {{ month.monthName }}
+          </span>
 
           <CalendarDays />
 
@@ -1097,6 +1142,9 @@ const getBookingType = (day: Day): string | null => {
 .vue-calendar .calendar_wrapper_content {
   @apply grid grid-cols-2 gap-4;
 }
+.vue-calendar .calendar_wrapper_content:not(.calendar_wrapper_content--year) {
+  @apply max-w-[780px];
+}
 .vue-calendar .calendar_wrapper_content-days {
   @apply grid grid-cols-7;
 }
@@ -1146,7 +1194,7 @@ const getBookingType = (day: Day): string | null => {
   @apply pointer-events-none font-extralight;
 }
 .vue-calendar .calendar_day--day-number {
-  @apply absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+  @apply absolute z-[5] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
 }
 .vue-calendar .event-none {
   @apply pointer-events-none;
@@ -1155,17 +1203,18 @@ const getBookingType = (day: Day): string | null => {
 .vue-calendar .calendar_wrapper--year {
   @apply w-full;
 }
-.vue-calendar .calendar_wrapper--year .calendar_wrapper_content {
+.vue-calendar .calendar_wrapper_content--year {
   @apply grid grid-cols-4 gap-x-6 gap-y-6;
 }
 
 .vue-calendar .calendar_paginate-wrapper {
-  @apply mb-4;
+  @apply mb-8 flex items-center;
+}
+.vue-calendar .calendar_paginate-wrapper--left-content {
+  @apply flex items-center;
 }
 .vue-calendar .calendar_paginate-button {
-  @apply p-4 duration-300;
-  border-width: 1px;
-  border-style: solid;
+  @apply duration-300 w-[48px] h-[48px] border flex items-center justify-center;
   background-color: var(--calendar-paginate-bg);
   border-color: var(--calendar-paginate-border-color);
   color: var(--calendar-paginate-text-color);
@@ -1181,9 +1230,16 @@ const getBookingType = (day: Day): string | null => {
   color: var(--calendar-paginate-disabled-text);
 }
 .vue-calendar .calendar_paginate-year {
-  @apply w-20 inline-block text-center font-bold;
+  @apply w-20 h-[48px] flex text-center font-bold px-4 border border-gray-200 mx-3 items-center justify-center;
 }
-
+.vue-calendar .calendar_today-button {
+  @apply h-[48px] flex text-center font-bold px-4 border border-gray-200 mx-3 items-center justify-center;
+}
+.vue-calendar .calendar_today-button:hover {
+  background-color: var(--calendar-paginate-hover-bg);
+  border-color: var(--calendar-paginate-hover-border);
+  color: var(--calendar-today-text);
+}
 .vue-calendar .calendar_day--booking {
   @apply opacity-80;
 }
