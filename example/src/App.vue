@@ -8,35 +8,49 @@ import type { Booking, Day, Period } from "../../src/types";
 const calendar = ref(null);
 const bookedDates = ref(["2022-05-13", "2022-05-12"]);
 const bookingColor = ref({
-  admin: "#ACB2EE",
-  contract: "#E1BB84",
-  test: "#ACBA77",
-});
+  type1: "#BFD3D9",
+  type2: "#ACBA77",
+  type3: "#ACB2EE",
+  type4: "#E1BB84",
+  type5: "#D8BFD9",
+  type6: "#BFB380",
+  type7: "#DC9898",
+}) as Ref<Record<string, string>>;
 const bookingDates: Ref<Booking[]> = ref([
   {
     checkInDate: "2022-07-01",
     checkOutDate: "2022-07-10",
-    type: "admin",
+    type: "type1",
+  },
+  {
+    checkInDate: "2022-07-10",
+    checkOutDate: "2022-07-20",
+    type: "type2",
+  },
+  {
+    checkInDate: "2022-07-20",
+    checkOutDate: "2022-07-30",
+    type: "type3",
   },
   {
     checkInDate: "2022-08-01",
-    checkOutDate: "2022-08-10",
-    type: "contract",
-  },
-  {
-    checkInDate: "2022-08-10",
     checkOutDate: "2022-08-20",
-    type: "admin",
-  },
-  {
-    checkInDate: "2022-08-20",
-    checkOutDate: "2022-08-30",
-    type: "test",
+    type: "type4",
   },
   {
     checkInDate: "2022-10-01",
-    checkOutDate: "2022-10-22",
-    type: "contract",
+    checkOutDate: "2022-10-20",
+    type: "type5",
+  },
+  {
+    checkInDate: "2022-10-20",
+    checkOutDate: "2022-10-30",
+    type: "type6",
+  },
+  {
+    checkInDate: "2022-11-01",
+    checkOutDate: "2022-11-12",
+    type: "type7",
   },
 ]);
 
@@ -169,12 +183,12 @@ const pushBookingDates = () => {
     {
       checkInDate: "2022-09-01",
       checkOutDate: "2022-09-10",
-      type: "test",
+      type: "type4",
     },
     {
       checkInDate: "2022-09-24",
       checkOutDate: "2022-09-30",
-      type: "test",
+      type: "type4",
     }
   );
 };

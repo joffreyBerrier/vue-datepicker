@@ -17,8 +17,8 @@ export const useGetPeriod = (
           .filter((p: Period) => p.periodType === period)
           .map((p: Period) => {
             return getDatesBetweenTwoDates(
-              new Date(p.startAt),
-              new Date(p.endAt),
+              p.startAt,
+              p.endAt,
               formattingFormat
             );
           })

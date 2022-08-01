@@ -194,10 +194,9 @@ if (props.checkIn && props.checkOut) {
   emit("update:checkOut", formatUtc(props.checkOut), false);
 }
 
-const paginateToToday = (): void => {
-  const today = new Date();
-  const todayMonth = getMonth(today);
-  const currentYear = getYear(today);
+const paginateToToday = (today: Ref<Date>): void => {
+  const todayMonth = getMonth(today.value);
+  const currentYear = getYear(today.value);
   const startYear = getYear(props.startDate);
 
   const numberOfYears =
@@ -211,7 +210,7 @@ const paginateToToday = (): void => {
 };
 
 const activeIndex = ref(0);
-paginateToToday();
+paginateToToday(today);
 
 // Current month of the current day
 months.value.push(useCreateMonth(props.startDate));
@@ -232,7 +231,7 @@ const {
 watch(
   () => props.showYear,
   () => {
-    paginateToToday();
+    paginateToToday(today);
   }
 );
 
@@ -545,8 +544,8 @@ const setMinimumDuration = (date: Date) => {
         ...nextPeriodDisabledDates
       );
       nextPeriodDisableDates.value = [...new Set(nextPeriodDisableDates.value)];
-      nextPeriodDisableDates.value = nextPeriodDisableDates.value.map(
-        (x) => new Date(x)
+      nextPeriodDisableDates.value = nextPeriodDisableDates.value.map((x) =>
+        formatUtc(x)
       );
       nextPeriodDisableDates.value = nextPeriodDisableDates.value.map((x) =>
         format(x, formattingFormat.value)
@@ -874,6 +873,7 @@ const getCurrentPeriod = (day: Day) => {
 
   return null;
 };
+
 const isInBookingDates = (day: Day) => {
   return (
     flatBookingDates.value.value.some((x) => x.value.includes(day.formatDay)) &&
@@ -1069,7 +1069,8 @@ const getBookingType = (day: Day): string | null => {
                   },
                   // Inactive saturday period
                   {
-                    'calendar_day--in-period': inWeeklyPeriods(day),
+                    'calendar_day--in-period':
+                      inWeeklyPeriods(day) && !isInBookingDates(day),
                   },
                   // CheckIn saturday / sunday / monday period
                   {
