@@ -80,7 +80,5 @@ export const useCheckIncheckOutHalfDay = (
     }
   });
 
-  console.log(checkIncheckOutHalfDay);
-
   return checkIncheckOutHalfDay;
 };

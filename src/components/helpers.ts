@@ -1,3 +1,4 @@
+import { default as dayjs } from "dayjs";
 import {
   addDate,
   format,
@@ -118,16 +119,17 @@ const sortDates = (dates: string[]): string[] => {
 };
 
 const getDaysArray = (start: Date | string, end: Date | string): Date[] => {
-  for (
-    // eslint-disable-next-line no-var
-    var arr = [], dt = new Date(start);
-    dt <= end;
-    dt.setDate(dt.getDate() + 1)
-  ) {
-    arr.push(new Date(dt));
+  const d1 = dayjs(start).utc(true);
+  const d2 = dayjs(end).utc(true);
+  const lenghDifference: number = getDateDiff(d1.toDate(), d2.toDate(), "day");
+  const arr = [];
+
+  for (let index = 0; index < lenghDifference + 1; index++) {
+    const day = d1.add(index, "day").toDate();
+
+    arr.push(day);
   }
 
-  // eslint-disable-next-line block-scoped-var
   return arr;
 };
 

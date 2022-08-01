@@ -126,8 +126,8 @@ const getNextDate = (date: Date | string, index: number) => {
 };
 
 const getDatesBetweenTwoDates = (
-  startDate: Date,
-  endDate: Date,
+  startDate: string | Date,
+  endDate: string | Date,
   formattingFormat: string
 ): string[] => {
   const d1 = dayjs(startDate).utc(true);
