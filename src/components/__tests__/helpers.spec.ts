@@ -229,18 +229,18 @@ describe("Format Date", () => {
     const datesObj = [
       { checkInDate: "2020-04-05", checkOutDate: "2020-04-10" },
       { checkInDate: "2020-01-10", checkOutDate: "2020-01-20" },
-      { checkInDate: "2020-01-05", checkOutDate: "2020-01-05" },
+      { checkInDate: "2020-01-05", checkOutDate: "2020-01-10" },
       { checkInDate: "2020-02-05", checkOutDate: "2020-02-08" },
-      { checkInDate: "2022-01-01", checkOutDate: "2022-01-10" },
+      { checkInDate: "2022-01-01", checkOutDate: "2022-01-05" },
     ];
 
     it("returns sorted dates", () => {
       expect(sortDatesObj(datesObj)).toEqual([
-        { checkInDate: "2022-01-01", checkOutDate: "2022-01-10" },
-        { checkInDate: "2020-01-05", checkOutDate: "2020-01-05" },
+        { checkInDate: "2020-01-05", checkOutDate: "2020-01-10" },
+        { checkInDate: "2020-01-10", checkOutDate: "2020-01-20" },
         { checkInDate: "2020-02-05", checkOutDate: "2020-02-08" },
         { checkInDate: "2020-04-05", checkOutDate: "2020-04-10" },
-        { checkInDate: "2020-01-10", checkOutDate: "2020-01-20" },
+        { checkInDate: "2022-01-01", checkOutDate: "2022-01-05" },
       ]);
     });
   });
