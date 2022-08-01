@@ -132,8 +132,8 @@ export const useCreateHalfDayDates = (
 
     const flatBookingDatesString: Ref<string[]> = ref(
       getDatesBetweenTwoDates(
-        new Date(booking.checkInDate),
-        new Date(booking.checkOutDate),
+        booking.checkInDate,
+        booking.checkOutDate,
         formattingFormat.value
       )
     );

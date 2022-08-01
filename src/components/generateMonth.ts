@@ -1,4 +1,5 @@
-import { format } from "../plugins/day";
+import { default as dayjs } from "dayjs";
+import { addDate, format } from "../plugins/day";
 import { addDays } from "./helpers";
 
 import type { Month } from "~/types";
@@ -11,7 +12,9 @@ const getMonthName = (day: Date): string => {
 };
 
 const getFirstDayOfMonth = (date: Date): Date => {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
+  const d = dayjs(date).utc(true);
+
+  return d.startOf("month").toDate();
 };
 
 const getFirstDayOfFirstWeekOfMonth = (
@@ -55,15 +58,7 @@ const createMonth = (date: Date): Month => {
 };
 
 const getNextMonth = (date: Date): Date => {
-  let nextMonth;
-
-  if (date.getMonth() === 11) {
-    nextMonth = new Date(date.getFullYear() + 1, 0, 1);
-  } else {
-    nextMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-  }
-
-  return nextMonth;
+  return addDate(date, 1, "month");
 };
 
 const createMultipleMonth = (dates: Date[]): Month[] => {

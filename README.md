@@ -1,4 +1,4 @@
-# vue-datepicker 1.3.65
+# vue-datepicker 1.3.66
 
 👊 An easier datePicker in Vue.js 👊
 
