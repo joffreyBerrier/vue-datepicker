@@ -177,11 +177,11 @@ const t = (key: string, minimumDuration = null): string => {
 };
 
 const emit = defineEmits([
+  "render-next-month",
+  "render-previous-month",
+  "select-booking-date",
   "update:checkIn",
   "update:checkOut",
-  "select-booking-date",
-  "render-previous-month",
-  "render-next-month",
 ]);
 
 const formattingFormat = ref("YYYY-MM-DD");
@@ -194,9 +194,9 @@ if (props.checkIn && props.checkOut) {
   emit("update:checkOut", formatUtc(props.checkOut), false);
 }
 
-const paginateToToday = (today: Ref<Date>): void => {
-  const todayMonth = getMonth(today.value);
-  const currentYear = getYear(today.value);
+const paginateToToday = (today: Date): void => {
+  const todayMonth = getMonth(today);
+  const currentYear = getYear(today);
   const startYear = getYear(props.startDate);
 
   const numberOfYears =
@@ -210,7 +210,11 @@ const paginateToToday = (today: Ref<Date>): void => {
 };
 
 const activeIndex = ref(0);
-paginateToToday(today);
+if (props.checkIn && props.checkOut) {
+  paginateToToday(props.checkIn);
+} else {
+  paginateToToday(today.value);
+}
 
 // Current month of the current day
 months.value.push(useCreateMonth(props.startDate));
@@ -231,7 +235,7 @@ const {
 watch(
   () => props.showYear,
   () => {
-    paginateToToday(today);
+    paginateToToday(today.value);
   }
 );
 
@@ -956,7 +960,7 @@ const getBookingType = (day: Day): string | null => {
           <button
             type="button"
             class="calendar_today-button"
-            @click="paginateToToday"
+            @click="paginateToToday(today)"
           >
             {{ t("today") }}
           </button>
