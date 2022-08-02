@@ -152,8 +152,8 @@ const periodDates: Ref<Period[]> = ref([
     minimumDuration: 1,
   },
 ]);
-const checkIn = ref(new Date("2022-07-01"));
-const checkOut = ref(new Date("2022-07-10"));
+const checkIn = ref(new Date("2023-07-01"));
+const checkOut = ref(new Date("2023-07-10"));
 const nextBookedDates: Ref<Booking[]> = ref([]);
 const showYear = ref(false);
 const placeholder = {
@@ -200,6 +200,8 @@ const pushBookingDates = () => {
       What you see comes from the <strong>example folder</strong>
     </p>
     <h1 class="text-4xl font-bold text-center mb-4">VueCalendar</h1>
+
+    <p class="mb-6">Dates : {{ checkIn }} {{ checkOut }}</p>
 
     <BaseCalendar
       ref="calendar"
