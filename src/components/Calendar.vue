@@ -403,11 +403,11 @@ const paginate = (operator: string) => {
 
   if (activeIndex.value > 0 && operator === "-") {
     activeIndex.value -= count;
-    emit("render-previous-month");
+    emit("render-previous-month", currentYear.value);
   }
   if (operator === "+") {
     activeIndex.value += count;
-    emit("render-next-month");
+    emit("render-next-month", currentYear.value);
   }
 };
 
