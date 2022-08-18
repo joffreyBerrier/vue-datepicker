@@ -1,4 +1,4 @@
-# vue-datepicker 1.3.66
+# vue-datepicker 1.3.8
 
 👊 An easier datePicker in Vue.js 👊
 
@@ -342,6 +342,7 @@ name | Description
 -------------------------------------|-------------------------
 day | Object on type Day
 booking | Selected Booking
+checkIncheckOutHalfDay | The half day of the checkIn
 e | Mouse Event
 
 

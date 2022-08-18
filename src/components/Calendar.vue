@@ -795,7 +795,13 @@ const clearDataWhenDateIsNull = () => {
 
 // Trigger each time the click on day is triggered
 const dayClicked = (day: Day, e: Event): void => {
-  emit("select-booking-date", day, getBooking(day), e);
+  emit(
+    "select-booking-date",
+    day,
+    getBooking(day),
+    checkIncheckOutHalfDay.value[day.formatDay],
+    e
+  );
 
   const disabledClicked =
     Boolean(checkIncheckOutHalfDay.value[day.formatDay]?.checkIn) &&
