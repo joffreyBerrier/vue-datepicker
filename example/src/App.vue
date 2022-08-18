@@ -18,36 +18,43 @@ const bookingColor = ref({
 }) as Ref<Record<string, string>>;
 const bookingDates: Ref<Booking[]> = ref([
   {
+    id: 1,
     checkInDate: "2022-07-01",
     checkOutDate: "2022-07-10",
     type: "type1",
   },
   {
+    id: 2,
     checkInDate: "2022-07-10",
     checkOutDate: "2022-07-20",
     type: "type2",
   },
   {
+    id: 3,
     checkInDate: "2022-07-20",
     checkOutDate: "2022-07-30",
     type: "type3",
   },
   {
+    id: 4,
     checkInDate: "2022-08-01",
     checkOutDate: "2022-08-20",
     type: "type4",
   },
   {
+    id: 5,
     checkInDate: "2022-10-01",
     checkOutDate: "2022-10-20",
     type: "type5",
   },
   {
+    id: 6,
     checkInDate: "2022-10-20",
     checkOutDate: "2022-10-30",
     type: "type6",
   },
   {
+    id: 7,
     checkInDate: "2022-11-01",
     checkOutDate: "2022-11-12",
     type: "type7",

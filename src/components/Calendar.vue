@@ -798,7 +798,7 @@ const dayClicked = (day: Day, e: Event): void => {
   emit(
     "select-booking-date",
     day,
-    getBooking(day),
+    getSelectedBooking(day),
     checkIncheckOutHalfDay.value[day.formatDay],
     e
   );
@@ -916,6 +916,55 @@ const isInCheckinHalfDayAndNotCheckin = (day: Day): boolean => {
 const isInCheckoutHalfDay = (day: Day): boolean => {
   return Boolean(checkIncheckOutHalfDay.value[day.formatDay]?.checkOut);
 };
+const getSelectedBooking = (day: Day) => {
+  // If day is between checkInDate and checkOutDate of a Booking
+  if (
+    bookingDatesT.value.some((d) =>
+      validateDateBetweenTwoDates(d.checkInDate, d.checkOutDate, day.formatDay)
+    )
+  ) {
+    return {
+      ...bookingDatesT.value.find((d) =>
+        validateDateBetweenTwoDates(
+          d.checkInDate,
+          d.checkOutDate,
+          day.formatDay
+        )
+      ),
+      ...getBooking(day),
+    };
+  }
+
+  // If day is on two bookings
+  if (
+    bookingDatesT.value.some((d) => d.checkInDate === day.formatDay) &&
+    bookingDatesT.value.some((d) => d.checkOutDate === day.formatDay)
+  ) {
+    return {
+      1: bookingDatesT.value.find((d) => d.checkInDate === day.formatDay),
+      2: bookingDatesT.value.find((d) => d.checkOutDate === day.formatDay),
+    };
+  }
+
+  // If day is a checkInDate of a Booking
+  if (bookingDatesT.value.some((d) => d.checkInDate === day.formatDay)) {
+    return {
+      ...bookingDatesT.value.find((d) => d.checkInDate === day.formatDay),
+      ...getBooking(day),
+    };
+  }
+
+  // If day is a checkOutDate of a Booking
+  if (bookingDatesT.value.some((d) => d.checkOutDate === day.formatDay)) {
+    return {
+      ...bookingDatesT.value.find((d) => d.checkOutDate === day.formatDay),
+      ...getBooking(day),
+    };
+  }
+
+  return null;
+};
+
 const getBooking = (day: Day): FlatBooking | null => {
   if (
     flatBookingDates.value.value.some((b) => b.value.includes(day.formatDay)) &&
