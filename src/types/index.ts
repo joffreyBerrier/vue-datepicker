@@ -2,8 +2,11 @@
 import type { ComputedRef } from "vue";
 
 export interface Booking {
+  1?: { id: string; type: string };
+  2?: { id: string; type: string };
   checkInDate: string;
   checkOutDate: string;
+  id?: string;
   type?: string;
 }
 export interface BookingColor {
