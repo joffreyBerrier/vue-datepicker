@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import BaseCalendar from "./components";
 
 import type { Ref } from "vue";
 import type { Booking, Day, Period } from "../../src/types";
 
-const calendar = ref(null);
+const calendar = ref<InstanceType<typeof BaseCalendar> | null>(null);
 const bookedDates = ref(["2022-05-13", "2022-05-12"]);
 const bookingColor = ref({
   type1: "#BFD3D9",
@@ -199,6 +199,11 @@ const pushBookingDates = () => {
     }
   );
 };
+onMounted(() => {
+  console.log(calendar.value);
+
+  calendar.value.paginateToDay(new Date("2023-07-01"));
+});
 </script>
 
 <template>

@@ -7,13 +7,13 @@ export default {
 <script setup lang="ts">
 import {
   computed,
-  ref,
   onBeforeMount,
   onUnmounted,
   provide,
+  ref,
+  toRef,
   watch,
   watchEffect,
-  toRef,
 } from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";
 
@@ -22,8 +22,6 @@ import BaseIcon from "./BaseIcon.vue";
 import CalendarDays from "./CalendarDays.vue";
 import CalendarHeader from "./CalendarHeader.vue";
 import CalendarInput from "./CalendarInput.vue";
-
-import { getMonth, getYear } from "../plugins/day";
 
 import {
   addDays,
@@ -48,6 +46,7 @@ import {
   useFlatBooking,
   useGetNextBookingDate,
   useGetPeriod,
+  usePaginate,
   useToggleCalendar,
 } from "./compose";
 
@@ -218,26 +217,15 @@ if (props.checkIn && props.checkOut) {
   emit("update:checkOut", formatUtc(props.checkOut), false);
 }
 
-const paginateToToday = (today: Date): void => {
-  const todayMonth = getMonth(today);
-  const currentYear = getYear(today);
-  const startYear = getYear(props.startDate);
-
-  const numberOfYears =
-    currentYear - startYear > 0 ? currentYear - startYear : 0;
-
-  const numberOfMonth = props.showYear
-    ? numberOfYears * 12
-    : numberOfYears * 12 + todayMonth;
-
-  activeIndex.value = Math.floor(numberOfMonth);
+const activeIndex = ref(0);
+const paginateToDay = (day: Date): void => {
+  activeIndex.value = usePaginate(day, props.startDate, props.showYear);
 };
 
-const activeIndex = ref(0);
 if (props.checkIn && props.checkOut) {
-  paginateToToday(props.checkIn);
+  paginateToDay(props.checkIn);
 } else {
-  paginateToToday(today.value);
+  paginateToDay(today.value);
 }
 
 // Current month of the current day
@@ -259,7 +247,7 @@ const {
 watch(
   () => props.showYear,
   () => {
-    paginateToToday(today.value);
+    paginateToDay(today.value);
   }
 );
 
@@ -1006,6 +994,9 @@ const getBooking = (day: Day): FlatBooking | null => {
 const getBookingType = (day: Day): string | null => {
   return getBooking(day)?.key || null;
 };
+
+// Define expose
+defineExpose({ activeIndex, paginateToDay });
 </script>
 
 <template>
@@ -1048,7 +1039,7 @@ const getBookingType = (day: Day): string | null => {
           <button
             type="button"
             class="calendar_today-button"
-            @click="paginateToToday(today)"
+            @click="paginateToDay(today)"
           >
             {{ t("today") }}
           </button>
