@@ -6,7 +6,34 @@ import CalendarDays from "../CalendarDays.vue";
 let wrapper: any;
 
 beforeEach(() => {
-  wrapper = mount(CalendarDays);
+  wrapper = mount(CalendarDays, {
+    global: {
+      provide: {
+        t: (key: string): string => {
+          const translation = {
+            days: {
+              monday: "Mo",
+              tuesday: "Tu",
+              wednesday: "We",
+              thursday: "Th",
+              friday: "Fr",
+              saturday: "Sa",
+              sunday: "Su",
+            },
+          };
+
+          if (key.includes(".")) {
+            const a = key.split(".");
+
+            const translationValue = translation[a[0]][a[1]];
+            return translationValue;
+          } else {
+            return translation[key];
+          }
+        },
+      },
+    },
+  });
 });
 
 afterEach(() => {

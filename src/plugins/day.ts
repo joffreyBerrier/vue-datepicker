@@ -4,6 +4,7 @@ import { default as isBetween } from "dayjs/plugin/isBetween";
 import { default as isSameOrAfter } from "dayjs/plugin/isSameOrAfter";
 import { default as isSameOrBefore } from "dayjs/plugin/isSameOrBefore";
 import { default as utc } from "dayjs/plugin/utc";
+import "dayjs/locale/fr";
 
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrAfter);
@@ -146,6 +147,7 @@ const getDatesBetweenTwoDates = (
 
 export {
   addDate,
+  dayjs,
   format,
   formatDateUtc,
   formatUtc,

@@ -10,13 +10,14 @@ import {
   ref,
   onBeforeMount,
   onUnmounted,
+  provide,
   watch,
   watchEffect,
   toRef,
 } from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";
 
-import { format, formatUtc, isAfterOrEqual } from "../plugins/day";
+import { dayjs, format, formatUtc, isAfterOrEqual } from "../plugins/day";
 import BaseIcon from "./BaseIcon.vue";
 import CalendarDays from "./CalendarDays.vue";
 import CalendarHeader from "./CalendarHeader.vue";
@@ -138,6 +139,15 @@ const props = defineProps({
     type: Object,
     default: () => ({
       fr: {
+        days: {
+          monday: "Lun",
+          tuesday: "Mar",
+          wednesday: "Mer",
+          thursday: "Jeu",
+          friday: "Ven",
+          saturday: "Sam",
+          sunday: "Dim",
+        },
         today: "Aujourd'hui",
         periodType: {
           weeklyBySaturday: "Du samedi au samedi uniquement",
@@ -147,6 +157,15 @@ const props = defineProps({
         },
       },
       en: {
+        days: {
+          monday: "Mo",
+          tuesday: "Tu",
+          wednesday: "We",
+          thursday: "Th",
+          friday: "Fr",
+          saturday: "Sa",
+          sunday: "Su",
+        },
         today: "Today",
         periodType: {
           weeklyBySaturday: "From Saturday to Saturday",
@@ -158,6 +177,8 @@ const props = defineProps({
     }),
   },
 });
+
+dayjs.locale(props.locale);
 
 const t = (key: string, minimumDuration = null): string => {
   const translation = props.translations[props.locale];
@@ -175,6 +196,7 @@ const t = (key: string, minimumDuration = null): string => {
     return translation[key];
   }
 };
+provide("t", t);
 
 const emit = defineEmits([
   "render-next-month",
@@ -990,6 +1012,7 @@ const getBookingType = (day: Day): string | null => {
   <div ref="calendarRef" class="vue-calendar">
     <CalendarInput
       v-if="showInputCalendar"
+      :class="{ 'calendar_input-open': showCalendar }"
       :placeholder="placeholder"
       :check-in="checkIn"
       :check-out="checkOut"
@@ -1198,6 +1221,7 @@ const getBookingType = (day: Day): string | null => {
 
   --calendar-input-bg: #fff;
   --calendar-input-border: #eee;
+  --calendar-input-shadow: 0 0 0 0.2rem #eee;
 
   --calendar-paginate-bg: rgb(236 252 203);
   --calendar-paginate-text-color: rgb(163 230 53);
@@ -1228,6 +1252,9 @@ const getBookingType = (day: Day): string | null => {
 
 .vue-calendar {
   @apply w-full relative select-none;
+}
+.vue-calendar .calendar_input-open {
+  box-shadow: var(--calendar-input-shadow);
 }
 .vue-calendar .calendar_wrapper {
   @apply w-full md:w-[600px];
