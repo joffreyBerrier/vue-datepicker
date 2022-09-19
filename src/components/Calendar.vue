@@ -199,10 +199,8 @@ const t = (key: string, minimumDuration = null): string => {
 provide("t", t);
 
 const emit = defineEmits([
-  "render-next-month",
-  "render-next-year",
-  "render-previous-month",
-  "render-previous-year",
+  "render-next-date",
+  "render-previous-date",
   "select-booking-date",
   "update:checkIn",
   "update:checkOut",
@@ -412,10 +410,6 @@ const currentYear: ComputedRef<number> = computed(() => {
   return months.value[activeIndex.value].yearKey;
 });
 
-const currentMonth: ComputedRef<number> = computed(
-  () => months.value[activeIndex.value].monthKey + 1
-);
-
 const disabledPagination: ComputedRef<{ left: boolean; right: boolean }> =
   computed(() => {
     const diff = props.showYear ? 12 : 2;
@@ -431,15 +425,11 @@ const paginate = (operator: string) => {
 
   if (activeIndex.value > 0 && operator === "-") {
     activeIndex.value -= count;
-    props.showYear
-      ? emit("render-previous-year", currentYear.value)
-      : emit("render-previous-month", currentMonth.value, currentYear.value);
+    emit("render-previous-date", currentYear.value);
   }
   if (operator === "+") {
     activeIndex.value += count;
-    props.showYear
-      ? emit("render-next-year", currentYear.value)
-      : emit("render-next-month", currentMonth.value, currentYear.value);
+    emit("render-next-date", currentYear.value);
   }
 };
 
