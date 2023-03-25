@@ -8,7 +8,7 @@ export default {
 import { computed } from "vue";
 import type { ComputedRef, PropType } from "vue";
 
-import type { Month } from "~/types";
+import type { Month } from "../types";
 
 import BaseIcon from "./BaseIcon.vue";
 
@@ -41,37 +41,41 @@ const paginate = (operator: string) => {
 
 <template>
   <div class="calendar_header">
-    <button
-      type="button"
-      data-testid="button-prev-month"
-      :disabled="activeIndex === 0"
-      class="calendar_header-left-button"
-      @click="paginate('-')"
-    >
-      <base-icon name="chevronLeft" />
-    </button>
+    <slot name="calendar-header">
+      <div class="calendar_header-left">
+        <button
+          type="button"
+          data-testid="button-prev-month"
+          :disabled="activeIndex === 0"
+          class="calendar_header-left-button"
+          @click="paginate('-')"
+        >
+          <base-icon name="chevronLeft" size="s" />
+        </button>
 
-    <p class="calendar_header-text">{{ prevMonth }}</p>
-    <p class="calendar_header-text">{{ nextMonth }}</p>
+        <p class="calendar_header-text">{{ prevMonth }}</p>
+      </div>
 
-    <button
-      type="button"
-      data-testid="button-next-month"
-      :disabled="activeIndex >= months.length - 2"
-      class="calendar_header-right-button"
-      @click="paginate('+')"
-    >
-      <base-icon name="chevronRight" />
-    </button>
+      <div class="calendar_header-right">
+        <p class="calendar_header-text">{{ nextMonth }}</p>
+
+        <button
+          type="button"
+          data-testid="button-next-month"
+          :disabled="activeIndex >= months.length - 2"
+          class="calendar_header-right-button"
+          @click="paginate('+')"
+        >
+          <base-icon name="chevronRight" size="s" />
+        </button>
+      </div>
+    </slot>
   </div>
 </template>
 
 <style>
 .vue-calendar .calendar_header {
   @apply relative grid grid-cols-2 items-center gap-4;
-}
-.vue-calendar .calendar_header-text {
-  @apply text-center py-2 font-bold;
 }
 .vue-calendar .calendar_header-left-button,
 .vue-calendar .calendar_header-right-button {
@@ -91,10 +95,18 @@ const paginate = (operator: string) => {
   border-color: var(--calendar-paginate-disabled-border);
   color: var(--calendar-paginate-disabled-text);
 }
-.vue-calendar .calendar_header-left-button {
-  @apply absolute left-0 w-10 h-10 flex items-center justify-center border focus:outline-none disabled:pointer-events-none duration-300;
+.vue-calendar .calendar_header-left {
+  @apply flex justify-start;
 }
+.vue-calendar .calendar_header-right {
+  @apply flex justify-end;
+}
+.vue-calendar .calendar_header-text {
+  @apply flex items-center text-[14px] font-medium px-3 capitalize;
+  color: var(--calendar-text-color);
+}
+.vue-calendar .calendar_header-left-button,
 .vue-calendar .calendar_header-right-button {
-  @apply absolute right-0 w-10 h-10 flex items-center justify-center border focus:outline-none disabled:pointer-events-none duration-300;
+  @apply w-8 h-8 flex items-center justify-center focus:outline-none disabled:pointer-events-none duration-300;
 }
 </style>

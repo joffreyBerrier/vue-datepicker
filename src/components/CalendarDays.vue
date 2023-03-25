@@ -8,7 +8,7 @@ export default {
 import { ref, inject } from "vue";
 import type { Ref } from "vue";
 
-import type { HeaderDay } from "~/types";
+import type { HeaderDay } from "../types";
 
 const t = inject("t", (key: string) => ({}));
 
@@ -25,7 +25,7 @@ const days: Ref<HeaderDay[]> = ref([
 
 <template>
   <ul class="calendar_wrapper_content-header-days">
-    <li v-for="day in days" :key="day.key" class="font-medium">
+    <li v-for="day in days" :key="day.key" class="calendar-days">
       {{ t(`days.${day.name}`) }}
     </li>
   </ul>
@@ -33,6 +33,10 @@ const days: Ref<HeaderDay[]> = ref([
 
 <style>
 .vue-calendar .calendar_wrapper_content-header-days {
-  @apply grid grid-cols-7 text-center py-6 text-sm;
+  @apply grid grid-cols-7 text-center py-6 text-[12px] md:text-sm;
+}
+.vue-calendar .calendar-days {
+  @apply text-[12px];
+  color: var(--calendar-text-color);
 }
 </style>

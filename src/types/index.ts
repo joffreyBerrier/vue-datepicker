@@ -30,6 +30,7 @@ export interface FlatBooking {
 export interface Day {
   belongsToThisMonth: boolean;
   date: Date;
+  dayIndex: number;
   dayNumber: string;
   formatDay: string;
   style: {

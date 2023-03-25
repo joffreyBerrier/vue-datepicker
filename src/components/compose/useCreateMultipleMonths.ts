@@ -1,7 +1,7 @@
 import { default as dayjs } from "dayjs";
 import { createMultipleMonth, getNextMonth } from "../generateMonth";
 
-import type { Month } from "~/types";
+import type { Month } from "../../types";
 
 export const useCreateMultipleMonths = (date: Date, max: number): Month[] => {
   let nextMonth = dayjs(date).utc(true).toDate();

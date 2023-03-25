@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import type { Ref } from "vue";
 
-import type { Booking, BookingColor, FlatBooking } from "~/types";
+import type { Booking, BookingColor, FlatBooking } from "../../types";
 import { getDatesBetweenTwoDates } from "../helpers";
 
 export const useFlatBooking = (
