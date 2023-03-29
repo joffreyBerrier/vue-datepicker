@@ -29,12 +29,16 @@ describe("BaseIcon", () => {
   it("renders chevronLeft properly", async () => {
     await wrapper.setProps({ name: "chevronLeft" });
 
-    expect(wrapper.vm.path).toEqual("M15 19l-7-7 7-7");
+    expect(wrapper.vm.path).toEqual(
+      "M15 10a.75.75 0 01-.75.75H7.612l2.158 1.96a.75.75 0 11-1.04 1.08l-3.5-3.25a.75.75 0 010-1.08l3.5-3.25a.75.75 0 111.04 1.08L7.612 9.25h6.638A.75.75 0 0115 10z"
+    );
   });
 
   it("renders chevronRight properly", async () => {
     await wrapper.setProps({ name: "chevronRight" });
 
-    expect(wrapper.vm.path).toEqual("M9 5l7 7-7 7");
+    expect(wrapper.vm.path).toEqual(
+      "M5 10a.75.75 0 01.75-.75h6.638L10.23 7.29a.75.75 0 111.04-1.08l3.5 3.25a.75.75 0 010 1.08l-3.5 3.25a.75.75 0 11-1.04-1.08l2.158-1.96H5.75A.75.75 0 015 10z"
+    );
   });
 });

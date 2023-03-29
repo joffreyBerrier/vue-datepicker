@@ -87,11 +87,16 @@ const getDateDiff = (
 const isBetweenDate = (
   fromDate: string,
   toDate: string,
-  givenDate: string
+  givenDate: string | Date,
+  orEqual = false
 ): boolean => {
   const d1 = dayjs(fromDate).utc(true);
   const d2 = dayjs(toDate).utc(true);
   const d3 = dayjs(givenDate).utc(true);
+
+  if (orEqual) {
+    return dayjs(d3).isBetween(d1, d2, "day", "[)");
+  }
 
   return dayjs(d3).isBetween(d1, d2, "day");
 };
@@ -131,8 +136,8 @@ const getDatesBetweenTwoDates = (
   endDate: string | Date,
   formattingFormat: string
 ): string[] => {
-  const d1 = dayjs(startDate).utc(true);
-  const d2 = dayjs(endDate).utc(true);
+  const d1 = dayjs(startDate);
+  const d2 = dayjs(endDate);
   const lenghDifference: number = getDateDiff(d1.toDate(), d2.toDate(), "day");
   const arr = [];
 

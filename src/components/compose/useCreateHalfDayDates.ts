@@ -6,7 +6,7 @@ import type {
   BookingColor,
   CheckInCheckOutHalfDay,
   FlatBooking,
-} from "~/types";
+} from "../../types";
 import {
   getDayDiff,
   getDatesBetweenTwoDates,
@@ -62,7 +62,7 @@ const createHalfDayDatesWithBookedDates = (
 const createBookingDatesWithHalfDayDates = (
   checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>,
   bookingDatesProps: Booking[]
-): Ref<Booking[]> => {
+): Booking[] => {
   const bookingDates = new Set() as Set<Booking>;
   let increment = 0 as number;
   const booking = {} as Booking;
@@ -85,10 +85,7 @@ const createBookingDatesWithHalfDayDates = (
     }
   );
 
-  return sortDatesObj([
-    ...bookingDatesProps,
-    ...bookingDates,
-  ]) as unknown as Ref<Booking[]>;
+  return sortDatesObj([...bookingDatesProps, ...bookingDates]);
 };
 
 export const useCreateHalfDayDates = (
@@ -100,7 +97,7 @@ export const useCreateHalfDayDates = (
   flatBookingDates: Ref<FlatBooking[]>;
   checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>;
   disabledDates: Ref<string[]>;
-  newBookingDates: Ref<Booking[]>;
+  newBookingDates: Booking[];
 } => {
   const disabledDates: Ref<string[]> = ref([]);
   // Set DisabledDates to []
@@ -117,7 +114,7 @@ export const useCreateHalfDayDates = (
     createHalfDayDatesWithBookedDates(bookedDatesProps).checkIncheckOutHalfDay;
 
   // Create bookingDates with halfDay
-  const newBookingDates: Ref<Booking[]> = createBookingDatesWithHalfDayDates(
+  const newBookingDates: Booking[] = createBookingDatesWithHalfDayDates(
     checkIncheckOutHalfDay,
     bookingDates
   );

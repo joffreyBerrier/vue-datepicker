@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import type { PropType } from "vue";
-import type { Placeholder } from "~/types";
+import type { Placeholder } from "../types";
 
 import BaseIcon from "./BaseIcon.vue";
 

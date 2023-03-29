@@ -7,7 +7,7 @@ import {
   getMonthName,
 } from "../generateMonth";
 
-import type { Month } from "~/types";
+import type { Month } from "../../types";
 
 export const useCreateMonth = (date: Date): Month => {
   const firstDayOfWeek = 1 as number;
@@ -27,6 +27,7 @@ export const useCreateMonth = (date: Date): Month => {
     month.days.push({
       belongsToThisMonth: day.getMonth() === month.monthKey,
       date: day,
+      dayIndex: day.getDay(),
       dayNumber: format(day, "D"),
       formatDay: format(day, "YYYY-MM-DD"),
       style: {},

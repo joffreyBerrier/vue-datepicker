@@ -1,4 +1,4 @@
-# vue-datepicker 1.3.91
+# vue-datepicker 2.0.0
 
 👊 An easier datePicker in Vue.js 👊
 
@@ -58,33 +58,43 @@ Use css variable
 
 ```css
 --calendar-wrapper: #fff;
---calendar-tooltip-bg: #fff;
---calendar-tooltip-border: #ececec;
+
+--calendar-tooltip-bg: #202020;
+--calendar-tooltip-border: #202020;
+--calendar-tooltip-text: #fff;
+
+--calendar-half-day-color: #757575;
+--calendar-half-day-color-active: #222;
+
+--calendar-text-color: #202020;
+
+--day-border: #fff;
+--day-checkIn-checkOut: #8ebbbb;
+--day-disabled: #aaa;
+--day-hovering-with-checkIn: #8ebbbb;
+--day-range-days: #daebeb;
+
+--calendar-disabled-opacity: 0.5;
+
+--calendar-mobile-header-border-bottom-days: #eee;
 
 --calendar-input-bg: #fff;
---calendar-input-border: #eee;
+--calendar-input-border: #f0f2f6;
+--calendar-input-shadow: 0 0 0 0.2rem #eee;
 
---calendar-paginate-bg: rgb(236 252 203);
---calendar-paginate-text-color: rgb(163 230 53);
---calendar-paginate-border-color: rgb(163 230 53);
+--calendar-paginate-bg: #fff;
+--calendar-paginate-text-color: #202020;
+--calendar-paginate-border-color: #f0f2f6;
 
---calendar-paginate-hover-bg: rgb(163 230 53);
---calendar-paginate-hover-border: rgb(163 230 53);
---calendar-paginate-hover-text: #ffffff;
+--calendar-paginate-hover-bg: #fff;
+--calendar-paginate-hover-text: #202020;
+--calendar-paginate-hover-border: #202020;
 
---calendar-paginate-disabled-bg: rgba(101, 163, 13, 0.5);
---calendar-paginate-disabled-border: rgb(101 163 13);
---calendar-paginate-disabled-text: #ffffff;
+--calendar-paginate-disabled-bg: #ffffff;
+--calendar-paginate-disabled-border: #f0f2f6;
+--calendar-paginate-disabled-text: #f0f2f6;
 
---day-disabled: rgb(241 245 249);
-
---day-border: rgb(226 232 240);
---day-range-days: rgb(236 252 203);
---day-hovering-with-checkIn: rgb(163 230 53);
-
---day-checkIn-checkOut: rgb(190 242 100);
-
---day-today: rgb(217 249 157);
+--day-today: #264646;
 ```
 
 ## Data binding
@@ -94,14 +104,14 @@ Use css variable
 - Type: `Date`
 - Default: `null`
 
-Exemple : `v-model:checkIn=""`
+Example: `v-model:checkIn=""`
 
 ### CheckOut
 
 - Type: `Date`
 - Default: `null`
 
-Exemple : `v-model:checkOut=""`
+Example: `v-model:checkOut=""`
 
 ## Props/Options
 
@@ -119,7 +129,7 @@ Show calendar by default
 
 Allows you to define colors for your bookings, the name of the key must be equal to your type key in the booking object
 
-Exemple:
+Example:
 
 ```javascript
 bookingColor: {
@@ -135,7 +145,7 @@ bookingColor: {
 
 Allows you to define a date range (Booking)
 
-Exemple:
+Example:
 
 ```javascript
 bookingDates: [
@@ -166,6 +176,13 @@ Disabled days after the current date
 
 Disabled days before the current date
 
+### disabled
+
+- Type: `Boolean`
+- Default: `true`
+
+Disabled the click on input calendar
+
 ### startDate
 
 - Type: `Date`
@@ -194,6 +211,13 @@ Define the format of your date
 
 Define the text of you input calendar
 
+### position
+
+- Type: `String`
+- Default: `left`
+
+Define the position of the calendar (right or left)
+
 ### showYear
 
 - Type: `Boolean`
@@ -215,7 +239,7 @@ hide / show the input calendar
 
 This data is an array of your booked dates, the date is already booked is appear it in disabled
 
-Exemple:
+Example:
 
 ```javascript
 bookedDates: [
@@ -263,7 +287,7 @@ Corresponds to the start of your periods with the format `YYYY-MM-DD`
 - If the periodType is `nightly` the count corresponds the number of days
 - If the periodType is `weekly_by_saturday`, `weekly_by_sunday` or `weekly_by_monday` the count corresponds to the number of weeks
 
-Exemple:
+Example:
 
 ```javascript
 periodDates: [
@@ -291,9 +315,78 @@ periodDates: [
 ];
 ```
 
+### The **translations**
+```js
+fr: {...},
+en: {
+  clearDates: "Clear dates",
+  close: "Close",
+  days: {
+    monday: "Mo",
+    tuesday: "Tu",
+    wednesday: "We",
+    thursday: "Th",
+    friday: "Fr",
+    saturday: "Sa",
+    sunday: "Su",
+  },
+  today: "Today",
+  periodType: {
+    weeklyBySaturday: "From Saturday to Saturday",
+    weeklyBySunday: "From Sunday to Sunday",
+    weeklyByMonday: "From Monday to Monday",
+    nightly: "A minimum of %{minimumDuration} night is required",
+  },
+  halfDay: {
+    checkIn: "Possible end of stay",
+    checkOut: "Possible start of stay",
+  },
+}
+```
+
 ## Events
 
-`@render-next-month` : fires when the user clicks on paginate
+* `@render-next-month` : Fires when the user clicks on paginate
+* `@click-on-date` : Fires when user click on a date
+* `select-booking-date` : Fires when user click on a booking
+* `toggle-calendar` : Fires when user open the calendar
+
+## Slots
+### Calendar Header Input
+* **Name**: `calendar-input-header`
+* **Data**:
+  * today:
+* **Methods**:
+  * paginate:
+  * paginateToToday:
+
+**Example:**
+```
+calendar-footer="{ today, paginate, paginateToToday }"
+```
+### Calendar Header mobile
+* **Name**: `calendar-header`
+* **Methods**:
+  * clearDates:
+  * closeDatePicker:
+
+**Example:**
+```
+calendar-footer="{ clearDates, closeDatePicker }"
+```
+
+### Calendar Footer
+* **Name**: `calendar-footer`
+* **Methods**:
+  * clearDates:
+  * closeDatePicker:
+
+**Example:**
+```
+calendar-footer="{ clearDates, closeDatePicker }"
+```
+
+## Header
 
 #### Example :
 
@@ -359,13 +452,14 @@ e | Mouse Event
 - Manage BookingDates 👊
 - Show checkIn checkOut date 👊
 - When click on checkIn checkOut date open calendar 👊
-- Refacto code, using setup syntax
-- Enable the calendar years view
+- Refacto code, using setup syntax 👊
+- Enable the calendar years view 👊
+- Manage translations 👊
+- Manage monday to monday and others days 👊
 
 # To Do
 
-- Manage translations
-- Manage monday to monday and others days
+- A11Y
 
 ## Contributing to development 💁‍♂️💁‍♀️
 

@@ -1,8 +1,8 @@
 import { default as dayjs } from "dayjs";
 import { addDate, format } from "../plugins/day";
-import { addDays } from "./helpers";
+import { useCreateMonth } from "./compose/useCreateMonth";
 
-import type { Month } from "~/types";
+import type { Month } from "../types";
 
 const getMonthName = (day: Date): string => {
   const currentMonth = format(day, "MMMM");
@@ -31,32 +31,6 @@ const getFirstDayOfFirstWeekOfMonth = (
   return new Date(firstDay.setDate(firstDay.getDate() + offset));
 };
 
-const createMonth = (date: Date): Month => {
-  const firstDayOfWeek = 1 as number;
-  const maxDaysInMonth = 42 as number; // a month is covered by 6 weeks max
-  const firstDayOfMonth = getFirstDayOfMonth(date) as Date;
-  const firstDay = getFirstDayOfFirstWeekOfMonth(date, firstDayOfWeek) as Date;
-  const month = {
-    days: [],
-    monthKey: date.getMonth(),
-    monthName: getMonthName(firstDayOfMonth),
-    yearKey: date.getFullYear(),
-  } as Month;
-
-  for (let i = 0; i < maxDaysInMonth; i++) {
-    const day = addDays(firstDay, i) as Date;
-
-    month.days.push({
-      belongsToThisMonth: day.getMonth() === month.monthKey,
-      date: day,
-      dayNumber: format(day, "D"),
-      formatDay: format(day, "YYYY-MM-DD"),
-    });
-  }
-
-  return month;
-};
-
 const getNextMonth = (date: Date): Date => {
   return addDate(date, 1, "month");
 };
@@ -67,7 +41,7 @@ const createMultipleMonth = (dates: Date[]): Month[] => {
   for (let d = 0; d < dates.length; d++) {
     const currentDate = dates[d] as Date;
 
-    months.push(createMonth(currentDate));
+    months.push(useCreateMonth(currentDate));
   }
 
   return months;

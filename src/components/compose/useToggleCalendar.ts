@@ -1,14 +1,16 @@
+import type { Ref } from "vue";
 import { ref, watch } from "vue";
 
-export const useToggleCalendar = (props) => {
+export const useToggleCalendar = (props: { alwaysVisible: boolean }) => {
   const showCalendar = props.alwaysVisible ? ref(true) : ref(false);
-  const calendarRef = ref(null);
+  const calendarRef: Ref<HTMLElement | null> = ref(null);
 
-  const handleClickOutside = (event: MouseEvent & { target: HTMLElement }) => {
+  const handleClickOutside = (event: Event) => {
     const ignoredElement = calendarRef.value;
 
     if (ignoredElement && showCalendar.value) {
-      const isIgnoredElementClicked = ignoredElement.contains(event.target);
+      const target = event.target as HTMLElement;
+      const isIgnoredElementClicked = ignoredElement.contains(target);
 
       if (!isIgnoredElementClicked) {
         showCalendar.value = false;

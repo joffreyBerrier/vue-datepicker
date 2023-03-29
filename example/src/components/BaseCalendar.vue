@@ -80,44 +80,12 @@ const handleCheckOut = (date: Date) => {
     :locale="locale"
     :period-dates="periodDates"
     :placeholder="placeholder"
-    v-bind="$attrs"
     @update:check-in="handleCheckIn"
     @update:check-out="handleCheckOut"
+    v-bind="$attrs"
   >
     <template #header>
       <slot name="header" />
     </template>
   </calendar>
 </template>
-
-<style>
-.vue-calendar {
-  --calendar-wrapper: #fff;
-  --calendar-tooltip-bg: #fff;
-  --calendar-tooltip-border: #f0f2f6;
-
-  --calendar-input-bg: #fff;
-  --calendar-input-border: #f0f2f6;
-
-  --calendar-paginate-bg: #fff;
-  --calendar-paginate-text-color: #636372;
-  --calendar-paginate-border-color: #f0f2f6;
-
-  --calendar-paginate-hover-bg: #fff;
-  --calendar-paginate-hover-border: #448084;
-  --calendar-paginate-hover-text: #448084;
-
-  --calendar-paginate-disabled-bg: #ffffff;
-  --calendar-paginate-disabled-border: #f0f2f6;
-  --calendar-paginate-disabled-text: #f0f2f6;
-
-  --day-disabled: #f0f2f6;
-
-  --day-border: #d9dae0;
-  --day-range-days: #dbf0f0;
-  --day-hovering-with-checkIn: #448084;
-  --day-checkIn-checkOut: #448084;
-
-  --day-today: #264646;
-}
-</style>

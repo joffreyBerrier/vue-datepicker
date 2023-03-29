@@ -1,7 +1,11 @@
 import { ref } from "vue";
 import type { Ref } from "vue";
 
-import type { Booking, BookingColor, CheckInCheckOutHalfDay } from "~/types";
+import type {
+  Booking,
+  BookingColor,
+  CheckInCheckOutHalfDay,
+} from "../../types";
 import { getDatesBetweenTwoDates } from "../helpers";
 
 export const useBookingStyle = (
@@ -13,9 +17,10 @@ export const useBookingStyle = (
   const bookingStyle: Ref<
     Record<string, string | { checkIn: string; checkOut: string }>
   > = ref({});
-  const bookingTypeAndDates: {
+  type ObjectT = {
     [key: string]: string[];
-  } = {};
+  };
+  const bookingTypeAndDates: ObjectT = {};
 
   bookingDates.forEach((booking: Booking) => {
     const flatBookingDatesString: Ref<string[]> = ref(
