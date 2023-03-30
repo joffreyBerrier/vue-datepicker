@@ -352,27 +352,37 @@ en: {
 * `toggle-calendar` : Fires when user open the calendar
 
 ## Slots
-### Calendar Header Input
-* **Name**: `calendar-input-header`
-* **Data**:
-  * today:
-* **Methods**:
-  * paginate:
-  * paginateToToday:
+### Calendar Header
+
+* **Name**: `header`
 
 **Example:**
 ```
-calendar-footer="{ today, paginate, paginateToToday }"
+<template #header>
 ```
-### Calendar Header mobile
-* **Name**: `calendar-header`
+
+### Calendar Header Mobile
+
+* **Name**: `calendar-header-mobile`
 * **Methods**:
   * clearDates:
   * closeDatePicker:
 
 **Example:**
 ```
-calendar-footer="{ clearDates, closeDatePicker }"
+<template #calendar-header-mobile="{ clearDates, closeDatePicker }">
+```
+### Calendar Header mobile
+* **Name**: `calendar-header`
+* **Data**:
+  * activeIndex
+  * months
+* **Methods**:
+  * paginate
+
+**Example:**
+```
+<template #calendar-header="{ months, paginate, activeIndex }">
 ```
 
 ### Calendar Footer
@@ -383,7 +393,7 @@ calendar-footer="{ clearDates, closeDatePicker }"
 
 **Example:**
 ```
-calendar-footer="{ clearDates, closeDatePicker }"
+<template #calendar-footer="{ clearDates, closeDatePicker }">
 ```
 
 ## Header
