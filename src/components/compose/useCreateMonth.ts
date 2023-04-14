@@ -1,19 +1,17 @@
-import { format } from "../../plugins/day";
-
-import { addDays } from "../helpers";
-import {
-  getFirstDayOfFirstWeekOfMonth,
-  getFirstDayOfMonth,
-  getMonthName,
-} from "../generateMonth";
-
 import type { Month } from "../../types";
 
+import {
+  format,
+  getFirstDayOfFirstWeekOfMonth,
+  getFirstDayOfMonth,
+} from "../../plugins/day";
+import { getMonthName } from "../generateMonth";
+import { addDays } from "../helpers";
+
 export const useCreateMonth = (date: Date): Month => {
-  const firstDayOfWeek = 1 as number;
   const maxDaysInMonth = 42 as number; // a month is covered by 6 weeks max
   const firstDayOfMonth = getFirstDayOfMonth(date);
-  const firstDay = getFirstDayOfFirstWeekOfMonth(date, firstDayOfWeek);
+  const firstDay = getFirstDayOfFirstWeekOfMonth(date);
   const month = {
     days: [],
     monthKey: date.getMonth(),

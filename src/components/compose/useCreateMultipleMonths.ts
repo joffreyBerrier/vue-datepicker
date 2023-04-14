@@ -1,10 +1,10 @@
-import { default as dayjs } from "dayjs";
-import { createMultipleMonth, getNextMonth } from "../generateMonth";
-
 import type { Month } from "../../types";
 
+import { createMultipleMonth, getNextMonth } from "../generateMonth";
+import { formatDateUtc } from "../../plugins/day";
+
 export const useCreateMultipleMonths = (date: Date, max: number): Month[] => {
-  let nextMonth = dayjs(date).utc(true).toDate();
+  let nextMonth = formatDateUtc(date);
   const dates = [];
 
   for (let countMonth = 0; countMonth < max; countMonth++) {

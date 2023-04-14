@@ -344,6 +344,13 @@ en: {
 }
 ```
 
+### Timezone
+
+- Type : `String`
+- Default: `Europe/Paris`
+
+Define the timezone of the Calendar for manage periods and disabled dates in the correct timezone
+
 ## Events
 
 * `@render-next-month` : Fires when the user clicks on paginate
