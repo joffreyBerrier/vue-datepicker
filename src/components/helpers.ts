@@ -1,9 +1,9 @@
-import { default as dayjs } from "dayjs";
 import {
   addDate,
   format,
   getDateDiff,
   getDatesBetweenTwoDates,
+  getDaysArray,
   getNextDate,
   isAfter,
   isBefore,
@@ -116,21 +116,6 @@ const sortDates = (dates: string[]): string[] => {
       return aa < bb ? -1 : aa > bb ? 1 : 0;
     })
     .map((d) => format(d, "YYYY-MM-DD"));
-};
-
-const getDaysArray = (start: Date | string, end: Date | string): Date[] => {
-  const d1 = dayjs(start).utc(true);
-  const d2 = dayjs(end).utc(true);
-  const lenghDifference: number = getDateDiff(d1.toDate(), d2.toDate(), "day");
-  const arr = [];
-
-  for (let index = 0; index < lenghDifference + 1; index++) {
-    const day = d1.add(index, "day").toDate();
-
-    arr.push(day);
-  }
-
-  return arr;
 };
 
 const deviceIsMobile = () => {

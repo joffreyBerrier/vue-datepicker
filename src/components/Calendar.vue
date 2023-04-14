@@ -217,8 +217,13 @@ const props = defineProps({
       },
     }),
   },
+  timezone: {
+    type: String,
+    default: "Europe/Paris",
+  },
 });
 
+dayjs.tz.setDefault(props.timezone);
 dayjs.locale(props.locale);
 
 const t = (key: string, minimumDuration: number | null = null): string => {
@@ -1191,6 +1196,8 @@ onUnmounted(() => {
     window.removeEventListener("resize", resizeContainer);
   }
 });
+
+defineExpose({ activeIndex });
 </script>
 
 <template>
