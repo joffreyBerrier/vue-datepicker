@@ -96,7 +96,7 @@ const clearDates = () => {
       </p>
     </div>
 
-    <base-icon name="close" @click="clearDates" />
+    <base-icon v-if="checkIn && checkOut" name="close" @click="clearDates" />
   </div>
 </template>
 
