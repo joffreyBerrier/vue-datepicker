@@ -121,7 +121,15 @@ const props = defineProps({
     type: String,
     default: "YYYY-MM-DD",
   },
-  isFooter: {
+  isAffixed: {
+    type: Boolean,
+    default: false,
+  },
+  hasFooter: {
+    type: Boolean,
+    default: false,
+  },
+  hasHeader: {
     type: Boolean,
     default: false,
   },
@@ -225,6 +233,8 @@ const props = defineProps({
 
 dayjs.tz.setDefault(props.timezone);
 dayjs.locale(props.locale);
+
+const isClient = typeof window !== "undefined";
 
 const t = (key: string, minimumDuration: number | null = null): string => {
   const translation = props.translations[props.locale];
@@ -751,9 +761,11 @@ const slicedMonthsForDesktop: ComputedRef<Month[]> = computed(() => {
   return months.value.slice(activeIndex.value, count + activeIndex.value);
 });
 const slicedMonthsForMobile: ComputedRef<Month[]> = computed(() => {
-  const count = 12;
+  if (props.isAffixed) {
+    return months.value.slice(activeMobileIndex.value, 12 + activeIndex.value);
+  }
 
-  return months.value.slice(activeMobileIndex.value, count + activeIndex.value);
+  return months.value.slice(activeIndex.value, 1 + activeIndex.value);
 });
 const slicedMonths: ComputedRef<Month[]> = computed(() => {
   return isMobile.value
@@ -1120,8 +1132,10 @@ const clearDates = () => {
   emits("clear-dates");
 };
 const resizeContainer = () => {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty("--vh", `${vh}px`);
+  if (isClient) {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+  }
 };
 
 const visibleMobileMonth: ComputedRef<number> = computed(() => {
@@ -1183,7 +1197,7 @@ watch(
 onBeforeMount(() => {
   if (!props.alwaysVisible) addClickOusideListener();
 
-  if (isMobile.value) {
+  if (isClient && isMobile.value) {
     window.addEventListener("resize", resizeContainer);
     resizeContainer();
   }
@@ -1192,12 +1206,12 @@ onBeforeMount(() => {
 onUnmounted(() => {
   if (!props.alwaysVisible) removeClickOusideListener();
 
-  if (isMobile.value) {
+  if (isClient && isMobile.value) {
     window.removeEventListener("resize", resizeContainer);
   }
 });
 
-defineExpose({ activeIndex });
+defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
 </script>
 
 <template>
@@ -1213,8 +1227,8 @@ defineExpose({ activeIndex });
       :check-out="checkOut"
       :day-format="dayFormat"
       @open-calendar="openCalendar"
+      @clear-dates="clearDates"
     />
-
     <div>
       <div v-if="alwaysVisible" class="calendar_paginate-wrapper">
         <div class="calendar_paginate-wrapper--left-content">
@@ -1260,13 +1274,14 @@ defineExpose({ activeIndex });
         `calendar_wrapper--${position}`,
         {
           'calendar_wrapper--year': alwaysVisible,
-          'calendar_wrapper--mobile': isMobile,
+          'calendar_wrapper--affix': isAffixed,
         },
       ]"
     >
       <CalendarHeader
-        v-if="!alwaysVisible && !isMobile"
+        v-if="!alwaysVisible && !isAffixed"
         :active-index="activeIndex"
+        :is-mobile="isMobile"
         :months="months"
         @paginate="paginate"
       >
@@ -1281,7 +1296,7 @@ defineExpose({ activeIndex });
       </CalendarHeader>
 
       <CalendarFooter
-        v-if="isMobile"
+        v-if="hasHeader"
         :is-mobile="isMobile"
         @close-date-picker="closeDatePicker"
         @clear-dates="clearDates"
@@ -1319,7 +1334,7 @@ defineExpose({ activeIndex });
 
           <!-- Mobile header -->
           <CalendarDays v-if="isDesktop" />
-          <div v-if="isMobile" class="calendar_wrapper_month">
+          <div v-if="isAffixed" class="calendar_wrapper_month">
             <span>{{ month.monthName }}</span>
           </div>
           <!-- Mobile header -->
@@ -1496,7 +1511,7 @@ defineExpose({ activeIndex });
       </div>
 
       <CalendarFooter
-        v-if="isDesktop && isFooter"
+        v-if="isDesktop && hasFooter"
         :is-mobile="isMobile"
         @close-date-picker="closeDatePicker"
         @clear-dates="clearDates"
@@ -1715,18 +1730,19 @@ defineExpose({ activeIndex });
     color: var(--calendar-paginate-hover-text);
   }
 }
-/* Mobile style */
-.vue-calendar .calendar_wrapper.calendar_wrapper--mobile {
+
+/* Affix style */
+.vue-calendar .calendar_wrapper.calendar_wrapper--affix {
   @apply p-0 fixed top-0 left-0 right-0;
   min-height: calc(var(--vh, 1vh) * 100);
 }
 .vue-calendar
-  .calendar_wrapper.calendar_wrapper--mobile
+  .calendar_wrapper.calendar_wrapper--affix
   .calendar_wrapper_content {
   height: calc(100vh - 100px - var(--vh, 1vh));
 }
 .vue-calendar
-  .calendar_wrapper.calendar_wrapper--mobile
+  .calendar_wrapper.calendar_wrapper--affix
   .calendar_wrapper_content {
   @apply overflow-y-auto p-4;
 }

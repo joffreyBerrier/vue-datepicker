@@ -119,9 +119,10 @@ const sortDates = (dates: string[]): string[] => {
 };
 
 const deviceIsMobile = () => {
+  const isClient = typeof window !== "undefined";
   let check = false;
 
-  if (window) {
+  if (isClient) {
     /* eslint-disable */
     (function (a) {
       if (

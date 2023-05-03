@@ -151,7 +151,7 @@ const pushBookingDates = () => {
       :period-dates="periodDates"
       :placeholder="placeholder"
       :show-input-calendar="true"
-      is-footer
+      has-footer
       :show-year="showYear"
       @click-on-date="clickOnDate"
       @render-next-month="renderNextMonth"

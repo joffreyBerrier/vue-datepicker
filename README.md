@@ -1,4 +1,4 @@
-# vue-datepicker 2.0.0
+# vue-datepicker 2.1.3
 
 👊 An easier datePicker in Vue.js 👊
 
@@ -183,6 +183,27 @@ Disabled days before the current date
 
 Disabled the click on input calendar
 
+### hasFooter
+
+- Type: `Boolean`
+- Default: `false`
+
+Hidden / Show the default footer of the calendar
+
+### hasHeader
+
+- Type: `Boolean`
+- Default: `false`
+
+Hidden / Show the default header of the calendar
+
+### isAffixed
+
+- Type: `Boolean`
+- Default: `false`
+
+Add a calendar in a modal
+
 ### startDate
 
 - Type: `Date`
@@ -353,10 +374,21 @@ Define the timezone of the Calendar for manage periods and disabled dates in the
 
 ## Events
 
-* `@render-next-month` : Fires when the user clicks on paginate
-* `@click-on-date` : Fires when user click on a date
-* `select-booking-date` : Fires when user click on a booking
-* `toggle-calendar` : Fires when user open the calendar
+* `clear-dates`: Fires when date is cleared
+* `close-date-picker`: Fires when the calendar is closed
+* `render-next-date`: Fires when date is paginate to the next month
+* `render-previous-date`: Fires when date is paginate to the previous month
+* `select-booking-date`: Fires when click on a booking
+* `update:checkIn`: Fires when click on a checkIn
+* `update:checkOut`: Fires when click on a checkOut
+
+## Expose
+
+Expose allows you to access to different methods with a ref on the Calendar component
+
+* `clearDates`: Allows you to clear the dates
+* `closeDatePicker`: Allows you to close the datepicker
+* `openCalendar`: Allows you to open the datepicker
 
 ## Slots
 ### Calendar Header

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
+
 import type { PropType } from "vue";
 
 import { Calendar } from "../../../src/index";
@@ -68,14 +70,24 @@ const handleCheckIn = (date: Date) => {
 const handleCheckOut = (date: Date) => {
   emit("update:endDate", date);
 };
+
+const isAffixed = ref(false);
+
+const calendarRef = ref(null);
+onMounted(() => {
+  console.log(calendarRef.value);
+});
 </script>
 
 <template>
   <calendar
+    ref="calendarRef"
     :booking-color="bookingColor"
     :booking-dates="bookingDates"
     :check-in="startDate"
     :check-out="endDate"
+    :has-header="isAffixed"
+    :is-affixed="isAffixed"
     :format-date="formatDate"
     :locale="locale"
     :period-dates="periodDates"
