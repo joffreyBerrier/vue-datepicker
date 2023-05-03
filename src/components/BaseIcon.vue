@@ -33,6 +33,7 @@ const paths: Ref<Icon> = ref({
   arrowNarrowRight: "M17 8l4 4m0 0l-4 4m4-4H3",
   calendar:
     "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
+  close: "M6 18L18 6M6 6l12 12",
   chevronLeft:
     "M15 10a.75.75 0 01-.75.75H7.612l2.158 1.96a.75.75 0 11-1.04 1.08l-3.5-3.25a.75.75 0 010-1.08l3.5-3.25a.75.75 0 111.04 1.08L7.612 9.25h6.638A.75.75 0 0115 10z",
   chevronRight:

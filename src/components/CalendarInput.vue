@@ -10,7 +10,7 @@ import type { Placeholder } from "../types";
 
 import BaseIcon from "./BaseIcon.vue";
 
-const emit = defineEmits(["open-calendar"]);
+const emit = defineEmits(["clear-dates", "open-calendar"]);
 defineProps({
   checkIn: {
     type: [Date, String],
@@ -33,67 +33,70 @@ defineProps({
 const openCalendar = () => {
   emit("open-calendar");
 };
+const clearDates = () => {
+  emit("clear-dates");
+};
 </script>
 
 <template>
-  <div
-    data-testid="calendar_input"
-    class="calendar_input"
-    @click="openCalendar"
-  >
-    <base-icon
-      name="calendar"
-      :color="[
-        'calendar_input-calendar',
-        {
-          'calendar_input-calendar--hasnt-checkIn': !checkIn,
-          'calendar_input-calendar--checkIn': checkIn,
-        },
-      ]"
-    />
-
-    <p class="calendar_input-text">
-      <span
-        data-testid="checkIn"
-        :class="[
-          {
-            'calendar_input-text--hasnt-checkIn': !checkIn,
-            'calendar_input-text--checkIn': checkIn,
-          },
-        ]"
-      >
-        <template v-if="checkIn">
-          {{ dayFormat(checkIn) }}
-        </template>
-        <template v-else>{{ placeholder.checkIn }}</template>
-      </span>
-
+  <div data-testid="calendar_input" class="calendar_input">
+    <div class="calendar_input-left-part" @click="openCalendar">
       <base-icon
-        name="arrowNarrowRight"
+        name="calendar"
         :color="[
-          'calendar_input-arrowRight',
+          'calendar_input-calendar',
           {
-            'calendar_input-arrowRight--hasnt-checkIn': !checkIn,
-            'calendar_input-arrowRight--checkIn': checkIn,
+            'calendar_input-calendar--hasnt-checkIn': !checkIn,
+            'calendar_input-calendar--checkIn': checkIn,
           },
         ]"
       />
 
-      <span
-        data-testid="checkOut"
-        :class="[
-          {
-            'calendar_input-text--hasnt-checkIn': !checkIn,
-            'calendar_input-text--checkIn': checkIn,
-          },
-        ]"
-      >
-        <template v-if="checkOut">
-          {{ dayFormat(checkOut) }}
-        </template>
-        <template v-else>{{ placeholder.checkOut }}</template>
-      </span>
-    </p>
+      <p class="calendar_input-text">
+        <span
+          data-testid="checkIn"
+          :class="[
+            {
+              'calendar_input-text--hasnt-checkIn': !checkIn,
+              'calendar_input-text--checkIn': checkIn,
+            },
+          ]"
+        >
+          <template v-if="checkIn">
+            {{ dayFormat(checkIn) }}
+          </template>
+          <template v-else>{{ placeholder.checkIn }}</template>
+        </span>
+
+        <base-icon
+          name="arrowNarrowRight"
+          :color="[
+            'calendar_input-arrowRight',
+            {
+              'calendar_input-arrowRight--hasnt-checkIn': !checkIn,
+              'calendar_input-arrowRight--checkIn': checkIn,
+            },
+          ]"
+        />
+
+        <span
+          data-testid="checkOut"
+          :class="[
+            {
+              'calendar_input-text--hasnt-checkIn': !checkIn,
+              'calendar_input-text--checkIn': checkIn,
+            },
+          ]"
+        >
+          <template v-if="checkOut">
+            {{ dayFormat(checkOut) }}
+          </template>
+          <template v-else>{{ placeholder.checkOut }}</template>
+        </span>
+      </p>
+    </div>
+
+    <base-icon name="close" @click="clearDates" />
   </div>
 </template>
 
@@ -101,7 +104,10 @@ const openCalendar = () => {
 .vue-calendar .calendar_input {
   background-color: var(--calendar-input-bg);
   border-color: var(--calendar-input-border);
-  @apply flex items-center h-[50px] cursor-pointer px-4 border;
+  @apply flex items-center h-[50px] cursor-pointer px-4 border justify-between;
+}
+.vue-calendar .calendar_input-left-part {
+  @apply w-full flex items-center;
 }
 .vue-calendar .calendar_input-calendar {
   @apply mr-4;

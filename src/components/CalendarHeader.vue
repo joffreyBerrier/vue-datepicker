@@ -18,6 +18,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  isMobile: {
+    type: Boolean,
+    default: false,
+  },
   months: {
     type: Array as PropType<Month[]>,
     default: () => {
@@ -40,7 +44,7 @@ const paginate = (operator: string) => {
 </script>
 
 <template>
-  <div class="calendar_header">
+  <div :class="['calendar_header', { calendar_header_mobile: isMobile }]">
     <slot name="calendar-header">
       <div class="calendar_header-left">
         <button
@@ -53,11 +57,13 @@ const paginate = (operator: string) => {
           <base-icon name="chevronLeft" size="s" />
         </button>
 
-        <p class="calendar_header-text">{{ prevMonth }}</p>
+        <p v-if="!isMobile" class="calendar_header-text">{{ prevMonth }}</p>
       </div>
 
+      <p v-if="isMobile" class="text-center">{{ prevMonth }}</p>
+
       <div class="calendar_header-right">
-        <p class="calendar_header-text">{{ nextMonth }}</p>
+        <p v-if="!isMobile" class="calendar_header-text">{{ nextMonth }}</p>
 
         <button
           type="button"
@@ -75,7 +81,10 @@ const paginate = (operator: string) => {
 
 <style>
 .vue-calendar .calendar_header {
-  @apply relative grid grid-cols-2 items-center gap-4;
+  @apply relative grid md:grid-cols-2 grid-cols-3 items-center gap-4;
+}
+.vue-calendar .calendar_header_mobile {
+  @apply relative flex justify-between items-center gap-4 mb-6;
 }
 .vue-calendar .calendar_header-left-button,
 .vue-calendar .calendar_header-right-button {
