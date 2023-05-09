@@ -1466,7 +1466,7 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
                   },
                   // Inactive saturday / sunday / monday period
                   {
-                    'calendar_day--in-period':
+                    'calendar_day--in-period event-none':
                       inWeeklyPeriods(day) && !isInBookingDates(day),
                   },
                   // Inactive saturday / sunday / monday period
