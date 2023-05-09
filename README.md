@@ -115,6 +115,12 @@ Example: `v-model:checkOut=""`
 
 ## Props/Options
 
+### SingleCalendar
+- Type: `Boolean`
+- Default: `false`
+
+Show single mode calendar
+
 ### alwaysVisible
 
 - Type: `Boolean`
