@@ -18,7 +18,7 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-  isMobile: {
+  showHeader: {
     type: Boolean,
     default: false,
   },
@@ -44,7 +44,7 @@ const paginate = (operator: string) => {
 </script>
 
 <template>
-  <div :class="['calendar_header', { calendar_header_mobile: isMobile }]">
+  <div :class="['calendar_header', { calendar_header_mobile: showHeader }]">
     <slot name="calendar-header">
       <div class="calendar_header-left">
         <button
@@ -57,13 +57,13 @@ const paginate = (operator: string) => {
           <base-icon name="chevronLeft" size="s" />
         </button>
 
-        <p v-if="!isMobile" class="calendar_header-text">{{ prevMonth }}</p>
+        <p v-if="!showHeader" class="calendar_header-text">{{ prevMonth }}</p>
       </div>
 
-      <p v-if="isMobile" class="text-center">{{ prevMonth }}</p>
+      <p v-if="showHeader" class="text-center">{{ prevMonth }}</p>
 
       <div class="calendar_header-right">
-        <p v-if="!isMobile" class="calendar_header-text">{{ nextMonth }}</p>
+        <p v-if="!showHeader" class="calendar_header-text">{{ nextMonth }}</p>
 
         <button
           type="button"

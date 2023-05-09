@@ -79,6 +79,7 @@ const periodDates: Ref<Period[]> = ref([
   },
 ]);
 const checkIn = ref(new Date("2023-05-01"));
+const checkInSingle = ref();
 const checkOut = ref(new Date("2023-05-10"));
 const showAlwaysVisible = ref(false);
 const showYear = ref(false);
@@ -183,5 +184,24 @@ const pushBookingDates = () => {
         </div>
       </template>
     </BaseCalendar>
+
+    <!-- Single calendar -->
+    <div class="mt-10">
+      <h2 class="font-bold">Single Calendar</h2>
+      <div class="my-4">
+        <strong>Check-In:</strong>
+        <pre>{{ checkInSingle }}</pre>
+      </div>
+      <BaseCalendar
+        ref="calendar"
+        class="mt-4"
+        single-calendar
+        v-model:checkIn="checkInSingle"
+        :placeholder="placeholder"
+        :show-input-calendar="true"
+        :show-year="showYear"
+        @click-on-date="clickOnDate"
+      />
+    </div>
   </div>
 </template>

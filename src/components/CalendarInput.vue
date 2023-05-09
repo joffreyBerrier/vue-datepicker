@@ -28,6 +28,10 @@ defineProps({
     type: Object as PropType<Placeholder>,
     required: true,
   },
+  singleCalendar: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const openCalendar = () => {
@@ -68,31 +72,33 @@ const clearDates = () => {
           <template v-else>{{ placeholder.checkIn }}</template>
         </span>
 
-        <base-icon
-          name="arrowNarrowRight"
-          :color="[
-            'calendar_input-arrowRight',
-            {
-              'calendar_input-arrowRight--hasnt-checkIn': !checkIn,
-              'calendar_input-arrowRight--checkIn': checkIn,
-            },
-          ]"
-        />
+        <template v-if="!singleCalendar">
+          <base-icon
+            name="arrowNarrowRight"
+            :color="[
+              'calendar_input-arrowRight',
+              {
+                'calendar_input-arrowRight--hasnt-checkIn': !checkIn,
+                'calendar_input-arrowRight--checkIn': checkIn,
+              },
+            ]"
+          />
 
-        <span
-          data-testid="checkOut"
-          :class="[
-            {
-              'calendar_input-text--hasnt-checkIn': !checkIn,
-              'calendar_input-text--checkIn': checkIn,
-            },
-          ]"
-        >
-          <template v-if="checkOut">
-            {{ dayFormat(checkOut) }}
-          </template>
-          <template v-else>{{ placeholder.checkOut }}</template>
-        </span>
+          <span
+            data-testid="checkOut"
+            :class="[
+              {
+                'calendar_input-text--hasnt-checkIn': !checkIn,
+                'calendar_input-text--checkIn': checkIn,
+              },
+            ]"
+          >
+            <template v-if="checkOut">
+              {{ dayFormat(checkOut) }}
+            </template>
+            <template v-else>{{ placeholder.checkOut }}</template>
+          </span>
+        </template>
       </p>
     </div>
 

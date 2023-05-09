@@ -164,6 +164,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  singleCalendar: {
+    type: Boolean,
+    default: false,
+  },
   startDate: {
     type: Date,
     default: new Date(new Date().getFullYear() - 2, 0, 1),
@@ -768,9 +772,13 @@ const slicedMonthsForMobile: ComputedRef<Month[]> = computed(() => {
   return months.value.slice(activeIndex.value, 1 + activeIndex.value);
 });
 const slicedMonths: ComputedRef<Month[]> = computed(() => {
-  return isMobile.value
-    ? slicedMonthsForMobile.value
-    : slicedMonthsForDesktop.value;
+  if (!props.singleCalendar) {
+    return isMobile.value
+      ? slicedMonthsForMobile.value
+      : slicedMonthsForDesktop.value;
+  }
+
+  return slicedMonthsForMobile.value;
 });
 const formatToday: ComputedRef<string> = computed(() => {
   return format(today.value, formattingFormat.value);
@@ -867,10 +875,10 @@ const defineHoveringData = (day: Day) => {
   }
 };
 const mobileClick = (day: Day) => {
-  if (isMobile.value) defineHoveringData(day);
+  if (isMobile.value && !props.singleCalendar) defineHoveringData(day);
 };
 const desktopHover = (day: Day) => {
-  if (isDesktop.value) defineHoveringData(day);
+  if (isDesktop.value && !props.singleCalendar) defineHoveringData(day);
 };
 
 const removeTooltip = () => {
@@ -883,13 +891,18 @@ const dayMouseLeave = () => {
 };
 
 const setCheckIn = (day: Day) => {
-  emits("update:checkIn", day.date);
-  getNextBookingDate(day);
-  setMinimumDuration(day.date);
-  const cp = getCurrentPeriod(day);
-  currentPeriod.value = cp;
-  hoveringDates.value = [];
-  hoveringPeriod.value = cp;
+  if (props.singleCalendar) {
+    emits("update:checkIn", day.date);
+    closeDatePicker();
+  } else {
+    emits("update:checkIn", day.date);
+    getNextBookingDate(day);
+    setMinimumDuration(day.date);
+    const cp = getCurrentPeriod(day);
+    currentPeriod.value = cp;
+    hoveringDates.value = [];
+    hoveringPeriod.value = cp;
+  }
 };
 const setCheckOut = (day: Day) => {
   emits("update:checkOut", day.date);
@@ -936,32 +949,40 @@ const dayClicked = (day: Day, e: Event): void => {
 
   if (isInBookingDates(day) && !disabledClicked) return;
 
-  if (props.checkIn === day.date) {
-    // CheckIn when already CheckIn
-    emits("update:checkIn", null);
-    emits("update:checkOut", null);
-    clearDataWhenDateIsNull();
-  } else if (
-    (props.checkIn && !props.checkOut) ||
-    (isInBookingDates(day) &&
-      isInCheckinHalfDayAndCheckin(day) &&
-      props.checkIn)
-  ) {
-    // CheckIn + !ChecKout
-    setCheckOut(day);
-
-    currentPeriod.value = null;
-    nextDisableBookingDate.value = null;
-    hoveringDay.value = null;
-
-    if (!props.alwaysVisible) showCalendar.value = false;
-  } else if (!props.checkIn) {
-    // CheckIn
-    setCheckIn(day);
+  if (props.singleCalendar) {
+    if (props.checkIn === day.date) {
+      emits("update:checkIn", null);
+    } else {
+      setCheckIn(day);
+    }
   } else {
-    // CheckIn + CheckOut
-    setCheckIn(day);
-    emits("update:checkOut", null);
+    if (props.checkIn === day.date) {
+      // CheckIn when already CheckIn
+      emits("update:checkIn", null);
+      emits("update:checkOut", null);
+      clearDataWhenDateIsNull();
+    } else if (
+      (props.checkIn && !props.checkOut) ||
+      (isInBookingDates(day) &&
+        isInCheckinHalfDayAndCheckin(day) &&
+        props.checkIn)
+    ) {
+      // CheckIn + !ChecKout
+      setCheckOut(day);
+
+      currentPeriod.value = null;
+      nextDisableBookingDate.value = null;
+      hoveringDay.value = null;
+
+      if (!props.alwaysVisible) showCalendar.value = false;
+    } else if (!props.checkIn) {
+      // CheckIn
+      setCheckIn(day);
+    } else {
+      // CheckIn + CheckOut
+      setCheckIn(day);
+      emits("update:checkOut", null);
+    }
   }
 };
 // Récupère la prochaine date de booking
@@ -1223,6 +1244,7 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
       v-if="showInputCalendar"
       :class="{ 'calendar_input-open': showCalendar }"
       :placeholder="placeholder"
+      :single-calendar="singleCalendar"
       :check-in="checkIn"
       :check-out="checkOut"
       :day-format="dayFormat"
@@ -1275,13 +1297,14 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
         {
           'calendar_wrapper--year': alwaysVisible,
           'calendar_wrapper--affix': isAffixed,
+          'calendar_wrapper--single': singleCalendar,
         },
       ]"
     >
       <CalendarHeader
         v-if="!alwaysVisible && !isAffixed"
         :active-index="activeIndex"
-        :is-mobile="isMobile"
+        :show-header="isMobile || singleCalendar"
         :months="months"
         @paginate="paginate"
       >
@@ -1398,6 +1421,13 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
                       format(checkIn, formattingFormat) ===
                       format(day.date, formattingFormat),
                   },
+                  // singleCalendar
+                  {
+                    'calendar_day--checkIn--single':
+                      singleCalendar &&
+                      format(checkIn, formattingFormat) ===
+                        format(day.date, formattingFormat),
+                  },
                   // CheckOut
                   {
                     'calendar_day--checkOut':
@@ -1461,8 +1491,9 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
                 <!-- Half day for CheckIn -->
                 <CalendarHalfDay
                   v-if="
+                    !singleCalendar &&
                     format(checkIn, formattingFormat) ===
-                    format(day.date, formattingFormat)
+                      format(day.date, formattingFormat)
                   "
                   :day="day"
                   :is-check-in="true"
@@ -1471,8 +1502,9 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
                 <!-- Half day for CheckOut -->
                 <CalendarHalfDay
                   v-if="
+                    !singleCalendar &&
                     format(checkOut, formattingFormat) ===
-                    format(day.date, formattingFormat)
+                      format(day.date, formattingFormat)
                   "
                   :day="day"
                   :is-check-in="false"
@@ -1481,6 +1513,7 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
                 <!-- Half day for Booking and Periods  -->
                 <CalendarHalfDay
                   v-if="
+                    !singleCalendar &&
                     isInFlattenBookingDates(day) &&
                     (isInCheckinHalfDayAndCheckin(day) ||
                       isInCheckinHalfDayAndNotCheckin(day))
@@ -1492,7 +1525,9 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
                 />
                 <CalendarHalfDay
                   v-if="
-                    isInFlattenBookingDates(day) && isInCheckoutHalfDay(day)
+                    !singleCalendar &&
+                    isInFlattenBookingDates(day) &&
+                    isInCheckoutHalfDay(day)
                   "
                   :booking-style="bookingStyle"
                   :day="day"
@@ -1627,6 +1662,9 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
   @apply font-bold;
   color: var(--calendar-half-day-color);
 }
+.vue-calendar .calendar_day--checkIn--single {
+  background-color: var(--day-range-days);
+}
 .vue-calendar
   .calendar_day--hovering-checkIn:not(.calendar_day-in-half-day--checkIn) {
   background-color: var(--day-hovering-with-checkIn);
@@ -1706,6 +1744,11 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
   @apply right-auto left-auto;
 }
 
+/* Single */
+.vue-calendar .calendar_wrapper--single .calendar_wrapper_content {
+  @apply block;
+}
+
 /* Disabled */
 .vue-calendar--disabled {
   opacity: var(--calendar-disabled-opacity);
@@ -1718,6 +1761,9 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
 @screen md {
   .vue-calendar .calendar_wrapper:not(.calendar_wrapper--year) {
     @apply w-full md:w-[600px];
+  }
+  .vue-calendar .calendar_wrapper.calendar_wrapper--single {
+    @apply w-[380px];
   }
   .vue-calendar .calendar_today-button:hover {
     background-color: var(--calendar-paginate-hover-bg);
