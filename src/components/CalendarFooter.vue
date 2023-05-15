@@ -18,6 +18,10 @@ defineProps({
     type: Boolean,
     required: true,
   },
+  locale: {
+    type: String,
+    required: true,
+  },
 });
 
 const closeDatePicker = () => {
@@ -45,7 +49,7 @@ const clearDates = () => {
         </button>
       </div>
 
-      <CalendarDays v-if="isMobile" />
+      <CalendarDays v-if="isMobile" :locale="locale" />
     </slot>
   </div>
 </template>

@@ -1321,6 +1321,7 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
       <CalendarFooter
         v-if="hasHeader"
         :is-mobile="isMobile"
+        :locale="locale"
         @close-date-picker="closeDatePicker"
         @clear-dates="clearDates"
       >
@@ -1356,7 +1357,7 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
           </span>
 
           <!-- Mobile header -->
-          <CalendarDays v-if="isDesktop" />
+          <CalendarDays v-if="isDesktop" :locale="locale" />
           <div v-if="isAffixed" class="calendar_wrapper_month">
             <span>{{ month.monthName }}</span>
           </div>
@@ -1548,6 +1549,7 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
       <CalendarFooter
         v-if="isDesktop && hasFooter"
         :is-mobile="isMobile"
+        :locale="locale"
         @close-date-picker="closeDatePicker"
         @clear-dates="clearDates"
       >

@@ -5,14 +5,21 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, inject } from "vue";
+import { computed, ref, inject, type ComputedRef } from "vue";
 import type { Ref } from "vue";
 
 import type { HeaderDay } from "../types";
 
+const props = defineProps({
+  locale: {
+    type: String,
+    required: true,
+  },
+});
+
 const t = inject("t", (key: string) => ({}));
 
-const days: Ref<HeaderDay[]> = ref([
+const listOfDays: Ref<HeaderDay[]> = ref([
   { key: 1, name: "monday" },
   { key: 2, name: "tuesday" },
   { key: 3, name: "wednesday" },
@@ -21,6 +28,13 @@ const days: Ref<HeaderDay[]> = ref([
   { key: 6, name: "saturday" },
   { key: 0, name: "sunday" },
 ]);
+
+const days: ComputedRef<HeaderDay[]> = computed(() => {
+  if (props.locale === "en")
+    return listOfDays.value.sort((a, b) => a.key - b.key);
+
+  return listOfDays.value;
+});
 </script>
 
 <template>

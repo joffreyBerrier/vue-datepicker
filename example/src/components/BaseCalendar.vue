@@ -89,7 +89,7 @@ onMounted(() => {
     :has-header="isAffixed"
     :is-affixed="isAffixed"
     :format-date="formatDate"
-    :locale="locale"
+    locale="fr"
     :period-dates="periodDates"
     :placeholder="placeholder"
     @update:check-in="handleCheckIn"
@@ -99,5 +99,23 @@ onMounted(() => {
     <template #header>
       <slot name="header" />
     </template>
+
+    <template #calendar-footer>
+      <slot name="calendar-footer" />
+    </template>
+
+    <template #calendar-header>
+      <slot name="calendar-header" />
+    </template>
+
+    <template #calendar-header-mobile>
+      <slot name="calendar-header-mobile" />
+    </template>
   </calendar>
 </template>
+
+<style>
+.calendar_wrapper.calendar_wrapper--left {
+  z-index: 10;
+}
+</style>
