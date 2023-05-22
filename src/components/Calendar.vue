@@ -40,6 +40,7 @@ import {
   convertHexToRGBA,
   deviceIsMobile,
   getDatesBetweenTwoDates,
+  getDatesBetweenTwoDatesDiff,
   getDaysArray,
   getMonthDiff,
   getNextDay,
@@ -1456,6 +1457,7 @@ defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
                   },
                   {
                     'calendar_day_between--checkIn-checkOut':
+                      getDatesBetweenTwoDatesDiff(checkIn, checkOut) >= 2 &&
                       datesBetweenCheckInCheckOutDates.includes(day.formatDay),
                   },
                   {

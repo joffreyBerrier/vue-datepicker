@@ -132,6 +132,16 @@ const getNextDate = (date: Date | string, index: number) => {
   return d.day(index).toDate();
 };
 
+const getDatesBetweenTwoDatesDiff = (
+  startDate: string | Date,
+  endDate: string | Date
+) => {
+  const d1 = dayjs(startDate);
+  const d2 = dayjs(endDate);
+
+  return getDateDiff(d1.toDate(), d2.toDate(), "day");
+};
+
 const getDatesBetweenTwoDates = (
   startDate: string | Date,
   endDate: string | Date,
@@ -188,6 +198,7 @@ export {
   formatUtc,
   getDateDiff,
   getDatesBetweenTwoDates,
+  getDatesBetweenTwoDatesDiff,
   getDaysArray,
   getFirstDayOfFirstWeekOfMonth,
   getFirstDayOfMonth,
