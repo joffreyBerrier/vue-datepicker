@@ -30,9 +30,10 @@ const props = defineProps({
 });
 
 const setHalfDayStyle = (
-  formatDay: string,
-  key: "checkIn" | "checkOut"
+  formatDay: string
 ): { background: string; border: string } => {
+  const key = props.isCheckIn ? "checkIn" : "checkOut";
+
   if (props.bookingStyle) {
     const bookingColor = props.bookingStyle.value[formatDay];
 
@@ -62,7 +63,7 @@ const setHalfDayStyle = (
 
 <template>
   <i
-    :style="setHalfDayStyle(day.formatDay, 'checkIn')"
+    :style="setHalfDayStyle(day.formatDay)"
     :class="[
       'calendar_day_haldDay',
       {
