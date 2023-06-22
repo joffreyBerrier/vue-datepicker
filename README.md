@@ -1,4 +1,4 @@
-# vue-datepicker 2.2.0
+# vue-datepicker 2.2.3
 
 👊 An easier datePicker in Vue.js 👊
 
@@ -392,9 +392,15 @@ Define the timezone of the Calendar for manage periods and disabled dates in the
 
 Expose allows you to access to different methods with a ref on the Calendar component
 
+### Data
+* `activeIndex`: Get the index of pagination (use a computed for that)
+* `showCalendar`: Get the value of the calendar display
+
+### Methods
 * `clearDates`: Allows you to clear the dates
-* `closeDatePicker`: Allows you to close the datepicker
-* `openCalendar`: Allows you to open the datepicker
+* `closeCalendar`: Allows you to close the calendar
+* `openCalendar`: Allows you to open the calendar
+* `toggleCalendar`: Allows you to toggle the calendar
 
 ## Slots
 ### Calendar Header
