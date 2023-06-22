@@ -92,10 +92,10 @@ const clearDates = () => {
   checkOut.value = new Date();
 };
 const toggleCalendar = () => {
-  showYear.value = !showYear.value;
+  calendar.value?.$refs.calendarRef.toggleCalendar();
 };
 const toggleAlwaysVisible = () => {
-  showAlwaysVisible.value = !showAlwaysVisible.value;
+  calendar.value?.$refs.calendarRef.toggleCalendar();
 };
 const clickOnDate = (day: Date, currentBooking: Booking) => {
   console.log(day, currentBooking);

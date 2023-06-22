@@ -353,9 +353,11 @@ months.value.push(...multipleMonths);
 const {
   addClickOusideListener,
   calendarRef,
+  closeCalendar,
   openCalendar,
   removeClickOusideListener,
   showCalendar,
+  toggleCalendar,
 } = useToggleCalendar(props);
 
 // Sorted periods
@@ -1233,7 +1235,15 @@ onUnmounted(() => {
   }
 });
 
-defineExpose({ activeIndex, clearDates, closeDatePicker, openCalendar });
+defineExpose({
+  activeIndex,
+  clearDates,
+  closeCalendar,
+  closeDatePicker,
+  openCalendar,
+  showCalendar,
+  toggleCalendar,
+});
 </script>
 
 <template>
