@@ -110,10 +110,10 @@ const clearDates = () => {
 .vue-calendar .calendar_input {
   background-color: var(--calendar-input-bg);
   border-color: var(--calendar-input-border);
-  @apply flex items-center h-[50px] cursor-pointer px-4 border justify-between;
+  @apply flex items-center h-[50px] px-4 cursor-pointer border justify-between;
 }
 .vue-calendar .calendar_input-left-part {
-  @apply w-full flex items-center;
+  @apply w-full flex items-center h-full;
 }
 .vue-calendar .calendar_input-calendar {
   @apply mr-4;

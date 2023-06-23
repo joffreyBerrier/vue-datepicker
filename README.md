@@ -423,18 +423,6 @@ Expose allows you to access to different methods with a ref on the Calendar comp
 ```
 <template #calendar-header-mobile="{ clearDates, closeDatePicker }">
 ```
-### Calendar Header mobile
-* **Name**: `calendar-header`
-* **Data**:
-  * activeIndex
-  * months
-* **Methods**:
-  * paginate
-
-**Example:**
-```
-<template #calendar-header="{ months, paginate, activeIndex }">
-```
 
 ### Calendar Footer
 * **Name**: `calendar-footer`

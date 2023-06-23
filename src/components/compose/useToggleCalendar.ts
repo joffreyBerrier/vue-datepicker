@@ -9,8 +9,8 @@ export const useToggleCalendar = (props: { alwaysVisible: boolean }) => {
   const handleClickOutside = (event: Event) => {
     const ignoredElement = calendarRef.value;
 
-    if (!ignoreOutsideClick.value) {
-      if (ignoredElement && showCalendar.value) {
+    if (showCalendar.value && !ignoreOutsideClick.value) {
+      if (ignoredElement) {
         const target = event.target as HTMLElement;
         const isIgnoredElementClicked = ignoredElement.contains(target);
 

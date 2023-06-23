@@ -45,37 +45,35 @@ const paginate = (operator: string) => {
 
 <template>
   <div :class="['calendar_header', { calendar_header_mobile: showHeader }]">
-    <slot name="calendar-header">
-      <div class="calendar_header-left">
-        <button
-          type="button"
-          data-testid="button-prev-month"
-          :disabled="activeIndex === 0"
-          class="calendar_header-left-button"
-          @click="paginate('-')"
-        >
-          <base-icon name="chevronLeft" size="s" />
-        </button>
+    <div class="calendar_header-left">
+      <button
+        type="button"
+        data-testid="button-prev-month"
+        :disabled="activeIndex === 0"
+        class="calendar_header-left-button"
+        @click="paginate('-')"
+      >
+        <base-icon name="chevronLeft" size="s" />
+      </button>
 
-        <p v-if="!showHeader" class="calendar_header-text">{{ prevMonth }}</p>
-      </div>
+      <p v-if="!showHeader" class="calendar_header-text">{{ prevMonth }}</p>
+    </div>
 
-      <p v-if="showHeader" class="text-center">{{ prevMonth }}</p>
+    <p v-if="showHeader" class="text-center">{{ prevMonth }}</p>
 
-      <div class="calendar_header-right">
-        <p v-if="!showHeader" class="calendar_header-text">{{ nextMonth }}</p>
+    <div class="calendar_header-right">
+      <p v-if="!showHeader" class="calendar_header-text">{{ nextMonth }}</p>
 
-        <button
-          type="button"
-          data-testid="button-next-month"
-          :disabled="activeIndex >= months.length - 2"
-          class="calendar_header-right-button"
-          @click="paginate('+')"
-        >
-          <base-icon name="chevronRight" size="s" />
-        </button>
-      </div>
-    </slot>
+      <button
+        type="button"
+        data-testid="button-next-month"
+        :disabled="activeIndex >= months.length - 2"
+        class="calendar_header-right-button"
+        @click="paginate('+')"
+      >
+        <base-icon name="chevronRight" size="s" />
+      </button>
+    </div>
   </div>
 </template>
 
@@ -111,7 +109,7 @@ const paginate = (operator: string) => {
   @apply flex justify-end;
 }
 .vue-calendar .calendar_header-text {
-  @apply flex items-center text-[14px] font-medium px-3 capitalize;
+  @apply flex items-center text-[14px] font-medium px-3 capitalize m-0;
   color: var(--calendar-text-color);
 }
 .vue-calendar .calendar_header-left-button,

@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import BaseCalendar from "./components";
+
+import { deviceIsMobile } from "../../src/components/helpers";
+
+import { Calendar } from "../../src/index";
 
 import type { Ref } from "vue";
 import type { Booking, Day, Period } from "../../src/types";
 
-const calendar = ref(null);
+const calendarRef = ref(null);
+const calendarRef2 = ref(null);
 const bookedDates: Ref<string[]> = ref([
   "2023-09-12",
   "2023-09-13",
@@ -92,10 +96,10 @@ const clearDates = () => {
   checkOut.value = new Date();
 };
 const toggleCalendar = () => {
-  calendar.value?.$refs.calendarRef.toggleCalendar();
+  calendarRef.value?.toggleCalendar();
 };
 const toggleAlwaysVisible = () => {
-  calendar.value?.$refs.calendarRef.toggleCalendar();
+  calendarRef.value?.toggleCalendar();
 };
 const clickOnDate = (day: Date, currentBooking: Booking) => {
   console.log(day, currentBooking);
@@ -141,23 +145,23 @@ const pushBookingDates = () => {
       <p>Check out : {{ checkOut }}</p>
     </div>
 
-    <BaseCalendar
-      ref="calendar"
+    <calendar
+      ref="calendarRef"
       v-model:checkIn="checkIn"
       v-model:checkOut="checkOut"
-      :booking-dates="bookingDates"
-      :always-visible="showAlwaysVisible"
-      :booked-dates="bookedDates"
       :booking-color="bookingColor"
+      :booking-dates="bookingDates"
+      :is-affixed="deviceIsMobile()"
       :period-dates="periodDates"
       :placeholder="placeholder"
-      :show-input-calendar="true"
-      has-footer
-      :show-year="showYear"
       @click-on-date="clickOnDate"
       @render-next-month="renderNextMonth"
       @select-booking-date="selectBookingDate"
       @toggle-calendar="toggleCalendar"
+      format-date="DD-MM-YYYY"
+      has-footer
+      has-header
+      locale="fr"
     >
       <template #header>
         <div class="flex items-center">
@@ -183,7 +187,15 @@ const pushBookingDates = () => {
           </button>
         </div>
       </template>
-    </BaseCalendar>
+
+      <template #calendar-footer>
+        <div class="flex items-center">calendar-footer</div>
+      </template>
+
+      <template #calendar-header-mobile>
+        <div class="flex items-center">calendar-header-mobile</div>
+      </template>
+    </calendar>
 
     <!-- Single calendar -->
     <div class="mt-10">
@@ -192,14 +204,14 @@ const pushBookingDates = () => {
         <strong>Check-In:</strong>
         <pre>{{ checkInSingle }}</pre>
       </div>
-      <BaseCalendar
-        ref="calendar"
-        class="mt-4"
-        single-calendar
+
+      <calendar
+        ref="calendarRef2"
         v-model:checkIn="checkInSingle"
         :placeholder="placeholder"
-        :show-input-calendar="true"
         :show-year="showYear"
+        class="mt-4"
+        single-calendar
         @click-on-date="clickOnDate"
       />
     </div>

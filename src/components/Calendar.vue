@@ -1318,19 +1318,10 @@ defineExpose({
         :show-header="isMobile || singleCalendar"
         :months="months"
         @paginate="paginate"
-      >
-        <template #calendar-header>
-          <slot
-            name="calendar-header"
-            :months="months"
-            :paginate="paginate"
-            :active-index="activeIndex"
-          />
-        </template>
-      </CalendarHeader>
+      />
 
       <CalendarFooter
-        v-if="hasHeader"
+        v-if="hasHeader && isMobile"
         :is-mobile="isMobile"
         :locale="locale"
         @close-date-picker="closeDatePicker"
@@ -1565,11 +1556,13 @@ defineExpose({
         @close-date-picker="closeDatePicker"
         @clear-dates="clearDates"
       >
-        <slot
-          name="calendar-footer"
-          :clear-dates="clearDates"
-          :close-date-picker="closeDatePicker"
-        />
+        <template #footer>
+          <slot
+            name="calendar-footer"
+            :clear-dates="clearDates"
+            :close-date-picker="closeDatePicker"
+          />
+        </template>
       </CalendarFooter>
     </div>
   </div>
@@ -1631,6 +1624,7 @@ defineExpose({
 }
 .vue-calendar .calendar_wrapper {
   background-color: var(--calendar-wrapper);
+  @apply z-20;
 }
 .vue-calendar .calendar_wrapper:not(.calendar_wrapper--year) {
   @apply py-8 px-6 md:shadow-md md:absolute md:top-[100%];
