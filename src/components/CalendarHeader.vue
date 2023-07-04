@@ -53,7 +53,7 @@ const paginate = (operator: string) => {
         class="calendar_header-left-button"
         @click="paginate('-')"
       >
-        <base-icon name="chevronLeft" size="s" />
+        <base-icon name="chevronLeft" :size="1" />
       </button>
 
       <p v-if="!showHeader" class="calendar_header-text">{{ prevMonth }}</p>
@@ -71,7 +71,7 @@ const paginate = (operator: string) => {
         class="calendar_header-right-button"
         @click="paginate('+')"
       >
-        <base-icon name="chevronRight" size="s" />
+        <base-icon name="chevronRight" :size="1" />
       </button>
     </div>
   </div>

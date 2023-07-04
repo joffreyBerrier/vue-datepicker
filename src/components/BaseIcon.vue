@@ -22,22 +22,20 @@ const props = defineProps({
     default: () => [],
   },
   size: {
-    type: String,
-    default: "xs",
-    validator: (value: string) => ["s", "xs", "xxs"].includes(value),
+    type: Number,
+    default: 1.5,
   },
 });
 
 const paths: Ref<Icon> = ref({
-  arrowLeft: "M15.75 19.5L8.25 12l7.5-7.5",
-  arrowNarrowRight: "M17 8l4 4m0 0l-4 4m4-4H3",
+  arrowLeft: "M21 12H3m0 0l8.5-8.5M3 12l8.5 8.5",
+  arrowRight: "M3 12h18m0 0l-8.5-8.5M21 12l-8.5 8.5",
   calendar:
-    "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
-  close: "M6 18L18 6M6 6l12 12",
-  chevronLeft:
-    "M15 10a.75.75 0 01-.75.75H7.612l2.158 1.96a.75.75 0 11-1.04 1.08l-3.5-3.25a.75.75 0 010-1.08l3.5-3.25a.75.75 0 111.04 1.08L7.612 9.25h6.638A.75.75 0 0115 10z",
-  chevronRight:
-    "M5 10a.75.75 0 01.75-.75h6.638L10.23 7.29a.75.75 0 111.04-1.08l3.5 3.25a.75.75 0 010 1.08l-3.5 3.25a.75.75 0 11-1.04-1.08l2.158-1.96H5.75A.75.75 0 015 10z",
+    "M15 4V2m0 2v2m0-2h-4.5M3 10v9a2 2 0 002 2h14a2 2 0 002-2v-9H3zM3 10V6a2 2 0 012-2h2M7 2v4M21 10V6a2 2 0 00-2-2h-.5",
+  close:
+    "M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243",
+  chevronLeft: "M15 6l-6 6 6 6",
+  chevronRight: "M9 6l6 6-6 6",
 });
 
 const path: ComputedRef<string> | string = computed(() => {
@@ -49,39 +47,16 @@ const path: ComputedRef<string> | string = computed(() => {
 
 <template>
   <svg
-    v-if="['chevronLeft', 'chevronRight'].includes(name)"
-    :class="[`base-icon--${size} fill-current`, color]"
-    fill="currentColor"
-    stroke="none"
-    viewBox="0 0 20 20"
+    :class="color"
+    :width="`${size}em`"
+    :height="`${size}em`"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
   >
     <path clip-rule="evenodd" :d="path" />
   </svg>
-
-  <svg
-    v-else
-    :class="[`base-icon--${size} stroke-current`, color]"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      :d="path"
-    />
-  </svg>
 </template>
-
-<style>
-.base-icon--s {
-  @apply w-8 h-8;
-}
-.base-icon--xs {
-  @apply w-5 h-5;
-}
-.base-icon--xxs {
-  @apply w-4 h-4;
-}
-</style>

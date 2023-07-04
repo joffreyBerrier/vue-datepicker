@@ -1,6 +1,6 @@
 {
   "name": "vue-calendar-3",
-  "version": "2.2.4",
+  "version": "2.2.6",
   "repository": "https://github.com/joffreyBerrier/vue-datepicker",
   "funding": "https://github.com/sponsors/joffreyBerrier",
   "author": "Joffrey Berrier <joffrey.berrier@gmail.com>",
@@ -13,7 +13,7 @@
     "example-install": "cd ./example && npm install",
     "example-build": "cd ./example && npm run build",
     "example-preview": "cd ./example && npm run preview",
-    "test:unit": "vitest --environment jsdom",
+    "test": "vitest --environment jsdom",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },

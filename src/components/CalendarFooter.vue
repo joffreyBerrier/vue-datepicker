@@ -44,7 +44,7 @@ const clearDates = () => {
           {{ t("clearDates") }}
         </button>
         <button class="calendar_footer--button-close" @click="closeDatePicker">
-          <base-icon v-if="isMobile" name="arrowLeft" size="xxs" />
+          <base-icon v-if="isMobile" name="arrowLeft" :size="1" />
           <span v-else>{{ t("close") }}</span>
         </button>
       </div>

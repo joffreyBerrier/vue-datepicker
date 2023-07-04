@@ -74,7 +74,8 @@ const clearDates = () => {
 
         <template v-if="!singleCalendar">
           <base-icon
-            name="arrowNarrowRight"
+            name="arrowRight"
+            :size="1"
             :color="[
               'calendar_input-arrowRight',
               {
