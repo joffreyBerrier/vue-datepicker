@@ -53,7 +53,7 @@ const paginate = (operator: string) => {
         class="calendar_header-left-button"
         @click="paginate('-')"
       >
-        <base-icon name="chevronLeft" :size="1" />
+        <base-icon name="chevronLeft" />
       </button>
 
       <p v-if="!showHeader" class="calendar_header-text">{{ prevMonth }}</p>
@@ -109,11 +109,11 @@ const paginate = (operator: string) => {
   @apply flex justify-end;
 }
 .vue-calendar .calendar_header-text {
-  @apply flex items-center text-[14px] font-medium px-3 capitalize m-0;
+  @apply flex items-center text-[14px] font-bold px-3 capitalize m-0;
   color: var(--calendar-text-color);
 }
 .vue-calendar .calendar_header-left-button,
 .vue-calendar .calendar_header-right-button {
-  @apply w-8 h-8 flex items-center justify-center focus:outline-none disabled:pointer-events-none duration-300;
+  @apply flex items-center justify-center focus:outline-none disabled:pointer-events-none duration-300;
 }
 </style>
