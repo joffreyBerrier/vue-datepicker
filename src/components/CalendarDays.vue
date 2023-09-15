@@ -40,17 +40,17 @@ const days: ComputedRef<HeaderDay[]> = computed(() => {
 <template>
   <ul class="calendar_wrapper_content-header-days">
     <li v-for="day in days" :key="day.key" class="calendar-days">
-      {{ t(`days.${day.name}`) }}
+      {{ t(`days.${day.name}`) }}.
     </li>
   </ul>
 </template>
 
 <style>
 .vue-calendar .calendar_wrapper_content-header-days {
-  @apply grid grid-cols-7 text-center py-6 text-[12px] md:text-sm;
+  @apply grid grid-cols-7 pt-5 pb-1.5;
 }
 .vue-calendar .calendar-days {
-  @apply text-[12px];
-  color: var(--calendar-text-color);
+  @apply text-[14px];
+  color: var(--calendar-header-days-color);
 }
 </style>

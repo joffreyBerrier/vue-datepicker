@@ -1582,6 +1582,7 @@ defineExpose({
   --calendar-half-day-color-active: #222;
 
   --calendar-text-color: #202020;
+  --calendar-header-days-color: #757575;
 
   --day-border: #fff;
   --day-checkIn-checkOut: #8ebbbb;
@@ -1627,13 +1628,12 @@ defineExpose({
   @apply z-20;
 }
 .vue-calendar .calendar_wrapper:not(.calendar_wrapper--year) {
-  @apply py-8 px-6 md:shadow-md md:absolute md:top-[100%];
+  @apply p-6 md:shadow-md md:absolute md:top-[100%];
 }
-.vue-calendar .calendar_wrapper_content {
-  @apply grid md:grid-cols-2 md:gap-4;
-}
-.vue-calendar .calendar_wrapper_content:not(.calendar_wrapper_content--year) {
-  @apply md:max-w-[780px];
+.vue-calendar
+  .calendar_wrapper:not(.calendar_wrapper--affix)
+  .calendar_wrapper_content {
+  @apply grid md:grid-cols-2 md:gap-12;
 }
 .vue-calendar .calendar_wrapper_content-days {
   @apply grid grid-cols-7;
@@ -1649,7 +1649,7 @@ defineExpose({
   @apply pointer-events-none;
 }
 .vue-calendar .calendar_day {
-  @apply w-full left-0 right-0 h-full text-[12px] absolute focus:outline-none overflow-hidden;
+  @apply w-full left-0 right-0 h-full text-[16px] absolute focus:outline-none overflow-hidden;
 }
 .vue-calendar .calendar_day--today:after {
   content: "";
@@ -1763,12 +1763,15 @@ defineExpose({
   @apply pointer-events-none;
 }
 .calendar_wrapper_month {
-  @apply pb-6 text-center text-[14px] md:py-0 font-medium;
+  @apply pb-6 text-center text-[14px] md:py-0 font-bold capitalize;
 }
 /* Desktop style */
 @screen md {
-  .vue-calendar .calendar_wrapper:not(.calendar_wrapper--year) {
-    @apply w-full md:w-[600px];
+  .vue-calendar
+    .calendar_wrapper:not(.calendar_wrapper--year):not(
+      .calendar_wrapper--affix
+    ) {
+    @apply w-[780px];
   }
   .vue-calendar .calendar_wrapper.calendar_wrapper--single {
     @apply w-[380px];
@@ -1782,6 +1785,20 @@ defineExpose({
     background-color: var(--calendar-paginate-hover-bg);
     border-color: var(--calendar-paginate-hover-border);
     color: var(--calendar-paginate-hover-text);
+  }
+  .vue-calendar
+    .calendar_wrapper:not(.calendar_wrapper--affix)
+    .calendar_wrap_month:first-child {
+    @apply relative 
+    after:content-[''] 
+    after:block 
+    after:h-[calc(100%+1.5rem)] 
+    after:w-px 
+    after:bg-gray-200 
+    after:absolute 
+    after:bottom-0 
+    after:left-[calc(100%+1.5rem)] 
+    after:-translate-x-1/2;
   }
 }
 

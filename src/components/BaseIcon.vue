@@ -43,14 +43,17 @@ const path: ComputedRef<string> | string = computed(() => {
 
   return "";
 });
+const strokeWidth = computed(() => {
+  return 24 / (props.size * 16);
+});
 </script>
 
 <template>
   <svg
     :class="color"
-    :width="`${size}em`"
-    :height="`${size}em`"
-    stroke-width="1.5"
+    :width="`${size}rem`"
+    :height="`${size}rem`"
+    :stroke-width="strokeWidth"
     stroke-linecap="round"
     stroke-linejoin="round"
     fill="none"
