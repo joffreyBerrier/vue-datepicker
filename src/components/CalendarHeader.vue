@@ -71,7 +71,7 @@ const paginate = (operator: string) => {
         class="calendar_header-right-button"
         @click="paginate('+')"
       >
-        <base-icon name="chevronRight" :size="1" />
+        <base-icon name="chevronRight" />
       </button>
     </div>
   </div>

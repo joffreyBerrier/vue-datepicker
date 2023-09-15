@@ -56,7 +56,7 @@ const clearDates = () => {
 
 <style>
 .calendar_footer {
-  @apply flex flex-col px-4 pt-4 border border-b md:border-none md:px-0;
+  @apply flex flex-col px-4 pt-4 md:px-0;
   border-color: var(--calendar-mobile-header-border-bottom-days);
 }
 .calendar_footer--button {

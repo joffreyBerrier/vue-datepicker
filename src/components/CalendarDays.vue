@@ -50,7 +50,7 @@ const days: ComputedRef<HeaderDay[]> = computed(() => {
   @apply grid grid-cols-7 pt-5 pb-1.5;
 }
 .vue-calendar .calendar-days {
-  @apply text-[14px];
+  @apply text-[14px] text-center;
   color: var(--calendar-header-days-color);
 }
 </style>
