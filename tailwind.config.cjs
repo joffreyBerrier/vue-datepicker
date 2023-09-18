@@ -1,4 +1,4 @@
 module.exports = {
-  content: ["./safelist.txt", "./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
+  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   plugins: [],
 };

@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
-
+import { resolve } from "path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 
@@ -9,6 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "vue-calendar-3": resolve(__dirname, "../"),
     },
   },
   build: {

@@ -1615,7 +1615,6 @@ defineExpose({
 
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
 
 .vue-calendar {
   @apply w-full relative select-none;
@@ -1789,15 +1788,15 @@ defineExpose({
   .vue-calendar
     .calendar_wrapper:not(.calendar_wrapper--affix)
     .calendar_wrap_month:first-child {
-    @apply relative 
-    after:content-[''] 
-    after:block 
-    after:h-[calc(100%+1.5rem)] 
-    after:w-px 
-    after:bg-gray-200 
-    after:absolute 
-    after:bottom-0 
-    after:left-[calc(100%+1.5rem)] 
+    @apply relative
+    after:content-['']
+    after:block
+    after:h-[calc(100%+1.5rem)]
+    after:w-px
+    after:bg-gray-200
+    after:absolute
+    after:bottom-0
+    after:left-[calc(100%+1.5rem)]
     after:-translate-x-1/2;
   }
 }
