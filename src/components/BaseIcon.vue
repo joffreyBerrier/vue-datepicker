@@ -51,8 +51,10 @@ const strokeWidth = computed(() => {
 <template>
   <svg
     :class="color"
-    :width="`${size}rem`"
-    :height="`${size}rem`"
+    :style="{
+      width: `${size}rem`,
+      height: `${size}rem`,
+    }"
     :stroke-width="strokeWidth"
     stroke-linecap="round"
     stroke-linejoin="round"

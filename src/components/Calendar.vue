@@ -1616,6 +1616,7 @@ defineExpose({
 @tailwind base;
 @tailwind components;
 
+/* Global Style */
 .vue-calendar {
   @apply w-full relative select-none;
 }
