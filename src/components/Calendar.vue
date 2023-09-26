@@ -1251,8 +1251,6 @@ defineExpose({
     ref="calendarRef"
     :class="['vue-calendar', { 'vue-calendar--disabled': disabled }]"
   >
-    {{ nextPeriodDisableDates }}
-
     <CalendarInput
       v-if="showInputCalendar"
       :class="{ 'calendar_input-open': showCalendar }"
