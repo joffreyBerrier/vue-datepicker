@@ -1251,6 +1251,8 @@ defineExpose({
     ref="calendarRef"
     :class="['vue-calendar', { 'vue-calendar--disabled': disabled }]"
   >
+    {{ nextPeriodDisableDates }}
+
     <CalendarInput
       v-if="showInputCalendar"
       :class="{ 'calendar_input-open': showCalendar }"
@@ -1471,7 +1473,9 @@ defineExpose({
                   // Inactive saturday / sunday / monday period
                   {
                     'calendar_day--in-period event-none':
-                      inWeeklyPeriods(day) && !isInBookingDates(day),
+                      (inWeeklyPeriods(day) && !isInBookingDates(day)) ||
+                      (nextPeriodDisableDates.includes(day.formatDay) &&
+                        !isInBookingDates(day)),
                   },
                   // Inactive saturday / sunday / monday period
                   {
