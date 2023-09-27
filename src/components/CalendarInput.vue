@@ -117,10 +117,7 @@ const clearDates = () => {
   @apply w-full flex items-center h-full;
 }
 .vue-calendar .calendar_input-calendar {
-  @apply mr-4;
-}
-.vue-calendar .calendar_input-calendar--hasnt-checkIn {
-  @apply text-gray-300;
+  @apply mr-2;
 }
 .vue-calendar .calendar_input-calendar--checkIn {
   @apply text-gray-700;
@@ -129,8 +126,10 @@ const clearDates = () => {
 .vue-calendar .calendar_input-text {
   @apply flex items-center m-0;
 }
-.vue-calendar .calendar_input-text--hasnt-checkIn {
-  @apply text-gray-300;
+.vue-calendar .calendar_input-text--hasnt-checkIn,
+.vue-calendar .calendar_input-calendar--hasnt-checkIn,
+.vue-calendar .calendar_input-arrowRight--hasnt-checkIn {
+  color: #aaa;
 }
 .vue-calendar .calendar_input-text--checkIn {
   @apply text-gray-700;
@@ -138,9 +137,6 @@ const clearDates = () => {
 
 .vue-calendar .calendar_input-arrowRight {
   @apply mx-4;
-}
-.vue-calendar .calendar_input-arrowRight--hasnt-checkIn {
-  @apply text-gray-300;
 }
 .vue-calendar .calendar_input-arrowRight--checkIn {
   @apply text-gray-700;
