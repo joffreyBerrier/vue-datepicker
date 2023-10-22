@@ -5,7 +5,7 @@ import { getDatesBetweenTwoDates } from "../helpers";
 export const useGetFlattenedPeriods = (
   periodDates: ComputedRef<Period[]>,
   period: string,
-  formattingFormat: string
+  formattingFormat: string,
 ): string[] => {
   if (
     periodDates.value.length > 0 &&
@@ -19,10 +19,10 @@ export const useGetFlattenedPeriods = (
             return getDatesBetweenTwoDates(
               p.startAt,
               p.endAt,
-              formattingFormat
+              formattingFormat,
             );
           })
-          .flat()
+          .flat(),
       ),
     ];
   }

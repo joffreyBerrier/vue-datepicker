@@ -12,7 +12,7 @@ export const useBookingStyle = (
   bookingDates: Booking[],
   bookingColor: BookingColor,
   formattingFormat: Ref<string>,
-  checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>
+  checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>,
 ): Ref<Record<string, string | { checkIn: string; checkOut: string }>> => {
   const bookingStyle: Ref<
     Record<string, string | { checkIn: string; checkOut: string }>
@@ -27,8 +27,8 @@ export const useBookingStyle = (
       getDatesBetweenTwoDates(
         booking.checkInDate,
         booking.checkOutDate,
-        formattingFormat.value
-      )
+        formattingFormat.value,
+      ),
     );
 
     if (booking.type) {
@@ -42,7 +42,7 @@ export const useBookingStyle = (
 
   const objectArray = Object.entries(bookingTypeAndDates) as unknown as [
     string,
-    string[]
+    string[],
   ][];
 
   const setBookingStyle = (key: string, day: string) => {

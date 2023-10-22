@@ -4,7 +4,6 @@ import {
   addDays,
   getDatesBetweenTwoDates,
   getDayDiff,
-  getDaysArray,
   getMonthDiff,
   getNextDay,
   getNextMonth,
@@ -114,7 +113,7 @@ describe("Get Date", () => {
           "2022-01-08",
           "2022-01-09",
           "2022-01-10",
-        ]
+        ],
       );
     });
   });
@@ -132,13 +131,13 @@ describe("Get Date", () => {
   describe("getMonthDiff", () => {
     it("return 0", async () => {
       expect(
-        getMonthDiff(new Date("2021-01-01"), new Date("2021-01-10"))
+        getMonthDiff(new Date("2021-01-01"), new Date("2021-01-10")),
       ).toEqual(0);
     });
 
     it("return 2", async () => {
       expect(
-        getMonthDiff(new Date("2021-01-01"), new Date("2021-03-10"))
+        getMonthDiff(new Date("2021-01-01"), new Date("2021-03-10")),
       ).toEqual(2);
     });
   });
@@ -148,21 +147,21 @@ describe("Get Date", () => {
 
     it("return 0 eq to Sunday", async () => {
       expect(dayjs(getNextDay(date, 0)).format("YYYY-MM-DD")).toEqual(
-        "2022-01-02"
+        "2022-01-02",
       );
       expect(dayjs(getNextDay(date, 0)).day()).toBe(0);
     });
 
     it("return 6 eq to Saturday", async () => {
       expect(dayjs(getNextDay(date, 6)).format("YYYY-MM-DD")).toEqual(
-        "2022-01-08"
+        "2022-01-08",
       );
       expect(dayjs(getNextDay(date, 6)).day()).toBe(6);
     });
 
     it("return 1 eq to Monday", async () => {
       expect(dayjs(getNextDay(date, 1)).format("YYYY-MM-DD")).toEqual(
-        "2022-01-03"
+        "2022-01-03",
       );
       expect(dayjs(getNextDay(date, 1)).day()).toBe(1);
     });
@@ -173,7 +172,7 @@ describe("Get Date", () => {
 
     it("return February", async () => {
       expect(dayjs(getNextMonth(date)).format("YYYY-MM-DD")).toEqual(
-        "2022-02-01"
+        "2022-02-01",
       );
       expect(dayjs(getNextMonth(date)).month()).toBe(1);
     });
@@ -182,13 +181,13 @@ describe("Get Date", () => {
   describe("validateDateBetweenTwoDates", () => {
     it("return true", async () => {
       expect(
-        validateDateBetweenTwoDates("2022-01-01", "2022-01-10", "2022-01-05")
+        validateDateBetweenTwoDates("2022-01-01", "2022-01-10", "2022-01-05"),
       ).toBe(true);
     });
 
     it("return false", async () => {
       expect(
-        validateDateBetweenTwoDates("2022-01-05", "2022-01-04", "2022-01-06")
+        validateDateBetweenTwoDates("2022-01-05", "2022-01-04", "2022-01-06"),
       ).toBe(false);
     });
   });

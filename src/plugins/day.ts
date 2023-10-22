@@ -48,7 +48,7 @@ const isAfter = (time1: Date, time2: Date): boolean => {
 
 const isAfterOrEqual = (
   time1: string | Date,
-  time2: string | Date
+  time2: string | Date,
 ): boolean => {
   const d1 = dayjs(time1);
   const d2 = dayjs(time2);
@@ -66,7 +66,7 @@ const isBefore = (time1: string | Date, time2: string | Date): boolean => {
 
 const isBeforeOrEqual = (
   time1: string | Date,
-  time2: string | Date
+  time2: string | Date,
 ): boolean => {
   const d1 = dayjs(time1);
   const d2 = dayjs(time2);
@@ -77,7 +77,7 @@ const isBeforeOrEqual = (
 const getDateDiff = (
   time1: string | Date,
   time2: string | Date,
-  type: UnitType
+  type: UnitType,
 ): number => {
   const d1 = dayjs(time1);
   const d2 = dayjs(time2);
@@ -89,7 +89,7 @@ const isBetweenDate = (
   fromDate: string,
   toDate: string,
   givenDate: string | Date,
-  orEqual = false
+  orEqual = false,
 ): boolean => {
   const d1 = dayjs(fromDate);
   const d2 = dayjs(toDate);
@@ -105,7 +105,7 @@ const isBetweenDate = (
 const addDate = (
   date: Date | string,
   quantity: number,
-  type: ManipulateType | undefined
+  type: ManipulateType | undefined,
 ): Date => {
   const d = dayjs(date);
 
@@ -115,7 +115,7 @@ const addDate = (
 const subtractDate = (
   date: Date | string,
   quantity: number,
-  type: ManipulateType | undefined
+  type: ManipulateType | undefined,
 ): Date => {
   const d = dayjs(date);
 
@@ -134,7 +134,7 @@ const getNextDate = (date: Date | string, index: number) => {
 
 const getDatesBetweenTwoDatesDiff = (
   startDate: string | Date,
-  endDate: string | Date
+  endDate: string | Date,
 ) => {
   const d1 = dayjs(startDate);
   const d2 = dayjs(endDate);
@@ -145,7 +145,7 @@ const getDatesBetweenTwoDatesDiff = (
 const getDatesBetweenTwoDates = (
   startDate: string | Date,
   endDate: string | Date,
-  formattingFormat: string
+  formattingFormat: string,
 ): string[] => {
   const d1 = dayjs(startDate);
   const d2 = dayjs(endDate);

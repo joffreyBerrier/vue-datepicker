@@ -4,7 +4,7 @@ import { isBetweenDate } from "./../../plugins/day";
 
 export const useGetPeriod = (
   periodDates: ComputedRef<Period[]>,
-  date: string
+  date: string,
 ): Period | undefined => {
   if (periodDates.value.length > 0) {
     return periodDates.value.find((p: Period) => {

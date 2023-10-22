@@ -30,7 +30,7 @@ const props = defineProps({
 });
 
 const setHalfDayStyle = (
-  formatDay: string
+  formatDay: string,
 ): { background: string; border: string } => {
   const key = props.isCheckIn ? "checkIn" : "checkOut";
 

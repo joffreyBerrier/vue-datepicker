@@ -15,7 +15,7 @@ import {
 } from "../helpers";
 
 const createHalfDayDatesWithBookedDates = (
-  dates: string[]
+  dates: string[],
 ): {
   checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>;
   bookedDates: Ref<string[]>;
@@ -61,7 +61,7 @@ const createHalfDayDatesWithBookedDates = (
 
 const createBookingDatesWithHalfDayDates = (
   checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>,
-  bookingDatesProps: Booking[]
+  bookingDatesProps: Booking[],
 ): Booking[] => {
   const bookingDates = new Set() as Set<Booking>;
   let increment = 0 as number;
@@ -82,7 +82,7 @@ const createBookingDatesWithHalfDayDates = (
           checkOutDate: booking.checkOutDate,
         });
       }
-    }
+    },
   );
 
   return sortDatesObj([...bookingDatesProps, ...bookingDates]);
@@ -92,7 +92,7 @@ export const useCreateHalfDayDates = (
   bookingDates: Booking[],
   bookedDatesProps: string[],
   bookingColor: BookingColor,
-  formattingFormat: Ref<string>
+  formattingFormat: Ref<string>,
 ): {
   flatBookingDates: Ref<FlatBooking[]>;
   checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>;
@@ -116,7 +116,7 @@ export const useCreateHalfDayDates = (
   // Create bookingDates with halfDay
   const newBookingDates: Booking[] = createBookingDatesWithHalfDayDates(
     checkIncheckOutHalfDay,
-    bookingDates
+    bookingDates,
   );
 
   bookingDates.forEach((booking: Booking) => {
@@ -131,8 +131,8 @@ export const useCreateHalfDayDates = (
       getDatesBetweenTwoDates(
         booking.checkInDate,
         booking.checkOutDate,
-        formattingFormat.value
-      )
+        formattingFormat.value,
+      ),
     );
 
     if (booking.type) {
@@ -146,7 +146,7 @@ export const useCreateHalfDayDates = (
 
   const objectArray = Object.entries(bookingTypeAndDates) as unknown as [
     string,
-    string[]
+    string[],
   ][];
 
   objectArray.forEach(([key, value]) => {

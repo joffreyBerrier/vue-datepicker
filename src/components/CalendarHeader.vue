@@ -31,7 +31,15 @@ const props = defineProps({
 });
 
 const prevMonth: ComputedRef<string> = computed(() => {
-  return props.months[props.activeIndex].monthName;
+  if (props.months[props.activeIndex]?.monthName) {
+    return props.months[props.activeIndex].monthName;
+  }
+
+  throw new Error(
+    `Month name not found with index: ${
+      props.activeIndex
+    } and month: ${JSON.stringify(props.months)}`,
+  );
 });
 
 const nextMonth: ComputedRef<string> = computed(() => {

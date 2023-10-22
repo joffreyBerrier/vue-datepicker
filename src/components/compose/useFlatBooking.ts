@@ -7,7 +7,7 @@ import { getDatesBetweenTwoDates } from "../helpers";
 export const useFlatBooking = (
   bookingDates: Booking[],
   bookingColor: BookingColor,
-  formattingFormat: Ref<string>
+  formattingFormat: Ref<string>,
 ): Ref<FlatBooking[]> => {
   const flatBookingDates: Ref<FlatBooking[]> = ref([]);
   const bookingTypeAndDates: {
@@ -19,8 +19,8 @@ export const useFlatBooking = (
       getDatesBetweenTwoDates(
         booking.checkInDate,
         booking.checkOutDate,
-        formattingFormat.value
-      )
+        formattingFormat.value,
+      ),
     );
 
     if (booking.type) {
@@ -34,7 +34,7 @@ export const useFlatBooking = (
 
   const objectArray = Object.entries(bookingTypeAndDates) as unknown as [
     string,
-    string[]
+    string[],
   ][];
 
   objectArray.forEach(([key, value]) => {

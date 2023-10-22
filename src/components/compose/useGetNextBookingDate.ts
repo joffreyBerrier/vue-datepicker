@@ -12,7 +12,7 @@ const validateDateBeforeDate = (fromDate: string, givenDate: string) => {
 
 const useGetNextBookingDate = (
   bookingDates: ComputedRef<Booking[]>,
-  date: Date
+  date: Date,
 ): Date | null => {
   if (bookingDates.value.length > 0) {
     const nextDateFormatted = format(addDays(date, 1), "YYYY-MM-DD");
@@ -22,8 +22,8 @@ const useGetNextBookingDate = (
         validateDateBetweenTwoDates(
           booking.checkInDate,
           booking.checkOutDate,
-          nextDateFormatted
-        )
+          nextDateFormatted,
+        ),
     ) as Booking | null;
 
     if (nextBooking && nextBooking.checkInDate) {

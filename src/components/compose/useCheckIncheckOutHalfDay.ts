@@ -5,7 +5,7 @@ import type { Booking, CheckInCheckOutHalfDay } from "../../types";
 import { getDayDiff, sortDates } from "../helpers";
 
 const createHalfDayDatesWithBookedDates = (
-  dates: string[]
+  dates: string[],
 ): {
   checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>;
   bookedDates: Ref<string[]>;
@@ -51,7 +51,7 @@ const createHalfDayDatesWithBookedDates = (
 
 export const useCheckIncheckOutHalfDay = (
   bookingDates: Booking[],
-  bookedDatesProps: string[]
+  bookedDatesProps: string[],
 ): Ref<CheckInCheckOutHalfDay> => {
   const checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay> =
     createHalfDayDatesWithBookedDates(bookedDatesProps).checkIncheckOutHalfDay;

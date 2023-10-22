@@ -51,7 +51,7 @@ const getDayDiff = (d1: string, d2: string): number => {
 const validateDateBetweenTwoDates = (
   fromDate: string,
   toDate: string,
-  givenDate: string | Date
+  givenDate: string | Date,
 ): boolean => {
   return isBetweenDate(fromDate, toDate, givenDate);
 };
@@ -62,7 +62,7 @@ const getMonthDiff = (d1: Date, d2: Date): number => {
 
 const isDateBeforeOrEqual = (
   time1: Date | string,
-  time2: Date | string
+  time2: Date | string,
 ): boolean => {
   return isBeforeOrEqual(time1, time2);
 };

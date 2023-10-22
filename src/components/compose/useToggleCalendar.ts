@@ -52,7 +52,7 @@ export const useToggleCalendar = (props: { alwaysVisible: boolean }) => {
       } else {
         addClickOusideListener();
       }
-    }
+    },
   );
 
   return {
