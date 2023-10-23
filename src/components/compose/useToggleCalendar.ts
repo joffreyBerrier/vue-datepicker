@@ -24,10 +24,14 @@ export const useToggleCalendar = (props: { alwaysVisible: boolean }) => {
   };
 
   const addClickOusideListener = () => {
-    document.addEventListener("click", handleClickOutside, false);
+    if (props.alwaysVisible === false) {
+      document.addEventListener("click", handleClickOutside, false);
+    }
   };
   const removeClickOusideListener = () => {
-    document.removeEventListener("click", handleClickOutside);
+    if (props.alwaysVisible === false) {
+      document.removeEventListener("click", handleClickOutside);
+    }
   };
 
   const openCalendar = () => {
@@ -35,8 +39,10 @@ export const useToggleCalendar = (props: { alwaysVisible: boolean }) => {
     showCalendar.value = true;
   };
   const closeCalendar = () => {
-    ignoreOutsideClick.value = true;
-    showCalendar.value = false;
+    if (props.alwaysVisible === false) {
+      ignoreOutsideClick.value = true;
+      showCalendar.value = false;
+    }
   };
   const toggleCalendar = () => {
     ignoreOutsideClick.value = true;

@@ -254,13 +254,13 @@ const t = (key: string, minimumDuration: number | null = null): string => {
       if (minimumDuration === 1) {
         return translationPlurial[0].replace(
           "%{minimumDuration}",
-          minimumDuration
+          minimumDuration,
         );
       }
 
       return translationPlurial[1].replace(
         "%{minimumDuration}",
-        minimumDuration
+        minimumDuration,
       );
     }
 
@@ -392,28 +392,28 @@ const saturdayWeeklyPeriods = computed(() => {
   return useGetFlattenedPeriods(
     sortedPeriodDates,
     "weekly_by_saturday",
-    formattingFormat.value
+    formattingFormat.value,
   );
 });
 const sundayWeeklyPeriods = computed(() => {
   return useGetFlattenedPeriods(
     sortedPeriodDates,
     "weekly_by_sunday",
-    formattingFormat.value
+    formattingFormat.value,
   );
 });
 const mondayWeeklyPeriods = computed(() => {
   return useGetFlattenedPeriods(
     sortedPeriodDates,
     "weekly_by_monday",
-    formattingFormat.value
+    formattingFormat.value,
   );
 });
 const nightlyPeriods = computed(() => {
   return useGetFlattenedPeriods(
     sortedPeriodDates,
     "nightly",
-    formattingFormat.value
+    formattingFormat.value,
   );
 });
 
@@ -428,7 +428,7 @@ const bookingDatesT = toRef(props, "bookingDates") as unknown as Ref<Booking[]>;
 const bookedDatesT = toRef(props, "bookedDates") as unknown as Ref<string[]>;
 const bookingColorT = toRef(
   props,
-  "bookingColor"
+  "bookingColor",
 ) as unknown as Ref<BookingColor>;
 
 const disabledDates = computed(() => {
@@ -436,7 +436,7 @@ const disabledDates = computed(() => {
     bookingDatesT.value,
     bookedDatesT.value,
     bookingColorT.value,
-    formattingFormat
+    formattingFormat,
   ).disabledDates;
 });
 const newBookingDates = computed(() => {
@@ -444,21 +444,21 @@ const newBookingDates = computed(() => {
     bookingDatesT.value,
     bookedDatesT.value,
     bookingColorT.value,
-    formattingFormat
+    formattingFormat,
   ).newBookingDates;
 });
 const flatBookingDates = computed(() => {
   return useFlatBooking(
     bookingDatesT.value,
     bookingColorT.value,
-    formattingFormat
+    formattingFormat,
   );
 });
 
 let checkIncheckOutHalfDay = ref({}) as Ref<CheckInCheckOutHalfDay>;
 checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
   bookingDatesT.value,
-  bookedDatesT.value
+  bookedDatesT.value,
 );
 
 const bookingStyle = computed(() => {
@@ -466,14 +466,14 @@ const bookingStyle = computed(() => {
     bookingDatesT.value,
     bookingColorT.value,
     formattingFormat,
-    checkIncheckOutHalfDay
+    checkIncheckOutHalfDay,
   );
 });
 
 watchEffect(() => {
   checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
     bookingDatesT.value,
-    bookedDatesT.value
+    bookedDatesT.value,
   );
 
   months.value.forEach((m) => {
@@ -525,7 +525,7 @@ const datesBetweenCheckInCheckOutDates: ComputedRef<string[]> = computed(() => {
     return getDatesBetweenTwoDates(
       addDays(props.checkIn, 1),
       substractDays(props.checkOut, 1),
-      formattingFormat.value
+      formattingFormat.value,
     );
   }
 
@@ -553,7 +553,7 @@ const setMinimumDuration = (date: Date) => {
   if (sortedPeriodDates.value.length) {
     const nextPeriodIsPriority = (
       currentPeriod: CurrentPeriod | null,
-      minimumDurationNights: number
+      minimumDurationNights: number,
     ) => {
       if (nextPeriod.value?.minimumDurationNights) {
         // If NextPeriod is a weekly period
@@ -590,7 +590,7 @@ const setMinimumDuration = (date: Date) => {
 
         enableNextDate = substractDays(
           getNextDay(enableNextDate, constraintPeriod),
-          1
+          1,
         );
       }
 
@@ -603,7 +603,7 @@ const setMinimumDuration = (date: Date) => {
       let nextPeriodDisabledDates: string[] = [];
       const newDisablesDates: string[] = getDaysArray(
         startDateCheckin,
-        enableNextDate
+        enableNextDate,
       ).map((d) => format(d, formattingFormat.value));
 
       nextPeriodDisableDates.value.push(...newDisablesDates);
@@ -612,7 +612,7 @@ const setMinimumDuration = (date: Date) => {
       if (nextPeriod.value?.periodType.includes("weekly")) {
         let nextPeriodEnableDay = addDays(
           date,
-          nextPeriod.value.minimumDurationNights
+          nextPeriod.value.minimumDurationNights,
         );
         // weekly by sunday
         let constraintPeriod = 0;
@@ -625,12 +625,12 @@ const setMinimumDuration = (date: Date) => {
         if (nextPeriodEnableDay.getDay() !== constraintPeriod) {
           nextPeriodEnableDay = getNextDay(
             nextPeriodEnableDay,
-            constraintPeriod
+            constraintPeriod,
           );
 
           nextPeriodDisabledDates = getDaysArray(
             addDays(nextPeriod.value.startAt, 1),
-            substractDays(nextPeriodEnableDay, 1)
+            substractDays(nextPeriodEnableDay, 1),
           ).map((d) => format(d, formattingFormat.value));
         }
       }
@@ -638,14 +638,14 @@ const setMinimumDuration = (date: Date) => {
       // Filled nextPeriodDisabledDates
       nextPeriodDisableDates.value.push(
         ...newDisablesDates,
-        ...nextPeriodDisabledDates
+        ...nextPeriodDisabledDates,
       );
       nextPeriodDisableDates.value = [...new Set(nextPeriodDisableDates.value)];
       nextPeriodDisableDates.value = nextPeriodDisableDates.value.map((x) =>
-        formatUtc(x)
+        formatUtc(x),
       );
       nextPeriodDisableDates.value = nextPeriodDisableDates.value.map((x) =>
-        format(x, formattingFormat.value)
+        format(x, formattingFormat.value),
       );
     };
 
@@ -672,11 +672,11 @@ const setMinimumDuration = (date: Date) => {
     if (currentPeriod) {
       lastEnableDaysOfPeriod.value = substractDays(
         currentPeriod.endAt,
-        currentPeriod.minimumDurationNights
+        currentPeriod.minimumDurationNights,
       );
 
       const currentPeriodIndex = sortedPeriodDates.value.findIndex(
-        (p) => p.startAt === currentPeriod.startAt
+        (p) => p.startAt === currentPeriod.startAt,
       );
 
       if (sortedPeriodDates.value.length > currentPeriodIndex) {
@@ -745,13 +745,13 @@ const tooltipText: ComputedRef<string> = computed(() => {
     } else if (isInCheckoutHalfDay(hoveringDay.value)) {
       const period = useGetPeriod(
         sortedPeriodDates,
-        hoveringDay.value.formatDay
+        hoveringDay.value.formatDay,
       );
 
       if (period?.periodType && period?.minimumDuration) {
         return `${t("halfDay.checkOut")} \n ${t(
           `periodType.${toCamelCase(period.periodType)}`,
-          period.minimumDuration
+          period.minimumDuration,
         )}`;
       }
 
@@ -831,7 +831,7 @@ const inNightlyPeriod = (day: Day) => {
   if (currentPeriod.value?.nextEnableDate) {
     const isAfterNexteEnableDate = isAfterOrEqual(
       day.date,
-      currentPeriod.value?.nextEnableDate
+      currentPeriod.value?.nextEnableDate,
     );
 
     return (
@@ -873,7 +873,7 @@ const defineHoveringData = (day: Day) => {
     hoveringDates.value = getDatesBetweenTwoDates(
       props.checkIn,
       hoveringDay.value.date,
-      formattingFormat.value
+      formattingFormat.value,
     );
   }
 };
@@ -935,7 +935,7 @@ const dayClicked = (day: Day, e: Event): void => {
       day,
       getSelectedBooking(day),
       checkIncheckOutHalfDay.value[day.formatDay],
-      e
+      e,
     );
   }
 
@@ -977,7 +977,7 @@ const dayClicked = (day: Day, e: Event): void => {
       nextDisableBookingDate.value = null;
       hoveringDay.value = null;
 
-      if (!props.alwaysVisible) showCalendar.value = false;
+      closeCalendar();
     } else if (!props.checkIn) {
       // CheckIn
       setCheckIn(day);
@@ -998,7 +998,7 @@ const getNextBookingDate = (day: Day) => {
 
     nextDisableBookingDate.value = useGetNextBookingDate(
       newBookingDates,
-      newDate
+      newDate,
     );
   }
 };
@@ -1011,7 +1011,7 @@ const getCurrentPeriod = (day: Day) => {
         validateDateBetweenTwoDates(
           period.startAt,
           period.endAt,
-          day.formatDay
+          day.formatDay,
         ))
     ) {
       return period;
@@ -1041,7 +1041,7 @@ const getCurrentPeriod = (day: Day) => {
 
 const isInFlattenBookingDates = (day: Day) => {
   return flatBookingDates.value.value.some((x) =>
-    x.value.includes(day.formatDay)
+    x.value.includes(day.formatDay),
   );
 };
 const isInBookingDates = (day: Day) => {
@@ -1084,7 +1084,7 @@ const getSelectedBooking = (day: Day) => {
   // If day is between checkInDate and checkOutDate of a Booking
   if (
     bookingDatesT.value.some((d) =>
-      validateDateBetweenTwoDates(d.checkInDate, d.checkOutDate, day.formatDay)
+      validateDateBetweenTwoDates(d.checkInDate, d.checkOutDate, day.formatDay),
     )
   ) {
     return {
@@ -1092,8 +1092,8 @@ const getSelectedBooking = (day: Day) => {
         validateDateBetweenTwoDates(
           d.checkInDate,
           d.checkOutDate,
-          day.formatDay
-        )
+          day.formatDay,
+        ),
       ),
       ...getBooking(day),
     };
@@ -1135,7 +1135,7 @@ const getBooking = (day: Day): FlatBooking | null => {
     day.belongsToThisMonth
   ) {
     const flatBooking = flatBookingDates.value.value.find((b) =>
-      b.value.includes(day.formatDay)
+      b.value.includes(day.formatDay),
     );
 
     if (flatBooking) {
@@ -1146,7 +1146,7 @@ const getBooking = (day: Day): FlatBooking | null => {
   return null;
 };
 const closeDatePicker = () => {
-  showCalendar.value = false;
+  closeCalendar();
   emits("close-date-picker");
 };
 const clearDates = () => {
@@ -1197,7 +1197,7 @@ watch(
   () => props.showYear,
   () => {
     paginateToTodayDesktop(today.value);
-  }
+  },
 );
 
 watch(
@@ -1215,11 +1215,11 @@ watch(
         }
       });
     }
-  }
+  },
 );
 
 onBeforeMount(() => {
-  if (!props.alwaysVisible) addClickOusideListener();
+  addClickOusideListener();
 
   if (isClient && isMobile.value) {
     window.addEventListener("resize", resizeContainer);
@@ -1228,7 +1228,7 @@ onBeforeMount(() => {
 });
 
 onUnmounted(() => {
-  if (!props.alwaysVisible) removeClickOusideListener();
+  removeClickOusideListener();
 
   if (isClient && isMobile.value) {
     window.removeEventListener("resize", resizeContainer);
