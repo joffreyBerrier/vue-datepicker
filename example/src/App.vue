@@ -2,8 +2,7 @@
 import { ref } from "vue";
 
 import { deviceIsMobile } from "../../src/components/helpers";
-
-import { Calendar } from "../../src/index";
+import { Calendar } from "../../dist/vue-calendar-3.js";
 
 import type { Ref } from "vue";
 import type { Booking, Day, Period } from "../../src/types";
@@ -253,6 +252,8 @@ const pushBookingDates = () => {
 </template>
 
 <style>
+@import "../../dist/style.css";
+
 .flex {
   display: flex;
 }

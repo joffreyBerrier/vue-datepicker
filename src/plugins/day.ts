@@ -23,11 +23,11 @@ const format = (date: Date | string, format: string): string => {
   return d.format(format);
 };
 
-const getMonth = (date: Date) => {
+const getMonth = (date: Date | string) => {
   return dayjs(date).month();
 };
 
-const getYear = (date: Date) => {
+const getYear = (date: Date | string) => {
   return dayjs(date).year();
 };
 
@@ -166,7 +166,7 @@ const getFirstDayOfMonth = (date: Date): Date => {
   return dayjs(date).startOf("month").toDate();
 };
 
-const getFirstDayOfFirstWeekOfMonth = (date: Date): Date => {
+const getFirstDayOfFirstWeekOfMonth = (date: Date): string => {
   return dayjs(date).startOf("month").weekday(0).format("YYYY-MM-DD");
 };
 
