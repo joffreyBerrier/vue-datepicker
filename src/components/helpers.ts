@@ -5,7 +5,9 @@ import {
   getDatesBetweenTwoDates,
   getDatesBetweenTwoDatesDiff,
   getDaysArray,
+  getMonth,
   getNextDate,
+  getYear,
   isAfter,
   isBefore,
   isBeforeOrEqual,
@@ -161,8 +163,30 @@ const toCamelCase = (str: string) => {
   return newStr;
 };
 
+
+const calculIndex = ({ startDate, date, showYear }: {
+  startDate: Date;
+  date: Date;
+  showYear: boolean;
+}): number => {
+  const todayMonth = getMonth(date);
+  const currentYear = getYear(date);
+  const startYear = getYear(startDate);
+
+  const numberOfYears =
+    currentYear - startYear > 0 ? currentYear - startYear : 0;
+
+  const numberOfMonth = showYear
+    ? numberOfYears * 12
+    : numberOfYears * 12 + todayMonth;
+
+  return Math.floor(numberOfMonth);
+};
+
+
 export {
   addDays,
+  calculIndex,
   convertHexToRGBA,
   deviceIsMobile,
   getDatesBetweenTwoDates,

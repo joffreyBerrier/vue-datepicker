@@ -1,4 +1,4 @@
-# vue-datepicker 2.4.24
+# vue-datepicker 2.5.1
 
 👊 An easier datePicker in Vue.js 👊
 
@@ -6,11 +6,8 @@ https://github.com/joffreyBerrier/vue-datepicker/projects/1
 
 🔥 Vue3 + Typescript + Tailwind + HeroIcon 🔥
 
-# Sandbox example
-
-_Open this link on a new tab_
-
-[![Edit vue-calendar-3](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/vue-calendar-3-ezer3?fontsize=14&theme=dark&view=preview)
+# Ready to Experiment?
+Download the repository and execute `npm run dev` to get started!
 
 ## Installation
 
@@ -370,6 +367,9 @@ en: {
   },
 }
 ```
+
+ℹ️ Now, please set the `locale` **props** to view your translations in action.
+
 
 ### Timezone
 

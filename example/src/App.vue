@@ -113,9 +113,9 @@ const periodDates: Ref<Period[]> = ref([
     startAt: "2024-05-05",
   },
 ]);
-const checkIn = ref(new Date("2023-05-01"));
+const checkIn = ref(new Date("2024-05-01"));
 const checkInSingle = ref();
-const checkOut = ref(new Date("2023-05-10"));
+const checkOut = ref(new Date("2024-05-10"));
 const showAlwaysVisible = ref(false);
 const showYear = ref(false);
 const placeholder = {
@@ -165,7 +165,7 @@ const pushBookingDates = () => {
     <h1 class="text-4xl font-bold text-center mb-4">Vue Calendar</h1>
 
     <button
-      class="px-4 py-3 bg-[#000] text-white hover:bg-[#202020] mb-4"
+      class="px-4 py-3 bg-black text-white hover:bg-grey mb-4"
       @click="toggleAlwaysVisible"
     >
       Show Calendar
@@ -224,7 +224,10 @@ const pushBookingDates = () => {
       </template>
 
       <template #calendar-header-mobile>
-        <div class="flex items-center">calendar-header-mobile</div>
+        <div class="flex items-center justify-between">
+          <p>slot: calendar-header-mobile</p>
+          <button @click="toggleCalendar">close</button>
+        </div>
       </template>
     </calendar>
 
@@ -248,3 +251,53 @@ const pushBookingDates = () => {
     </div>
   </div>
 </template>
+
+<style>
+.flex {
+  display: flex;
+}
+.items-center {
+  align-items: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.p-4 {
+  padding: 1rem;
+}
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.bg-black {
+  background: #000;
+}
+.bg-grey {
+  background: #ccc;
+}
+.text-white {
+  color: #fff;
+}
+.text-4xl {
+  font-size: 2.25rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.text-blue-400 {
+  color: #63b3ed;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mt-10 {
+  margin-top: 2.5rem;
+}
+</style>

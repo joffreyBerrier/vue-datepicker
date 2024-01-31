@@ -14,18 +14,10 @@ import {
   watch,
   watchEffect,
   toRef,
-  nextTick,
 } from "vue";
 import type { ComputedRef, PropType, Ref } from "vue";
 
-import {
-  dayjs,
-  format,
-  formatUtc,
-  getMonth,
-  getYear,
-  isAfterOrEqual,
-} from "../plugins/day";
+import { dayjs, format, formatUtc, isAfterOrEqual } from "../plugins/day";
 
 import BaseIcon from "./BaseIcon.vue";
 import CalendarDays from "./CalendarDays.vue";
@@ -37,6 +29,7 @@ import CalendarTooltip from "./CalendarTooltip.vue";
 
 import {
   addDays,
+  calculIndex,
   convertHexToRGBA,
   deviceIsMobile,
   getDatesBetweenTwoDates,
@@ -310,24 +303,20 @@ if (props.checkIn && props.checkOut) {
   emits("update:checkOut", formatUtc(props.checkOut), false);
 }
 
-const calculIndex = (date: Date): number => {
-  const todayMonth = getMonth(date);
-  const currentYear = getYear(date);
-  const startYear = getYear(props.startDate);
-
-  const numberOfYears =
-    currentYear - startYear > 0 ? currentYear - startYear : 0;
-
-  const numberOfMonth = props.showYear
-    ? numberOfYears * 12
-    : numberOfYears * 12 + todayMonth;
-
-  return Math.floor(numberOfMonth);
-};
+const isMobile = computed(() => {
+  return deviceIsMobile();
+});
+const isDesktop = computed(() => {
+  return !isMobile.value;
+});
 
 // Desktop
 const paginateToTodayDesktop = (date: Date | string): void => {
-  const numberOfMonth = calculIndex(new Date(date));
+  const numberOfMonth = calculIndex({
+    date: new Date(date),
+    startDate: props.startDate,
+    showYear: props.showYear,
+  });
 
   activeIndex.value = Math.floor(numberOfMonth);
 };
@@ -339,7 +328,11 @@ if (props.checkIn && props.checkOut) {
 }
 
 // Active index for mobile
-activeMobileIndex.value = calculIndex(today.value);
+activeMobileIndex.value = calculIndex({
+  date: today.value,
+  startDate: props.startDate,
+  showYear: props.showYear,
+});
 
 // Current month of the current day
 months.value.push(useCreateMonth(props.startDate));
@@ -358,7 +351,13 @@ const {
   removeClickOusideListener,
   showCalendar,
   toggleCalendar,
-} = useToggleCalendar(props);
+} = useToggleCalendar(
+  activeMobileIndex,
+  calendarWrapperContent,
+  heightOfCalendarMonth,
+  isMobile,
+  props,
+);
 
 // Sorted periods
 const sortedPeriodDates: ComputedRef<Period[]> = computed(() => {
@@ -415,13 +414,6 @@ const nightlyPeriods = computed(() => {
     "nightly",
     formattingFormat.value,
   );
-});
-
-const isMobile = computed(() => {
-  return deviceIsMobile();
-});
-const isDesktop = computed(() => {
-  return !isMobile.value;
 });
 
 const bookingDatesT = toRef(props, "bookingDates") as unknown as Ref<Booking[]>;
@@ -1183,38 +1175,10 @@ const scrollToPaginateMobile = (e: Event) => {
   }
 };
 
-const scrollToCheckIn = () => {
-  const count = activeIndex.value - activeMobileIndex.value;
-
-  if (calendarWrapperContent.value) {
-    calendarWrapperContent.value.scrollTo({
-      top: heightOfCalendarMonth.value * count,
-    });
-  }
-};
-
 watch(
   () => props.showYear,
   () => {
     paginateToTodayDesktop(today.value);
-  },
-);
-
-watch(
-  () => showCalendar.value,
-  (val) => {
-    if (val) {
-      nextTick(() => {
-        heightOfCalendarMonth.value =
-          document
-            .querySelector(".calendar_wrap_month")
-            ?.getBoundingClientRect()?.height || 0;
-
-        if (props.checkIn && props.checkOut) {
-          scrollToCheckIn();
-        }
-      });
-    }
   },
 );
 

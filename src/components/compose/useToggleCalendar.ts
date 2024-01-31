@@ -1,7 +1,21 @@
 import type { Ref } from "vue";
-import { ref, watch } from "vue";
+import { ref, nextTick, watch } from "vue";
 
-export const useToggleCalendar = (props: { alwaysVisible: boolean }) => {
+import { calculIndex } from "../helpers";
+
+export const useToggleCalendar = (
+  activeMobileIndex: Ref<number>,
+  calendarWrapperContent: Ref<HTMLElement | null>,
+  heightOfCalendarMonth: Ref<number>,
+  isMobile: Ref<boolean>,
+  props: {
+    alwaysVisible: boolean;
+    checkIn: [Date, string];
+    checkOut: [Date, string];
+    startDate: Date;
+    showYear: boolean;
+  },
+) => {
   const showCalendar = props.alwaysVisible ? ref(true) : ref(false);
   const calendarRef: Ref<HTMLElement | null> = ref(null);
   const ignoreOutsideClick = ref(false);
@@ -34,9 +48,37 @@ export const useToggleCalendar = (props: { alwaysVisible: boolean }) => {
     }
   };
 
+  const scrollToCheckIn = () => {
+    heightOfCalendarMonth.value =
+      document.querySelector(".calendar_wrap_month")?.getBoundingClientRect()
+        ?.height || 0;
+
+    const currentIndex = calculIndex({
+      date: props.checkIn,
+      startDate: props.startDate,
+      showYear: props.showYear,
+    });
+
+    if (props.checkIn && props.checkOut) {
+      const count = currentIndex - activeMobileIndex.value;
+
+      if (calendarWrapperContent.value) {
+        calendarWrapperContent.value.scrollTo({
+          top: heightOfCalendarMonth.value * count,
+        });
+      }
+    }
+  };
+
   const openCalendar = () => {
     ignoreOutsideClick.value = true;
     showCalendar.value = true;
+
+    if (isMobile.value) {
+      nextTick(() => {
+        scrollToCheckIn();
+      });
+    }
   };
   const closeCalendar = () => {
     if (props.alwaysVisible === false) {
@@ -47,6 +89,12 @@ export const useToggleCalendar = (props: { alwaysVisible: boolean }) => {
   const toggleCalendar = () => {
     ignoreOutsideClick.value = true;
     showCalendar.value = !showCalendar.value;
+
+    if (showCalendar.value && isMobile.value) {
+      nextTick(() => {
+        scrollToCheckIn();
+      });
+    }
   };
 
   watch(
