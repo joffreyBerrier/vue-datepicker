@@ -1288,7 +1288,7 @@ defineExpose({
         'calendar_wrapper',
         `calendar_wrapper--${position}`,
         {
-          'calendar_wrapper--year': alwaysVisible,
+          'calendar_wrapper--year': alwaysVisible && showYear,
           'calendar_wrapper--affix': isAffixed,
           'calendar_wrapper--single': singleCalendar,
         },
