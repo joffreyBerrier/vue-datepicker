@@ -422,16 +422,13 @@ const bookingColorT = toRef(
   props,
   "bookingColor",
 ) as unknown as Ref<BookingColor>;
-
-const disabledDates = computed(() => {
-  return useCreateHalfDayDates(
-    bookingDatesT.value,
-    bookedDatesT.value,
-    bookingColorT.value,
-    formattingFormat,
-  ).disabledDates;
-});
-const newBookingDates = computed(() => {
+let disabledDates = useCreateHalfDayDates(
+  bookingDatesT.value,
+  bookedDatesT.value,
+  bookingColorT.value,
+  formattingFormat,
+).disabledDates;
+let newBookingDates = computed(() => {
   return useCreateHalfDayDates(
     bookingDatesT.value,
     bookedDatesT.value,
@@ -439,38 +436,61 @@ const newBookingDates = computed(() => {
     formattingFormat,
   ).newBookingDates;
 });
-const flatBookingDates = computed(() => {
-  return useFlatBooking(
-    bookingDatesT.value,
-    bookingColorT.value,
-    formattingFormat,
-  );
-});
-
+let flatBookingDates = useFlatBooking(
+  bookingDatesT.value,
+  bookingColorT.value,
+  formattingFormat,
+);
 let checkIncheckOutHalfDay = ref({}) as Ref<CheckInCheckOutHalfDay>;
 checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
   bookingDatesT.value,
   bookedDatesT.value,
 );
+let bookingStyle = useBookingStyle(
+  bookingDatesT.value,
+  bookingColorT.value,
+  formattingFormat,
+  checkIncheckOutHalfDay,
+);
 
-const bookingStyle = computed(() => {
-  return useBookingStyle(
+watchEffect(() => {
+  newBookingDates = computed(() => {
+    return useCreateHalfDayDates(
+      bookingDatesT.value,
+      bookedDatesT.value,
+      bookingColorT.value,
+      formattingFormat,
+    ).newBookingDates;
+  });
+
+  disabledDates = useCreateHalfDayDates(
+    bookingDatesT.value,
+    bookedDatesT.value,
+    bookingColorT.value,
+    formattingFormat,
+  ).disabledDates;
+
+  flatBookingDates = useFlatBooking(
     bookingDatesT.value,
     bookingColorT.value,
     formattingFormat,
-    checkIncheckOutHalfDay,
   );
-});
 
-watchEffect(() => {
   checkIncheckOutHalfDay = useCheckIncheckOutHalfDay(
     bookingDatesT.value,
     bookedDatesT.value,
   );
 
+  bookingStyle = useBookingStyle(
+    bookingDatesT.value,
+    bookingColorT.value,
+    formattingFormat,
+    checkIncheckOutHalfDay,
+  );
+
   months.value.forEach((m) => {
     m.days.forEach((day: Day) => {
-      const bookingColor = bookingStyle.value.value[day.formatDay] as string;
+      const bookingColor = bookingStyle.value[day.formatDay] as string;
 
       day.style = {
         background: !checkIncheckOutHalfDay.value[day.formatDay]
@@ -846,7 +866,7 @@ const inDisabledDay = (day: Day) => {
     (props.checkIn &&
       !props.checkOut &&
       isDateBefore(day.date, props.checkIn)) ||
-    (disabledDates.value.value.includes(day.formatDay) &&
+    (disabledDates.value.includes(day.formatDay) &&
       !checkIncheckOutHalfDay.value[day.formatDay]) ||
     (props.checkIn &&
       nextDisableBookingDate.value &&
@@ -1032,9 +1052,7 @@ const getCurrentPeriod = (day: Day) => {
 };
 
 const isInFlattenBookingDates = (day: Day) => {
-  return flatBookingDates.value.value.some((x) =>
-    x.value.includes(day.formatDay),
-  );
+  return flatBookingDates.value.some((x) => x.value.includes(day.formatDay));
 };
 const isInBookingDates = (day: Day) => {
   return (
@@ -1123,10 +1141,10 @@ const getSelectedBooking = (day: Day) => {
 
 const getBooking = (day: Day): FlatBooking | null => {
   if (
-    flatBookingDates.value.value.some((b) => b.value.includes(day.formatDay)) &&
+    flatBookingDates.value.some((b) => b.value.includes(day.formatDay)) &&
     day.belongsToThisMonth
   ) {
-    const flatBooking = flatBookingDates.value.value.find((b) =>
+    const flatBooking = flatBookingDates.value.find((b) =>
       b.value.includes(day.formatDay),
     );
 
@@ -1582,6 +1600,14 @@ defineExpose({
 @tailwind base;
 @tailwind components;
 
+/* Reset */
+.vue-calendar li {
+  list-style-type: none;
+}
+.vue-calendar button {
+  @apply appearance-none border-0 shadow-none bg-white;
+}
+
 /* Global Style */
 .vue-calendar {
   @apply w-full relative select-none;
@@ -1600,6 +1626,11 @@ defineExpose({
   .calendar_wrapper:not(.calendar_wrapper--affix)
   .calendar_wrapper_content {
   @apply grid md:grid-cols-2 md:gap-12;
+}
+.vue-calendar
+  .calendar_wrapper:not(.calendar_wrapper--affix).calendar_wrapper--year
+  .calendar_wrapper_content {
+  @apply grid md:grid-cols-4 md:gap-12;
 }
 .vue-calendar .calendar_wrapper_content-days {
   @apply grid grid-cols-7;

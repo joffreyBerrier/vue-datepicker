@@ -9,10 +9,10 @@ beforeEach(() => {
   wrapper = mount(CalendarHeader, {
     props: {
       months: [
-        { monthName: "January" },
-        { monthName: "February" },
-        { monthName: "March" },
-        { monthName: "April" },
+        { monthName: "January", days: [], monthKey: 1, yearKey: 2024 },
+        { monthName: "February", days: [], monthKey: 2, yearKey: 2024 },
+        { monthName: "March", days: [], monthKey: 3, yearKey: 2024 },
+        { monthName: "April", days: [], monthKey: 4, yearKey: 2024 },
       ],
       activeIndex: 1,
     },

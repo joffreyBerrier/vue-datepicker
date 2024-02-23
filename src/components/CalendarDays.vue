@@ -30,7 +30,9 @@ const listOfDays: Ref<HeaderDay[]> = ref([
 ]);
 
 const days: ComputedRef<HeaderDay[]> = computed(() => {
-  const copyListOfDays = JSON.parse(JSON.stringify(listOfDays.value));
+  const copyListOfDays = JSON.parse(
+    JSON.stringify(listOfDays.value),
+  ) as HeaderDay[];
 
   if (props.locale === "en")
     return copyListOfDays.sort((a, b) => a.key - b.key);

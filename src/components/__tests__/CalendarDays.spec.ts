@@ -10,7 +10,7 @@ beforeEach(() => {
     global: {
       provide: {
         t: (key: string): string => {
-          const translation = {
+          const translation: any = {
             days: {
               monday: "Mo",
               tuesday: "Tu",

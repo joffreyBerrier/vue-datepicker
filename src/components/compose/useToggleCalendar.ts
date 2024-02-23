@@ -8,13 +8,7 @@ export const useToggleCalendar = (
   calendarWrapperContent: Ref<HTMLElement | null>,
   heightOfCalendarMonth: Ref<number>,
   isMobile: Ref<boolean>,
-  props: {
-    alwaysVisible: boolean;
-    checkIn: [Date, string];
-    checkOut: [Date, string];
-    startDate: Date;
-    showYear: boolean;
-  },
+  props: any,
 ) => {
   const showCalendar = props.alwaysVisible ? ref(true) : ref(false);
   const calendarRef: Ref<HTMLElement | null> = ref(null);

@@ -5,13 +5,13 @@ export default {
 </script>
 
 <script setup lang="ts">
-import type { Ref, PropType } from "vue";
+import type { PropType } from "vue";
 import type { Day } from "../types";
 
 const props = defineProps({
   bookingStyle: {
     type: Object as PropType<
-      Ref<Record<string, string | { checkIn: string; checkOut: string }>>
+      Record<string, string | { checkIn: string; checkOut: string }>
     >,
     default: null,
   },
@@ -35,7 +35,7 @@ const setHalfDayStyle = (
   const key = props.isCheckIn ? "checkIn" : "checkOut";
 
   if (props.bookingStyle) {
-    const bookingColor = props.bookingStyle.value[formatDay];
+    const bookingColor = props.bookingStyle[formatDay];
 
     if (
       bookingColor &&

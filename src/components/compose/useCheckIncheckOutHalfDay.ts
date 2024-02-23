@@ -56,12 +56,17 @@ export const useCheckIncheckOutHalfDay = (
   const checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay> =
     createHalfDayDatesWithBookedDates(bookedDatesProps).checkIncheckOutHalfDay;
 
-  const uniqBookings = bookingDates.reduce((accumulator, current) => {
-    if (!accumulator.find((item) => item.checkInDate === current.checkInDate)) {
-      accumulator.push(current);
-    }
-    return accumulator;
-  }, []);
+  const uniqBookings = bookingDates.reduce(
+    (accumulator: Booking[], current) => {
+      if (
+        !accumulator.find((item) => item.checkInDate === current.checkInDate)
+      ) {
+        accumulator.push(current);
+      }
+      return accumulator;
+    },
+    [],
+  );
 
   uniqBookings.forEach((booking: Booking) => {
     if (!checkIncheckOutHalfDay.value[booking.checkInDate]) {

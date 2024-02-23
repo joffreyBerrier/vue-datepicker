@@ -2,8 +2,10 @@
 import { ref } from "vue";
 
 import { deviceIsMobile } from "../../src/components/helpers";
-
-import { Calendar } from "../../src/index";
+// Build mode
+// import { Calendar } from "../../dist/vue-calendar-3.js";
+// Locale mode
+import { Calendar } from '../../src/index'
 
 import type { Ref } from "vue";
 import type { Booking, Day, Period } from "../../src/types";
@@ -27,55 +29,55 @@ const bookingColor = ref({
 }) as Ref<Record<string, string>>;
 const bookingDates: Ref<Booking[]> = ref([
   {
-    checkInDate: "2023-07-01",
-    checkOutDate: "2023-07-10",
+    checkInDate: "2024-07-01",
+    checkOutDate: "2024-07-10",
     type: "type1",
   },
   {
-    checkInDate: "2023-07-10",
-    checkOutDate: "2023-07-20",
+    checkInDate: "2024-07-10",
+    checkOutDate: "2024-07-20",
     type: "type2",
   },
   {
-    checkInDate: "2023-07-20",
-    checkOutDate: "2023-07-30",
+    checkInDate: "2024-07-20",
+    checkOutDate: "2024-07-30",
     type: "type3",
   },
   {
-    checkInDate: "2023-08-01",
-    checkOutDate: "2023-08-20",
+    checkInDate: "2024-08-01",
+    checkOutDate: "2024-08-20",
     type: "type4",
   },
   {
-    checkInDate: "2023-10-01",
-    checkOutDate: "2023-10-20",
+    checkInDate: "2024-10-01",
+    checkOutDate: "2024-10-20",
     type: "type5",
   },
   {
-    checkInDate: "2023-10-20",
-    checkOutDate: "2023-10-30",
+    checkInDate: "2024-10-20",
+    checkOutDate: "2024-10-30",
     type: "type6",
   },
   {
-    checkInDate: "2023-11-01",
-    checkOutDate: "2023-11-12",
+    checkInDate: "2024-11-01",
+    checkOutDate: "2024-11-12",
     type: "type7",
   },
 ]);
 const periodDates: Ref<Period[]> = ref([
   {
     id: "1",
-    endAt: "2023-09-17",
+    endAt: "2024-09-17",
     minimumDuration: 1,
     periodType: "nightly",
-    startAt: "2023-09-01",
+    startAt: "2024-09-01",
   },
   {
     id: "2",
-    endAt: "2023-11-26",
+    endAt: "2024-11-26",
     minimumDuration: 1,
     periodType: "weekly_by_sunday",
-    startAt: "2023-09-17",
+    startAt: "2024-09-17",
   },
   {
     id: "3",
@@ -116,8 +118,7 @@ const periodDates: Ref<Period[]> = ref([
 const checkIn = ref(new Date("2024-05-01"));
 const checkInSingle = ref();
 const checkOut = ref(new Date("2024-05-10"));
-const showAlwaysVisible = ref(false);
-const showYear = ref(false);
+const showYear = ref(true);
 const placeholder = {
   checkIn: "Check-in",
   checkOut: "Check-out",
@@ -144,13 +145,13 @@ const selectBookingDate = (day: Day, booking: Booking, e: Event) => {
 const pushBookingDates = () => {
   bookingDates.value.push(
     {
-      checkInDate: "2022-09-01",
-      checkOutDate: "2022-09-10",
+      checkInDate: "2024-01-01",
+      checkOutDate: "2024-01-10",
       type: "type4",
     },
     {
-      checkInDate: "2022-09-24",
-      checkOutDate: "2022-09-30",
+      checkInDate: "2024-01-24",
+      checkOutDate: "2024-01-30",
       type: "type4",
     }
   );
@@ -253,6 +254,8 @@ const pushBookingDates = () => {
 </template>
 
 <style>
+@import "../../dist/style.css";
+
 .flex {
   display: flex;
 }

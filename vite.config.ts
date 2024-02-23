@@ -8,6 +8,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
       name: "vue-calendar-3",
+      fileName: "vue-calendar-3",
     },
     rollupOptions: {
       external: ["vue"],
