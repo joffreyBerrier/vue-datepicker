@@ -1288,7 +1288,8 @@ defineExpose({
         'calendar_wrapper',
         `calendar_wrapper--${position}`,
         {
-          'calendar_wrapper--year': alwaysVisible && showYear,
+          'calendar_wrapper--year': showYear,
+          'calendar_wrapper--visible': alwaysVisible,
           'calendar_wrapper--affix': isAffixed,
           'calendar_wrapper--single': singleCalendar,
         },
@@ -1621,6 +1622,9 @@ defineExpose({
 }
 .vue-calendar .calendar_wrapper:not(.calendar_wrapper--year) {
   @apply p-6 md:shadow-md md:absolute md:top-[100%];
+}
+.vue-calendar .calendar_wrapper.calendar_wrapper--visible {
+  @apply !static !block !mx-auto !w-full;
 }
 .vue-calendar
   .calendar_wrapper:not(.calendar_wrapper--affix)

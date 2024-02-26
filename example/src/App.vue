@@ -181,6 +181,7 @@ const pushBookingDates = () => {
       ref="calendarRef"
       v-model:checkIn="checkIn"
       v-model:checkOut="checkOut"
+      always-visible
       :booking-color="bookingColor"
       :booking-dates="bookingDates"
       :is-affixed="deviceIsMobile()"
