@@ -1,0 +1,801 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Calendar > renders Calendar properly 1`] = `
+"<div class="vue-calendar">
+  <div class="calendar_input calendar_input-open">
+    <div data-testid="calendar_input" class="calendar_input-left-part"><svg class="calendar_input-calendar calendar_input-calendar--checkIn" style="width: 1.5rem; height: 1.5rem;" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path clip-rule="evenodd" d="M15 4V2m0 2v2m0-2h-4.5M3 10v9a2 2 0 002 2h14a2 2 0 002-2v-9H3zM3 10V6a2 2 0 012-2h2M7 2v4M21 10V6a2 2 0 00-2-2h-.5"></path>
+      </svg>
+      <p class="calendar_input-text"><span data-testid="checkIn" class="calendar_input-text--checkIn">2024-04-01</span><svg class="calendar_input-arrowRight calendar_input-arrowRight--checkIn" style="width: 1rem; height: 1rem;" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path clip-rule="evenodd" d="M3 12h18m0 0l-8.5-8.5M21 12l-8.5 8.5"></path>
+        </svg><span data-testid="checkOut" class="calendar_input-text--checkIn">2024-04-20</span></p>
+    </div><svg class="" style="width: 1rem; height: 1rem;" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path clip-rule="evenodd" d="M6.758 17.243L12.001 12m5.243-5.243L12 12m0 0L6.758 6.757M12.001 12l5.243 5.243"></path>
+    </svg>
+  </div>
+  <div>
+    <div class="calendar_paginate-wrapper" data-testid="calendar_paginate">
+      <div class="calendar_paginate-wrapper--left-content"><button data-testid="calendar_paginate-prev--button" type="button" class="calendar_paginate-button"><svg class="" style="width: 1.5rem; height: 1.5rem;" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path clip-rule="evenodd" d="M15 6l-6 6 6 6"></path>
+          </svg></button>
+        <div class="calendar_paginate-year"><span>2024</span></div><button data-testid="calendar_paginate-next--button" type="button" class="calendar_paginate-button"><svg class="" style="width: 1.5rem; height: 1.5rem;" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path clip-rule="evenodd" d="M9 6l6 6-6 6"></path>
+          </svg></button><button type="button" class="calendar_today-button">Aujourd'hui</button>
+      </div>
+    </div>
+  </div>
+  <div class="calendar_wrapper calendar_wrapper--left calendar_wrapper--visible">
+    <!--v-if-->
+    <!--v-if-->
+    <div class="calendar_wrapper_content">
+      <div class="calendar_wrap_month"><span class="calendar_wrapper_month">avril  2024</span><!-- Mobile header -->
+        <ul class="calendar_wrapper_content-header-days">
+          <li class="calendar-days">Lun. </li>
+          <li class="calendar-days">Mar. </li>
+          <li class="calendar-days">Mer. </li>
+          <li class="calendar-days">Jeu. </li>
+          <li class="calendar-days">Ven. </li>
+          <li class="calendar-days">Sam. </li>
+          <li class="calendar-days">Dim. </li>
+        </ul>
+        <!--v-if-->
+        <!-- Mobile header -->
+        <div class="calendar_wrapper_content-days">
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-01">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day--checkIn" data-testid="day-2024-04-01">
+              <!-- Half day for CheckIn --><i data-v-3739958d="" class="calendar_day_haldDay calendar_day_haldDay--checkIn"></i><!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">1</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-02">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut" data-testid="day-2024-04-02">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">2</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-03">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut" data-testid="day-2024-04-03">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">3</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-04">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut" data-testid="day-2024-04-04">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">4</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-05">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut" data-testid="day-2024-04-05">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">5</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-04-06">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--is-a-day-period" data-testid="day-2024-04-06">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">6</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-04-07">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-07">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">7</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-08">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-08">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">8</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-09">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-09">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">9</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-10">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-10">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">10</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-11">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-11">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">11</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-12">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-12">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">12</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-04-13">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--is-a-day-period" data-testid="day-2024-04-13">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">13</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-04-14">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-14">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">14</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-15">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-15">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">15</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-16">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-16">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">16</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-17">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-17">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">17</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-18">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-18">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">18</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-19">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day_between--checkIn-checkOut calendar_day--in-period event-none" data-testid="day-2024-04-19">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">19</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-04-20">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day--checkOut calendar_day--is-a-day-period" data-testid="day-2024-04-20">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut --><i data-v-3739958d="" class="calendar_day_haldDay calendar_day_haldDay--checkOut"></i><!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">20</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-04-21">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day--in-period event-none" data-testid="day-2024-04-21">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">21</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-22">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day--in-period event-none" data-testid="day-2024-04-22">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">22</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-23">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day--in-period event-none" data-testid="day-2024-04-23">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">23</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-24">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day--in-period event-none" data-testid="day-2024-04-24">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">24</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-25">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day--in-period event-none" data-testid="day-2024-04-25">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">25</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-04-26">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day--in-period event-none" data-testid="day-2024-04-26">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">26</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-04-27">
+            <!--v-if--><button type="button" class="calendar_day z-5 calendar_day--is-a-day-period" data-testid="day-2024-04-27">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">27</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-04-28">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-04-28">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">28</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-29">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-04-29">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">29</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-04-30">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-04-30">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">30</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center calendar_day-wrap--no-border" data-testid="daywrap-2024-05-01">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center calendar_day-wrap--no-border" data-testid="daywrap-2024-05-02">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center calendar_day-wrap--no-border" data-testid="daywrap-2024-05-03">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right calendar_day-wrap--no-border" data-testid="daywrap-2024-05-04">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right calendar_day-wrap--no-border" data-testid="daywrap-2024-05-05">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left calendar_day-wrap--no-border" data-testid="daywrap-2024-05-06">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left calendar_day-wrap--no-border" data-testid="daywrap-2024-05-07">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center calendar_day-wrap--no-border" data-testid="daywrap-2024-05-08">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center calendar_day-wrap--no-border" data-testid="daywrap-2024-05-09">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center calendar_day-wrap--no-border" data-testid="daywrap-2024-05-10">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right calendar_day-wrap--no-border" data-testid="daywrap-2024-05-11">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right calendar_day-wrap--no-border" data-testid="daywrap-2024-05-12">
+            <!--v-if--><span></span>
+          </div>
+        </div>
+      </div>
+      <div class="calendar_wrap_month"><span class="calendar_wrapper_month">mai  2024</span><!-- Mobile header -->
+        <ul class="calendar_wrapper_content-header-days">
+          <li class="calendar-days">Lun. </li>
+          <li class="calendar-days">Mar. </li>
+          <li class="calendar-days">Mer. </li>
+          <li class="calendar-days">Jeu. </li>
+          <li class="calendar-days">Ven. </li>
+          <li class="calendar-days">Sam. </li>
+          <li class="calendar-days">Dim. </li>
+        </ul>
+        <!--v-if-->
+        <!-- Mobile header -->
+        <div class="calendar_wrapper_content-days">
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left calendar_day-wrap--no-border" data-testid="daywrap-2024-04-29">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left calendar_day-wrap--no-border" data-testid="daywrap-2024-04-30">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-01">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-01">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">1</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-02">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-02">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">2</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-03">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-03">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">3</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-05-04">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-04">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">4</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-05-05">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-05">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">5</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-05-06">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-06">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">6</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-05-07">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-07">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">7</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-08">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-08">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">8</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-09">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-09">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">9</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-10">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-10">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">10</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-05-11">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-11">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">11</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-05-12">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-12">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">12</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-05-13">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-13">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">13</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-05-14">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-14">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">14</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-15">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-15">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">15</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-16">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-16">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">16</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-17">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-17">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">17</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-05-18">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-18">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">18</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-05-19">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-19">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">19</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-05-20">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-20">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">20</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-05-21">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-21">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">21</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-22">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-22">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">22</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-23">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-23">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">23</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-24">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-24">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">24</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-05-25">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-25">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">25</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right" data-testid="daywrap-2024-05-26">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-26">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">26</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-05-27">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-27">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">27</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left" data-testid="daywrap-2024-05-28">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-28">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">28</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-29">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-29">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">29</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-30">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-30">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">30</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center" data-testid="daywrap-2024-05-31">
+            <!--v-if--><button type="button" class="calendar_day z-5" data-testid="day-2024-05-31">
+              <!-- Half day for CheckIn -->
+              <!--v-if-->
+              <!-- Half day for CheckOut -->
+              <!--v-if-->
+              <!-- Half day for Booking and Periods  -->
+              <!--v-if-->
+              <!--v-if--><span class="calendar_day--day-number">31</span>
+            </button>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right calendar_day-wrap--no-border" data-testid="daywrap-2024-06-01">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right calendar_day-wrap--no-border" data-testid="daywrap-2024-06-02">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left calendar_day-wrap--no-border" data-testid="daywrap-2024-06-03">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--left calendar_day-wrap--no-border" data-testid="daywrap-2024-06-04">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center calendar_day-wrap--no-border" data-testid="daywrap-2024-06-05">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center calendar_day-wrap--no-border" data-testid="daywrap-2024-06-06">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--center calendar_day-wrap--no-border" data-testid="daywrap-2024-06-07">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right calendar_day-wrap--no-border" data-testid="daywrap-2024-06-08">
+            <!--v-if--><span></span>
+          </div>
+          <div class="calendar_day-wrap calendar_day-wrap-tooltip--right calendar_day-wrap--no-border" data-testid="daywrap-2024-06-09">
+            <!--v-if--><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--v-if-->
+  </div>
+</div>"
+`;

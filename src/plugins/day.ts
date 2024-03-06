@@ -181,7 +181,7 @@ const getDaysArray = (start: Date | string, end: Date | string): Date[] => {
   const lenghDifference: number = getDateDiff(d1.toDate(), d2.toDate(), "day");
   const arr = [];
 
-  for (let index = 0; index < lenghDifference + 1; index++) {
+  for (let index = 0; index < lenghDifference; index++) {
     const day = d1.add(index, "day").toDate();
 
     arr.push(day);
