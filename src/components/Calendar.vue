@@ -585,7 +585,7 @@ const setMinimumDuration = (date: Date) => {
     };
 
     const getEnableNextDate = () => {
-      let enableNextDate = addDays(date, dynamicNightCounts.value - 1);
+      let enableNextDate = addDays(date, dynamicNightCounts.value);
 
       if (
         lastEnableDaysOfPeriod.value &&
@@ -610,13 +610,12 @@ const setMinimumDuration = (date: Date) => {
     };
 
     const setDisabledDays = () => {
-      const startDateCheckin = addDays(date, 1);
       const enableNextDate = getEnableNextDate();
       let nextPeriodDisabledDates: string[] = [];
-      const newDisablesDates: string[] = getDaysArray(
-        startDateCheckin,
-        enableNextDate,
-      ).map((d) => format(d, formattingFormat.value));
+
+      const newDisablesDates: string[] = getDaysArray(date, enableNextDate).map(
+        (d) => format(d, formattingFormat.value),
+      );
 
       nextPeriodDisableDates.value.push(...newDisablesDates);
 
@@ -1245,7 +1244,11 @@ defineExpose({
       @clear-dates="clearDates"
     />
     <div>
-      <div v-if="alwaysVisible" class="calendar_paginate-wrapper">
+      <div
+        v-if="alwaysVisible"
+        class="calendar_paginate-wrapper"
+        data-testid="calendar_paginate"
+      >
         <div class="calendar_paginate-wrapper--left-content">
           <button
             data-testid="calendar_paginate-prev--button"
@@ -1375,6 +1378,7 @@ defineExpose({
                 "
                 :tooltip-text="tooltipText"
                 @remove-tooltip="removeTooltip"
+                data-testid="calendar_tooltip"
               />
               <CalendarTooltip
                 v-else-if="
@@ -1388,6 +1392,7 @@ defineExpose({
                 "
                 :tooltip-text="tooltipText"
                 @remove-tooltip="removeTooltip"
+                data-testid="calendar_tooltip"
               />
 
               <button

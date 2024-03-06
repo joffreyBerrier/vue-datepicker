@@ -4,6 +4,7 @@ import {
   addDays,
   getDatesBetweenTwoDates,
   getDayDiff,
+  getDaysArray,
   getMonthDiff,
   getNextDay,
   getNextMonth,
@@ -241,6 +242,15 @@ describe("Format Date", () => {
         { checkInDate: "2020-04-05", checkOutDate: "2020-04-10" },
         { checkInDate: "2022-01-01", checkOutDate: "2022-01-05" },
       ]);
+    });
+  });
+
+  describe("getDaysArray", () => {
+    it("return an array of 31 days", () => {
+      const date1 = new Date("2022-01-01");
+      const date2 = new Date("2022-01-31");
+
+      expect(getDaysArray(date1, date2).length).toEqual(30);
     });
   });
 });

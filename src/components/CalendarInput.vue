@@ -43,8 +43,12 @@ const clearDates = () => {
 </script>
 
 <template>
-  <div data-testid="calendar_input" class="calendar_input">
-    <div class="calendar_input-left-part" @click="openCalendar">
+  <div class="calendar_input">
+    <div
+      data-testid="calendar_input"
+      class="calendar_input-left-part"
+      @click="openCalendar"
+    >
       <base-icon
         name="calendar"
         :color="[
