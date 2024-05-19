@@ -1,18 +1,13 @@
-<script lang="ts">
-export default {
-  name: "CalendarTooltip",
-};
-</script>
-
 <script setup lang="ts">
-defineProps<{
-  tooltipText: string;
-}>();
-const emits = defineEmits(["remove-tooltip"]);
+interface Props {
+  tooltipText: string
+}
+defineProps<Props>()
+const emits = defineEmits(['remove-tooltip'])
 
 const removeTooltip = () => {
-  emits("remove-tooltip");
-};
+  emits('remove-tooltip')
+}
 </script>
 
 <template>
@@ -22,8 +17,8 @@ const removeTooltip = () => {
         'calendar_tooltip--content',
         {
           'calendar_tooltip--content--min': tooltipText.length < 25,
-          'calendar_tooltip--content--max': tooltipText.length > 25,
-        },
+          'calendar_tooltip--content--max': tooltipText.length > 25
+        }
       ]"
       @mouseenter="removeTooltip"
     >

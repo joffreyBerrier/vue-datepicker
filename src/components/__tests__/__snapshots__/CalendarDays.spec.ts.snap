@@ -2,12 +2,12 @@
 
 exports[`CalendarDays > renders CalendarDays properly 1`] = `
 "<ul class="calendar_wrapper_content-header-days">
-  <li class="calendar-days">Mo. </li>
-  <li class="calendar-days">Tu. </li>
-  <li class="calendar-days">We. </li>
-  <li class="calendar-days">Th. </li>
-  <li class="calendar-days">Fr. </li>
-  <li class="calendar-days">Sa. </li>
-  <li class="calendar-days">Su. </li>
+  <li class="calendar-days">Mo.</li>
+  <li class="calendar-days">Tu.</li>
+  <li class="calendar-days">We.</li>
+  <li class="calendar-days">Th.</li>
+  <li class="calendar-days">Fr.</li>
+  <li class="calendar-days">Sa.</li>
+  <li class="calendar-days">Su.</li>
 </ul>"
 `;

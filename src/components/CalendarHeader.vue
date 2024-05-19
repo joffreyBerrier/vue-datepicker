@@ -1,54 +1,40 @@
-<script lang="ts">
-export default {
-  name: "CalendarHeader",
-};
-</script>
-
 <script setup lang="ts">
-import { computed } from "vue";
-import type { ComputedRef, PropType } from "vue";
+import { computed } from 'vue'
 
-import type { Month } from "../types";
+import type { Month } from '../types'
 
-import BaseIcon from "./BaseIcon.vue";
+import BaseIcon from './BaseIcon.vue'
 
-const emit = defineEmits(["paginate"]);
-const props = defineProps({
-  activeIndex: {
-    type: Number,
-    default: 0,
-  },
-  showHeader: {
-    type: Boolean,
-    default: false,
-  },
-  months: {
-    type: Array as PropType<Month[]>,
-    default: () => {
-      return [];
-    },
-  },
-});
+interface Props {
+  activeIndex: number
+  showHeader: boolean
+  months: Month[]
+}
+const props = withDefaults(defineProps<Props>(), {
+  activeIndex: 0,
+  showHeader: false
+})
+const emit = defineEmits(['paginate'])
 
-const prevMonth: ComputedRef<string> = computed(() => {
+const prevMonth = computed<string>(() => {
   if (props.months[props.activeIndex]?.monthName) {
-    return props.months[props.activeIndex].monthName;
+    return props.months[props.activeIndex].monthName
   }
 
   throw new Error(
     `Month name not found with index: ${
       props.activeIndex
-    } and month: ${JSON.stringify(props.months)}`,
-  );
-});
+    } and month: ${JSON.stringify(props.months)}`
+  )
+})
 
-const nextMonth: ComputedRef<string> = computed(() => {
-  return props.months[props.activeIndex + 1].monthName;
-});
+const nextMonth = computed(() => {
+  return props.months[props.activeIndex + 1].monthName
+})
 
 const paginate = (operator: string) => {
-  emit("paginate", operator);
-};
+  emit('paginate', operator)
+}
 </script>
 
 <template>

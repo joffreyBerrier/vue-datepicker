@@ -1,26 +1,26 @@
-import { ref } from "vue";
-import type { Ref } from "vue";
+import { ref } from 'vue'
+import type { Ref } from 'vue'
 
-import type { Booking, CheckInCheckOutHalfDay } from "../../types";
-import { getDayDiff, sortDates } from "../helpers";
+import type { Booking, CheckInCheckOutHalfDay } from '../../types'
+import { getDayDiff, sortDates } from '../helpers'
 
 const createHalfDayDatesWithBookedDates = (
-  dates: string[],
+  dates: string[]
 ): {
-  checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>;
-  bookedDates: Ref<string[]>;
+  checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay>
+  bookedDates: Ref<string[]>
 } => {
-  const checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay> = ref({});
-  const bookedDates = ref(sortDates([...dates])) as Ref<string[]>;
+  const checkIncheckOutHalfDay = ref<CheckInCheckOutHalfDay>({})
+  const bookedDates = ref<string[]>(sortDates([...dates]))
 
   for (let i = 0; i < bookedDates.value.length; i++) {
-    const newDate = bookedDates.value[i] as string;
-    const newDateIncrementOne = bookedDates.value[i + 1] as string;
+    const newDate = bookedDates.value[i] as string
+    const newDateIncrementOne = bookedDates.value[i + 1] as string
 
     if (i === 0) {
       checkIncheckOutHalfDay.value[newDate] = {
-        checkIn: true,
-      };
+        checkIn: true
+      }
     }
 
     if (
@@ -29,68 +29,65 @@ const createHalfDayDatesWithBookedDates = (
       getDayDiff(newDate, newDateIncrementOne) > 1
     ) {
       checkIncheckOutHalfDay.value[newDate] = {
-        checkOut: true,
-      };
+        checkOut: true
+      }
       checkIncheckOutHalfDay.value[newDateIncrementOne] = {
-        checkIn: true,
-      };
+        checkIn: true
+      }
     }
 
     if (i === bookedDates.value.length - 1) {
       checkIncheckOutHalfDay.value[newDate] = {
-        checkOut: true,
-      };
+        checkOut: true
+      }
     }
   }
 
   return {
     bookedDates,
-    checkIncheckOutHalfDay,
-  };
-};
+    checkIncheckOutHalfDay
+  }
+}
 
 export const useCheckIncheckOutHalfDay = (
   bookingDates: Booking[],
-  bookedDatesProps: string[],
-): Ref<CheckInCheckOutHalfDay> => {
-  const checkIncheckOutHalfDay: Ref<CheckInCheckOutHalfDay> =
-    createHalfDayDatesWithBookedDates(bookedDatesProps).checkIncheckOutHalfDay;
+  bookedDatesProps: string[]
+): CheckInCheckOutHalfDay => {
+  const checkIncheckOutHalfDay =
+    createHalfDayDatesWithBookedDates(bookedDatesProps).checkIncheckOutHalfDay
 
-  const uniqBookings = bookingDates.reduce(
-    (accumulator: Booking[], current) => {
-      if (
-        !accumulator.find((item) => item.checkInDate === current.checkInDate)
-      ) {
-        accumulator.push(current);
-      }
-      return accumulator;
-    },
-    [],
-  );
+  if (!bookingDates?.length) return checkIncheckOutHalfDay.value
+
+  const uniqBookings = bookingDates.reduce((accumulator: Booking[], current) => {
+    if (!accumulator.find((item) => item.checkInDate === current.checkInDate)) {
+      accumulator.push(current)
+    }
+    return accumulator
+  }, [])
 
   uniqBookings.forEach((booking: Booking) => {
     if (!checkIncheckOutHalfDay.value[booking.checkInDate]) {
       checkIncheckOutHalfDay.value[booking.checkInDate] = {
-        checkIn: true,
-      };
+        checkIn: true
+      }
     } else {
       checkIncheckOutHalfDay.value[booking.checkInDate] = {
         checkOut: true,
-        checkIn: true,
-      };
+        checkIn: true
+      }
     }
 
     if (!checkIncheckOutHalfDay.value[booking.checkOutDate]) {
       checkIncheckOutHalfDay.value[booking.checkOutDate] = {
-        checkOut: true,
-      };
+        checkOut: true
+      }
     } else {
       checkIncheckOutHalfDay.value[booking.checkOutDate] = {
         checkOut: true,
-        checkIn: true,
-      };
+        checkIn: true
+      }
     }
-  });
+  })
 
-  return checkIncheckOutHalfDay;
-};
+  return checkIncheckOutHalfDay.value
+}

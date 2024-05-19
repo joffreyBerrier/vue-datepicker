@@ -1,79 +1,79 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { mount } from "@vue/test-utils";
-import CalendarHeader from "../CalendarHeader.vue";
+import { mount } from '@vue/test-utils'
+import CalendarHeader from '../CalendarHeader.vue'
 
-let wrapper: any;
+let wrapper: any
 
 beforeEach(() => {
   wrapper = mount(CalendarHeader, {
     props: {
       months: [
-        { monthName: "January", days: [], monthKey: 1, yearKey: 2024 },
-        { monthName: "February", days: [], monthKey: 2, yearKey: 2024 },
-        { monthName: "March", days: [], monthKey: 3, yearKey: 2024 },
-        { monthName: "April", days: [], monthKey: 4, yearKey: 2024 },
+        { monthName: 'January', days: [], monthKey: 1, yearKey: 2024 },
+        { monthName: 'February', days: [], monthKey: 2, yearKey: 2024 },
+        { monthName: 'March', days: [], monthKey: 3, yearKey: 2024 },
+        { monthName: 'April', days: [], monthKey: 4, yearKey: 2024 }
       ],
-      activeIndex: 1,
+      activeIndex: 1
     },
     global: {
-      stubs: ["base-icon"],
-    },
-  });
-});
+      stubs: ['base-icon']
+    }
+  })
+})
 
 afterEach(() => {
-  wrapper.unmount();
-});
+  wrapper.unmount()
+})
 
-describe("CalendarHeader", () => {
-  it("is a Vue instance", () => {
-    expect(wrapper.vm).toBeTruthy();
-  });
+describe('CalendarHeader', () => {
+  it('is a Vue instance', () => {
+    expect(wrapper.vm).toBeTruthy()
+  })
 
-  describe("prevMonth", () => {
-    it("should returns February", async () => {
-      expect(wrapper.vm.prevMonth).toBe("February");
-    });
-  });
+  describe('prevMonth', () => {
+    it('should returns February', async () => {
+      expect(wrapper.vm.prevMonth).toBe('February')
+    })
+  })
 
-  describe("nextMonth", () => {
-    it("should returns February", async () => {
-      expect(wrapper.vm.nextMonth).toBe("March");
-    });
-  });
+  describe('nextMonth', () => {
+    it('should returns February', async () => {
+      expect(wrapper.vm.nextMonth).toBe('March')
+    })
+  })
 
-  describe("Prev Button", () => {
-    it("should emits prev paginate", async () => {
-      const prevButton = wrapper.get('[data-testid="button-prev-month"]');
-      await prevButton.trigger("click");
+  describe('Prev Button', () => {
+    it('should emits prev paginate', async () => {
+      const prevButton = wrapper.get('[data-testid="button-prev-month"]')
+      await prevButton.trigger('click')
 
-      expect(wrapper.emitted("paginate")[0][0]).toBe("-");
-    });
+      expect(wrapper.emitted('paginate')[0][0]).toBe('-')
+    })
 
-    it("should be disabled", async () => {
-      wrapper.setProps({ activeIndex: 0 });
-      const prevButton = wrapper.get('[data-testid="button-prev-month"]');
-      await prevButton.trigger("click");
+    it('should be disabled', async () => {
+      wrapper.setProps({ activeIndex: 0 })
+      const prevButton = wrapper.get('[data-testid="button-prev-month"]')
+      await prevButton.trigger('click')
 
-      expect(prevButton.isDisabled()).toBeTruthy();
-    });
-  });
+      expect(prevButton.isDisabled()).toBeTruthy()
+    })
+  })
 
-  describe("Next Button", () => {
-    it("should emits next paginate", async () => {
-      const nextButton = wrapper.get('[data-testid="button-next-month"]');
-      await nextButton.trigger("click");
+  describe('Next Button', () => {
+    it('should emits next paginate', async () => {
+      const nextButton = wrapper.get('[data-testid="button-next-month"]')
+      await nextButton.trigger('click')
 
-      expect(wrapper.emitted("paginate")[0][0]).toBe("+");
-    });
+      expect(wrapper.emitted('paginate')[0][0]).toBe('+')
+    })
 
-    it("should be disabled", async () => {
-      wrapper.setProps({ activeIndex: 2 });
-      const nextButton = wrapper.get('[data-testid="button-next-month"]');
-      await nextButton.trigger("click");
+    it('should be disabled', async () => {
+      wrapper.setProps({ activeIndex: 2 })
+      const nextButton = wrapper.get('[data-testid="button-next-month"]')
+      await nextButton.trigger('click')
 
-      expect(nextButton.isDisabled()).toBeTruthy();
-    });
-  });
-});
+      expect(nextButton.isDisabled()).toBeTruthy()
+    })
+  })
+})

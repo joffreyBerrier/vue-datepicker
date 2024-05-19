@@ -1,64 +1,45 @@
-<script lang="ts">
-export default {
-  name: "CalendarHalfDay",
-};
-</script>
-
 <script setup lang="ts">
-import type { PropType } from "vue";
-import type { Day } from "../types";
+import type { Day } from '../types'
 
-const props = defineProps({
-  bookingStyle: {
-    type: Object as PropType<
-      Record<string, string | { checkIn: string; checkOut: string }>
-    >,
-    default: null,
-  },
-  day: {
-    type: Object as PropType<Day>,
-    required: true,
-  },
-  isCheckIn: {
-    type: Boolean,
-    required: true,
-  },
-  isCheckOut: {
-    type: Boolean,
-    required: true,
-  },
-});
+interface Props {
+  bookingStyle: Record<string, string | { checkIn: string; checkOut: string }>
+  day: Day
+  isCheckIn: boolean
+  isCheckOut: boolean
+}
+const props = withDefaults(defineProps<Props>(), {
+  isCheckIn: true,
+  isCheckOut: true
+})
 
-const setHalfDayStyle = (
-  formatDay: string,
-): { background: string; border: string } => {
-  const key = props.isCheckIn ? "checkIn" : "checkOut";
+const setHalfDayStyle = (formatDay: string): { background: string; border: string } => {
+  const key = props.isCheckIn ? 'checkIn' : 'checkOut'
 
   if (props.bookingStyle) {
-    const bookingColor = props.bookingStyle[formatDay];
+    const bookingColor = props.bookingStyle[formatDay]
 
     if (
       bookingColor &&
-      typeof bookingColor === "object" &&
+      typeof bookingColor === 'object' &&
       (bookingColor.checkIn || bookingColor.checkOut)
     ) {
       return {
         background: bookingColor[key],
-        border: "1px solid white",
-      };
-    } else if (typeof bookingColor === "string") {
+        border: '1px solid white'
+      }
+    } else if (typeof bookingColor === 'string') {
       return {
         background: bookingColor,
-        border: "",
-      };
+        border: ''
+      }
     }
   }
 
   return {
-    background: "",
-    border: "",
-  };
-};
+    background: '',
+    border: ''
+  }
+}
 </script>
 
 <template>
@@ -68,8 +49,8 @@ const setHalfDayStyle = (
       'calendar_day_haldDay',
       {
         'calendar_day_haldDay--checkIn': isCheckIn,
-        'calendar_day_haldDay--checkOut': isCheckOut,
-      },
+        'calendar_day_haldDay--checkOut': isCheckOut
+      }
     ]"
   />
 </template>

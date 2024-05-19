@@ -1,35 +1,24 @@
-<script lang="ts">
-export default {
-  name: "CalendarHeaderMobile",
-};
-</script>
-
 <script setup lang="ts">
-import { inject } from "vue";
+import { inject } from 'vue'
 
-import BaseIcon from "./BaseIcon.vue";
-import CalendarDays from "./CalendarDays.vue";
+import BaseIcon from './BaseIcon.vue'
+import CalendarDays from './CalendarDays.vue'
 
-const emits = defineEmits(["close-date-picker", "clear-dates"]);
-const t = inject("t", (key: string) => ({}));
+const emits = defineEmits(['close-date-picker', 'clear-dates'])
+const t = inject('t', (key: string) => ({}))
 
-defineProps({
-  isMobile: {
-    type: Boolean,
-    required: true,
-  },
-  locale: {
-    type: String,
-    required: true,
-  },
-});
+interface Props {
+  isMobile: boolean
+  locale: string
+}
+defineProps<Props>()
 
 const closeDatePicker = () => {
-  emits("close-date-picker");
-};
+  emits('close-date-picker')
+}
 const clearDates = () => {
-  emits("clear-dates");
-};
+  emits('clear-dates')
+}
 </script>
 
 <template>
@@ -41,11 +30,11 @@ const clearDates = () => {
           :style="{ order: isMobile ? 1 : 2 }"
           @click="clearDates"
         >
-          {{ t("clearDates") }}
+          {{ t('clearDates') }}
         </button>
         <button class="calendar_footer--button-close" @click="closeDatePicker">
           <base-icon v-if="isMobile" name="arrowLeft" :size="1" />
-          <span v-else>{{ t("close") }}</span>
+          <span v-else>{{ t('close') }}</span>
         </button>
       </div>
 

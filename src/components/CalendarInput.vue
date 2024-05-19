@@ -1,64 +1,54 @@
-<script lang="ts">
-export default {
-  name: "CalendarInput",
-};
-</script>
-
 <script setup lang="ts">
-import type { PropType } from "vue";
-import type { Placeholder } from "../types";
+import type { Placeholder } from '../types'
 
-import BaseIcon from "./BaseIcon.vue";
+import BaseIcon from './BaseIcon.vue'
 
-const emit = defineEmits(["clear-dates", "open-calendar"]);
-defineProps({
-  checkIn: {
-    type: [Date, String],
-    default: null,
-  },
-  checkOut: {
-    type: [Date, String],
-    default: null,
-  },
-  dayFormat: {
-    type: Function,
-    required: true,
-  },
-  placeholder: {
-    type: Object as PropType<Placeholder>,
-    required: true,
-  },
-  singleCalendar: {
-    type: Boolean,
-    default: false,
-  },
-});
+const emit = defineEmits(['clear-dates', 'open-calendar'])
+interface Props {
+  checkIn: Date | string | null
+  checkOut: Date | string | null
+  dayFormat: Function
+  placeholder: Placeholder
+  singleCalendar: boolean
+}
+const props = withDefaults(defineProps<Props>(), {
+  checkIn: null,
+  checkOut: null,
+  singleCalendar: false
+})
 
+const calendarIconClass = () => {
+  let baseIconClass = 'calendar_input-calendar'
+  if (props.checkIn) {
+    baseIconClass += ' calendar_input-calendar--checkIn'
+  } else {
+    baseIconClass += ' calendar_input-calendar--hasnt-checkIn'
+  }
+
+  return baseIconClass
+}
+const arrowIconClass = () => {
+  let baseIconClass = 'calendar_input-arrowRight'
+  if (props.checkIn) {
+    baseIconClass += ' calendar_input-arrowRight--checkIn'
+  } else {
+    baseIconClass += ' calendar_input-arrowRight--hasnt-checkIn'
+  }
+
+  return baseIconClass
+}
 const openCalendar = () => {
-  emit("open-calendar");
-};
+  emit('open-calendar')
+}
 const clearDates = () => {
-  emit("clear-dates");
-};
+  emit('clear-dates')
+}
 </script>
 
 <template>
   <div class="calendar_input">
-    <div
-      data-testid="calendar_input"
-      class="calendar_input-left-part"
-      @click="openCalendar"
-    >
-      <base-icon
-        name="calendar"
-        :color="[
-          'calendar_input-calendar',
-          {
-            'calendar_input-calendar--hasnt-checkIn': !checkIn,
-            'calendar_input-calendar--checkIn': checkIn,
-          },
-        ]"
-      />
+    <div data-testid="calendar_input" class="calendar_input-left-part" @click="openCalendar">
+      <base-icon name="calendar" :size="1.5" :color="calendarIconClass()" />
 
       <p class="calendar_input-text">
         <span
@@ -66,8 +56,8 @@ const clearDates = () => {
           :class="[
             {
               'calendar_input-text--hasnt-checkIn': !checkIn,
-              'calendar_input-text--checkIn': checkIn,
-            },
+              'calendar_input-text--checkIn': checkIn
+            }
           ]"
         >
           <template v-if="checkIn">
@@ -77,25 +67,15 @@ const clearDates = () => {
         </span>
 
         <template v-if="!singleCalendar">
-          <base-icon
-            name="arrowRight"
-            :size="1"
-            :color="[
-              'calendar_input-arrowRight',
-              {
-                'calendar_input-arrowRight--hasnt-checkIn': !checkIn,
-                'calendar_input-arrowRight--checkIn': checkIn,
-              },
-            ]"
-          />
+          <base-icon name="arrowRight" :size="1" :color="arrowIconClass()" />
 
           <span
             data-testid="checkOut"
             :class="[
               {
                 'calendar_input-text--hasnt-checkIn': !checkIn,
-                'calendar_input-text--checkIn': checkIn,
-              },
+                'calendar_input-text--checkIn': checkIn
+              }
             ]"
           >
             <template v-if="checkOut">

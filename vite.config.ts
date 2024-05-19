@@ -1,23 +1,30 @@
-import vue from "@vitejs/plugin-vue";
-import { defineConfig } from "vite";
-import { resolve } from "path";
-import dts from "vite-plugin-dts";
+import { fileURLToPath, URL } from 'node:url'
 
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import dts from 'vite-plugin-dts'
+
+// https://vitejs.dev/config/
 export default defineConfig({
+  plugins: [vue(), dts()],
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
-      name: "vue-calendar-3",
-      fileName: "vue-calendar-3",
+      entry: fileURLToPath(new URL('src/index.ts', import.meta.url)),
+      name: 'vue-calendar-3',
+      fileName: 'vue-calendar-3'
     },
     rollupOptions: {
-      external: ["vue"],
+      external: ['vue'],
       output: {
         globals: {
-          vue: "Vue",
-        },
-      },
-    },
+          vue: 'Vue'
+        }
+      }
+    }
   },
-  plugins: [vue(), dts()],
-});
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  }
+})

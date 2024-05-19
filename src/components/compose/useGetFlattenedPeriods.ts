@@ -1,11 +1,11 @@
-import type { ComputedRef } from "vue";
-import type { Period } from "../../types";
-import { getDatesBetweenTwoDates } from "../helpers";
+import type { ComputedRef } from 'vue'
+import type { Period } from '../../types'
+import { getDatesBetweenTwoDates } from '../helpers'
 
 export const useGetFlattenedPeriods = (
   periodDates: ComputedRef<Period[]>,
   period: string,
-  formattingFormat: string,
+  formattingFormat: string
 ): string[] => {
   if (
     periodDates.value.length > 0 &&
@@ -16,16 +16,12 @@ export const useGetFlattenedPeriods = (
         periodDates.value
           .filter((p: Period) => p.periodType === period)
           .map((p: Period) => {
-            return getDatesBetweenTwoDates(
-              p.startAt,
-              p.endAt,
-              formattingFormat,
-            );
+            return getDatesBetweenTwoDates(p.startAt, p.endAt, formattingFormat)
           })
-          .flat(),
-      ),
-    ];
+          .flat()
+      )
+    ]
   }
 
-  return [];
-};
+  return []
+}
