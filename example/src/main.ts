@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import DatePicker from '../../src/index'
+import DatePicker from '../../dist/vue-calendar-3.js'
+import '../../dist/main.css'
 
 const app = createApp(App)
 

@@ -95,20 +95,21 @@ const clearDates = () => {
 .vue-calendar .calendar_input {
   background-color: var(--calendar-input-bg);
   border-color: var(--calendar-input-border);
-  @apply flex items-center h-[50px] px-4 cursor-pointer border justify-between;
+  border-style: solid;
+  @apply vuedatepicker-flex vuedatepicker-items-center vuedatepicker-h-[50px] vuedatepicker-px-4 vuedatepicker-cursor-pointer vuedatepicker-border vuedatepicker-justify-between;
 }
 .vue-calendar .calendar_input-left-part {
-  @apply w-full flex items-center h-full;
+  @apply vuedatepicker-w-full vuedatepicker-flex vuedatepicker-items-center vuedatepicker-h-full;
 }
 .vue-calendar .calendar_input-calendar {
-  @apply mr-2;
+  @apply vuedatepicker-mr-2;
 }
 .vue-calendar .calendar_input-calendar--checkIn {
-  @apply text-gray-700;
+  @apply vuedatepicker-text-gray-700;
 }
 
 .vue-calendar .calendar_input-text {
-  @apply flex items-center m-0;
+  @apply vuedatepicker-flex vuedatepicker-items-center vuedatepicker-m-0;
 }
 .vue-calendar .calendar_input-text--hasnt-checkIn,
 .vue-calendar .calendar_input-calendar--hasnt-checkIn,
@@ -116,13 +117,13 @@ const clearDates = () => {
   color: #aaa;
 }
 .vue-calendar .calendar_input-text--checkIn {
-  @apply text-gray-700;
+  @apply vuedatepicker-text-gray-700;
 }
 
 .vue-calendar .calendar_input-arrowRight {
-  @apply mx-4;
+  @apply vuedatepicker-mx-4;
 }
 .vue-calendar .calendar_input-arrowRight--checkIn {
-  @apply text-gray-700;
+  @apply vuedatepicker-text-gray-700;
 }
 </style>

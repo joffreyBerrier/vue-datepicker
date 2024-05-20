@@ -2,7 +2,7 @@
 import type { Day } from '../types'
 
 interface Props {
-  bookingStyle: Record<string, string | { checkIn: string; checkOut: string }>
+  bookingStyle?: Record<string, string | { checkIn: string; checkOut: string }>
   day: Day
   isCheckIn: boolean
   isCheckOut: boolean
@@ -46,7 +46,7 @@ const setHalfDayStyle = (formatDay: string): { background: string; border: strin
   <i
     :style="setHalfDayStyle(day.formatDay)"
     :class="[
-      'calendar_day_haldDay',
+      'calendar_day_haldDay vuedatepicker-w-[200%] vuedatepicker-h-[200%] vuedatepicker-absolute vuedatepicker-transform vuedatepicker-rotate-45',
       {
         'calendar_day_haldDay--checkIn': isCheckIn,
         'calendar_day_haldDay--checkOut': isCheckOut
@@ -57,9 +57,6 @@ const setHalfDayStyle = (formatDay: string): { background: string; border: strin
 
 <style scoped>
 /* Half day */
-.vue-calendar .calendar_day_haldDay {
-  @apply w-[200%] h-[200%] absolute transform rotate-45;
-}
 .vue-calendar .calendar_day_haldDay--checkIn {
   top: 0px;
   right: -140%;

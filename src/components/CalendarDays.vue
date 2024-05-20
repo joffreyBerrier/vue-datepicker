@@ -30,17 +30,21 @@ const days = computed<HeaderDay[]>(() => {
 </script>
 
 <template>
-  <ul class="calendar_wrapper_content-header-days">
-    <li v-for="day in days" :key="day.key" class="calendar-days">{{ t(`days.${day.name}`) }}.</li>
+  <ul
+    class="calendar_wrapper_content-header-days vuedatepicker-grid vuedatepicker-grid-cols-7 vuedatepicker-pt-5 vuedatepicker-pb-1.5"
+  >
+    <li
+      v-for="day in days"
+      :key="day.key"
+      class="calendar-days vuedatepicker-text-[14px] vuedatepicker-text-center"
+    >
+      {{ t(`days.${day.name}`) }}.
+    </li>
   </ul>
 </template>
 
 <style>
-.vue-calendar .calendar_wrapper_content-header-days {
-  @apply grid grid-cols-7 pt-5 pb-1.5;
-}
 .vue-calendar .calendar-days {
-  @apply text-[14px] text-center;
   color: var(--calendar-header-days-color);
 }
 </style>

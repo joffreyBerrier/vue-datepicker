@@ -56,6 +56,8 @@ export const useCheckIncheckOutHalfDay = (
   const checkIncheckOutHalfDay =
     createHalfDayDatesWithBookedDates(bookedDatesProps).checkIncheckOutHalfDay
 
+  console.log(checkIncheckOutHalfDay.value)
+
   if (!bookingDates?.length) return checkIncheckOutHalfDay.value
 
   const uniqBookings = bookingDates.reduce((accumulator: Booking[], current) => {

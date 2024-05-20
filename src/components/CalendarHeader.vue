@@ -73,16 +73,17 @@ const paginate = (operator: string) => {
 
 <style>
 .vue-calendar .calendar_header {
-  @apply relative grid md:grid-cols-2 grid-cols-3 items-center gap-4;
+  @apply vuedatepicker-relative vuedatepicker-grid md:vuedatepicker-grid-cols-2 vuedatepicker-grid-cols-3 vuedatepicker-items-center vuedatepicker-gap-4;
 }
 .vue-calendar .calendar_header_mobile {
-  @apply relative flex justify-between items-center gap-4 mb-6;
+  @apply vuedatepicker-relative vuedatepicker-flex vuedatepicker-justify-between vuedatepicker-items-center vuedatepicker-gap-4 vuedatepicker-mb-6;
 }
 .vue-calendar .calendar_header-left-button,
 .vue-calendar .calendar_header-right-button {
   background-color: var(--calendar-paginate-bg);
   border-color: var(--calendar-paginate-border-color);
   color: var(--calendar-paginate-text-color);
+  @apply vuedatepicker-cursor-pointer;
 }
 .vue-calendar .calendar_header-left-button:hover,
 .vue-calendar .calendar_header-right-button:hover {
@@ -97,17 +98,17 @@ const paginate = (operator: string) => {
   color: var(--calendar-paginate-disabled-text);
 }
 .vue-calendar .calendar_header-left {
-  @apply flex justify-start;
+  @apply vuedatepicker-flex vuedatepicker-justify-start;
 }
 .vue-calendar .calendar_header-right {
-  @apply flex justify-end;
+  @apply vuedatepicker-flex vuedatepicker-justify-end;
 }
 .vue-calendar .calendar_header-text {
-  @apply flex items-center text-[14px] font-bold px-3 capitalize m-0;
+  @apply vuedatepicker-flex vuedatepicker-items-center vuedatepicker-text-[14px] vuedatepicker-font-bold vuedatepicker-px-3 vuedatepicker-capitalize vuedatepicker-m-0;
   color: var(--calendar-text-color);
 }
 .vue-calendar .calendar_header-left-button,
 .vue-calendar .calendar_header-right-button {
-  @apply flex items-center justify-center focus:outline-none disabled:pointer-events-none duration-300;
+  @apply vuedatepicker-flex vuedatepicker-items-center vuedatepicker-justify-center focus:vuedatepicker-outline-none disabled:vuedatepicker-pointer-events-none vuedatepicker-duration-300;
 }
 </style>

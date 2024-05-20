@@ -86,31 +86,33 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   alwaysVisible: false,
-  checkIn: null,
-  checkOut: null,
+  bookedDates: () => [],
+  bookingColor: () => ({}),
+  bookingDates: () => [],
   disabled: false,
   disabledDaysAfterDayDate: false,
   disabledDaysBeforeDayDate: true,
-  endDate: new Date(new Date().getFullYear() + 2, 11, 1),
+  endDate: () => new Date(new Date().getFullYear() + 2, 11, 1),
   formatDate: 'YYYY-MM-DD',
   isAffixed: false,
   hasFooter: false,
   hasHeader: false,
   locale: 'fr',
   minNights: 1,
-  placeholder: {
+  periodDates: () => [],
+  placeholder: () => ({
     checkIn: 'Arrivée',
     checkOut: 'Départ'
-  },
+  }),
   position: 'left',
   showInputCalendar: true,
   showYear: false,
   singleCalendar: false,
-  startDate: new Date(new Date().getFullYear() - 2, 0, 1),
-  translations: {
+  startDate: () => new Date(new Date().getFullYear() - 2, 0, 1),
+  translations: () => ({
     fr,
     en
-  },
+  }),
   timezone: 'Europe/Paris'
 })
 
@@ -279,9 +281,9 @@ const nightlyPeriods = computed(() => {
   return useGetFlattenedPeriods(sortedPeriodDates, 'nightly', formattingFormat.value)
 })
 
-const bookingDatesT = toRef(props, 'bookingDates')
+const bookingDatesT = props.bookingDates ? toRef(props, 'bookingDates') : ref<Booking[]>([])
 const bookedDatesT = toRef(props, 'bookedDates')
-const bookingColorT = toRef(props, 'bookingColor')
+const bookingColorT = props.bookingColor ? toRef(props, 'bookingColor') : ref<BookingColor>({})
 let disabledDates = useCreateHalfDayDates(
   bookingDatesT.value,
   bookedDatesT.value,
@@ -1349,61 +1351,55 @@ defineExpose({
   --day-today: #264646;
 }
 
-@tailwind base;
-@tailwind components;
-
 /* Reset */
 .vue-calendar li {
   list-style-type: none;
 }
 .vue-calendar button {
-  @apply appearance-none border-0 shadow-none bg-white;
+  @apply vuedatepicker-appearance-none vuedatepicker-border-0 vuedatepicker-shadow-none vuedatepicker-bg-white;
 }
 
 /* Global Style */
 .vue-calendar {
-  @apply w-full relative select-none;
-}
-.vue-calendar .calendar_input-open {
-  box-shadow: var(--calendar-input-shadow);
+  @apply vuedatepicker-w-full vuedatepicker-relative vuedatepicker-select-none vuedatepicker-font-sans;
 }
 .vue-calendar .calendar_wrapper {
   background-color: var(--calendar-wrapper);
-  @apply z-20;
+  @apply vuedatepicker-z-20;
 }
 .vue-calendar .calendar_wrapper:not(.calendar_wrapper--year) {
-  @apply p-6 md:shadow-md md:absolute md:top-[100%];
+  @apply vuedatepicker-p-6 md:vuedatepicker-shadow-md md:vuedatepicker-absolute md:vuedatepicker-top-[100%];
 }
 .vue-calendar .calendar_wrapper.calendar_wrapper--visible {
-  @apply !static !block !mx-auto !w-full;
+  @apply !vuedatepicker-static !vuedatepicker-block !vuedatepicker-mx-auto !vuedatepicker-w-full;
 }
 .vue-calendar .calendar_wrapper:not(.calendar_wrapper--affix) .calendar_wrapper_content {
-  @apply grid md:grid-cols-2 md:gap-12;
+  @apply vuedatepicker-grid md:vuedatepicker-grid-cols-2 md:vuedatepicker-gap-12;
 }
 .vue-calendar
   .calendar_wrapper:not(.calendar_wrapper--affix).calendar_wrapper--year
   .calendar_wrapper_content {
-  @apply grid md:grid-cols-4 md:gap-12;
+  @apply vuedatepicker-grid md:vuedatepicker-grid-cols-4 md:vuedatepicker-gap-12;
 }
 .vue-calendar .calendar_wrapper_content-days {
-  @apply grid grid-cols-7;
+  @apply vuedatepicker-grid vuedatepicker-grid-cols-7;
 }
 .vue-calendar .calendar_day-wrap {
-  @apply relative h-0 pb-[100%] border-[.5px];
+  @apply vuedatepicker-relative vuedatepicker-h-0 vuedatepicker-pb-[100%] vuedatepicker-border-[.5px];
   border-color: var(--day-border);
 }
 .vue-calendar .calendar_day-wrap--no-border {
-  @apply border-0 pointer-events-none;
+  @apply vuedatepicker-border-0 vuedatepicker-pointer-events-none;
 }
 .vue-calendar .calendar_day-wrap--disabled {
-  @apply pointer-events-none;
+  @apply vuedatepicker-pointer-events-none;
 }
 .vue-calendar .calendar_day {
-  @apply w-full left-0 right-0 h-full text-[16px] absolute focus:outline-none overflow-hidden;
+  @apply vuedatepicker-w-full vuedatepicker-left-0 vuedatepicker-right-0 vuedatepicker-h-full vuedatepicker-text-[16px] vuedatepicker-absolute focus:vuedatepicker-outline-none vuedatepicker-overflow-hidden;
 }
 .vue-calendar .calendar_day--today:after {
   content: '';
-  @apply block w-1 h-1 rounded-full absolute bottom-1 left-0 right-0 mx-auto;
+  @apply vuedatepicker-block vuedatepicker-w-1 vuedatepicker-h-1 vuedatepicker-rounded-full vuedatepicker-absolute vuedatepicker-bottom-1 vuedatepicker-left-0 vuedatepicker-right-0 vuedatepicker-mx-auto;
   background-color: var(--day-today);
 }
 .vue-calendar .calendar_day--hovering:not(.calendar_day--checkIn),
@@ -1411,13 +1407,13 @@ defineExpose({
   background-color: var(--day-range-days);
 }
 .vue-calendar .calendar_day-in-half-day--checkIn {
-  @apply pointer-events-none hover:bg-white;
+  @apply vuedatepicker-pointer-events-none hover:vuedatepicker-bg-white;
 }
 .vue-calendar .calendar_day-in-half-day--checkIn .calendar_day--day-number,
 .vue-calendar
   .calendar_day-in-half-day--checkOut:not(.calendar_day--checkIn)
   .calendar_day--day-number {
-  @apply font-bold;
+  @apply vuedatepicker-font-bold;
   color: var(--calendar-half-day-color);
 }
 .vue-calendar .calendar_day--checkIn--single {
@@ -1434,45 +1430,45 @@ defineExpose({
   color: #202020;
 }
 .vue-calendar .calendar_day--day-number {
-  @apply absolute z-[6] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+  @apply vuedatepicker-absolute vuedatepicker-z-[6] vuedatepicker-top-1/2 vuedatepicker-left-1/2 vuedatepicker-transform -vuedatepicker-translate-x-1/2 -vuedatepicker-translate-y-1/2;
   color: var(--calendar-text-color);
 }
 .vue-calendar
   .calendar_day-wrap--disabled
   .calendar_day:not(.calendar_day--booking)
   .calendar_day--day-number {
-  @apply pointer-events-none font-[400] line-through;
+  @apply vuedatepicker-pointer-events-none vuedatepicker-font-[400] vuedatepicker-line-through;
   color: var(--day-disabled);
 }
 .vue-calendar
   .calendar_day-wrap--disabled
   .calendar_day.calendar_day--booking
   .calendar_day--day-number {
-  @apply pointer-events-none font-[400];
+  @apply vuedatepicker-pointer-events-none vuedatepicker-font-[400];
 }
 .vue-calendar .calendar_day--in-period .calendar_day--day-number {
-  @apply pointer-events-none font-[400];
+  @apply vuedatepicker-pointer-events-none vuedatepicker-font-[400];
   color: var(--day-disabled);
 }
 .vue-calendar .event-none {
-  @apply pointer-events-none;
+  @apply vuedatepicker-pointer-events-none;
 }
 /* Year calendar */
 .vue-calendar .calendar_wrapper--year {
-  @apply w-full;
+  @apply vuedatepicker-w-full;
 }
 .vue-calendar .calendar_wrapper_content--year {
-  @apply grid grid-cols-4 gap-x-6 gap-y-6;
+  @apply vuedatepicker-grid vuedatepicker-grid-cols-4 vuedatepicker-gap-x-6 vuedatepicker-gap-y-6;
 }
 
 .vue-calendar .calendar_paginate-wrapper {
-  @apply my-8 flex items-center;
+  @apply vuedatepicker-my-8 vuedatepicker-flex vuedatepicker-items-center;
 }
 .vue-calendar .calendar_paginate-wrapper--left-content {
-  @apply flex items-center;
+  @apply vuedatepicker-flex vuedatepicker-items-center;
 }
 .vue-calendar .calendar_paginate-button {
-  @apply duration-300 w-[48px] h-[48px] border flex items-center justify-center;
+  @apply vuedatepicker-duration-300 vuedatepicker-w-[48px] vuedatepicker-h-[48px] vuedatepicker-border vuedatepicker-flex vuedatepicker-items-center vuedatepicker-justify-center;
   background-color: var(--calendar-paginate-bg);
   border-color: var(--calendar-paginate-border-color);
   color: var(--calendar-paginate-text-color);
@@ -1483,43 +1479,43 @@ defineExpose({
   color: var(--calendar-paginate-disabled-text);
 }
 .vue-calendar .calendar_paginate-year {
-  @apply w-20 h-[48px] flex text-center font-bold px-4 border border-gray-200 mx-3 items-center justify-center;
+  @apply vuedatepicker-w-20 vuedatepicker-h-[48px] vuedatepicker-flex vuedatepicker-text-center vuedatepicker-font-bold vuedatepicker-px-4 vuedatepicker-border vuedatepicker-border-gray-200 vuedatepicker-mx-3 vuedatepicker-items-center vuedatepicker-justify-center;
 }
 .vue-calendar .calendar_today-button {
-  @apply h-[48px] flex text-center font-bold px-4 border border-gray-200 mx-3 items-center justify-center;
+  @apply vuedatepicker-h-[48px] vuedatepicker-flex vuedatepicker-text-center vuedatepicker-font-bold vuedatepicker-px-4 vuedatepicker-border vuedatepicker-border-gray-200 vuedatepicker-mx-3 vuedatepicker-items-center vuedatepicker-justify-center;
 }
 .vue-calendar .calendar_day-wrap--disabled .calendar_day--booking {
-  @apply pointer-events-auto line-through;
+  @apply vuedatepicker-pointer-events-auto vuedatepicker-line-through;
 }
 
 /* Position */
 .vue-calendar .calendar_wrapper--right {
-  @apply right-0 left-auto;
+  @apply vuedatepicker-right-0 vuedatepicker-left-auto;
 }
 .vue-calendar .calendar_wrapper--left {
-  @apply right-auto left-auto;
+  @apply vuedatepicker-right-auto vuedatepicker-left-auto;
 }
 
 /* Single */
 .vue-calendar .calendar_wrapper--single .calendar_wrapper_content {
-  @apply block;
+  @apply vuedatepicker-block;
 }
 
 /* Disabled */
 .vue-calendar--disabled {
   opacity: var(--calendar-disabled-opacity);
-  @apply pointer-events-none;
+  @apply vuedatepicker-pointer-events-none;
 }
 .calendar_wrapper_month {
-  @apply pb-6 text-center text-[14px] md:py-0 font-bold capitalize;
+  @apply vuedatepicker-pb-6 vuedatepicker-text-center vuedatepicker-text-[14px] md:vuedatepicker-py-0 vuedatepicker-font-bold vuedatepicker-capitalize;
 }
 /* Desktop style */
 @screen md {
   .vue-calendar .calendar_wrapper:not(.calendar_wrapper--year):not(.calendar_wrapper--affix) {
-    @apply w-[780px];
+    @apply vuedatepicker-w-[780px];
   }
   .vue-calendar .calendar_wrapper.calendar_wrapper--single {
-    @apply w-[380px];
+    @apply vuedatepicker-w-[380px];
   }
   .vue-calendar .calendar_today-button:hover {
     background-color: var(--calendar-paginate-hover-bg);
@@ -1532,28 +1528,28 @@ defineExpose({
     color: var(--calendar-paginate-hover-text);
   }
   .vue-calendar .calendar_wrapper:not(.calendar_wrapper--affix) .calendar_wrap_month:first-child {
-    @apply relative
-    after:content-['']
-    after:block
-    after:h-[calc(100%+1.5rem)]
-    after:w-px
-    after:bg-gray-200
-    after:absolute
-    after:bottom-0
-    after:left-[calc(100%+1.5rem)]
-    after:-translate-x-1/2;
+    @apply vuedatepicker-relative
+    after:vuedatepicker-content-['']
+    after:vuedatepicker-block
+    after:vuedatepicker-h-[calc(100%+1.5rem)]
+    after:vuedatepicker-w-px
+    after:vuedatepicker-bg-gray-200
+    after:vuedatepicker-absolute
+    after:vuedatepicker-bottom-0
+    after:vuedatepicker-left-[calc(100%+1.5rem)]
+    after:-vuedatepicker-translate-x-1/2;
   }
 }
 
 /* Affix style */
 .vue-calendar .calendar_wrapper.calendar_wrapper--affix {
-  @apply p-0 fixed top-0 left-0 right-0;
+  @apply vuedatepicker-p-0 vuedatepicker-fixed vuedatepicker-top-0 vuedatepicker-left-0 vuedatepicker-right-0;
   min-height: calc(var(--vh, 1vh) * 100);
 }
 .vue-calendar .calendar_wrapper.calendar_wrapper--affix .calendar_wrapper_content {
   height: calc(100vh - 100px - var(--vh, 1vh));
 }
 .vue-calendar .calendar_wrapper.calendar_wrapper--affix .calendar_wrapper_content {
-  @apply overflow-y-auto p-4;
+  @apply vuedatepicker-overflow-y-auto vuedatepicker-p-4;
 }
 </style>

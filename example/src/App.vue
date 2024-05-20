@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import type { Period } from '../src/types'
+// The DatePicker component is imported from the package in the main.ts file.
+import type { Period } from '../dist/types'
 
 const periodDates = ref<Period[]>([
   // Nightly
@@ -40,14 +41,6 @@ const checkOut = ref(new Date('2024-05-10'))
 </script>
 
 <template>
-  <p>
-    <strong>periodDates:</strong>
-    <pre>{{ periodDates }}</pre>
-  </p>
-  <p>
-    <strong>bookedDates:</strong>
-    <pre>{{ bookedDates }}</pre>
-  </p>
   <DatePicker
     v-model:checkIn="checkIn"
     v-model:checkOut="checkOut"
@@ -56,7 +49,3 @@ const checkOut = ref(new Date('2024-05-10'))
     locale="en"
   />
 </template>
-
-<style>
-@import "../../dist/style.css";
-</style>
