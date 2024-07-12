@@ -8,6 +8,7 @@ let wrapper: any
 beforeEach(() => {
   wrapper = mount(CalendarHeader, {
     props: {
+      showHeader: true,
       months: [
         { monthName: 'January', days: [], monthKey: 1, yearKey: 2024 },
         { monthName: 'February', days: [], monthKey: 2, yearKey: 2024 },

@@ -6,8 +6,8 @@ import type { Month } from '../types'
 import BaseIcon from './BaseIcon.vue'
 
 interface Props {
-  activeIndex: number
-  showHeader: boolean
+  activeIndex?: number
+  showHeader?: boolean
   months: Month[]
 }
 const props = withDefaults(defineProps<Props>(), {

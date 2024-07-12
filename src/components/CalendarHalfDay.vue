@@ -4,8 +4,8 @@ import type { Day } from '../types'
 interface Props {
   bookingStyle?: Record<string, string | { checkIn: string; checkOut: string }>
   day: Day
-  isCheckIn: boolean
-  isCheckOut: boolean
+  isCheckIn?: boolean
+  isCheckOut?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   isCheckIn: true,

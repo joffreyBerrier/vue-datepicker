@@ -5,11 +5,11 @@ import BaseIcon from './BaseIcon.vue'
 
 const emit = defineEmits(['clear-dates', 'open-calendar'])
 interface Props {
-  checkIn: Date | string | null
-  checkOut: Date | string | null
+  checkIn?: Date | string | null
+  checkOut?: Date | string | null
   dayFormat: Function
   placeholder: Placeholder
-  singleCalendar: boolean
+  singleCalendar?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   checkIn: null,

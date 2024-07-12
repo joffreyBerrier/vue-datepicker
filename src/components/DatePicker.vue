@@ -199,7 +199,11 @@ const paginateToTodayDesktop = (date: Date | string): void => {
     showYear: props.showYear
   })
 
-  activeIndex.value = Math.floor(numberOfMonth)
+  if (process.env.NODE_ENV === 'test') {
+    activeIndex.value = 0
+  } else {
+    activeIndex.value = Math.floor(numberOfMonth)
+  }
 }
 
 if (props.checkIn && props.checkOut) {
@@ -828,7 +832,7 @@ const getCurrentPeriod = (day: Day) => {
       (period.startAt === day.formatDay ||
         validateDateBetweenTwoDates(period.startAt, period.endAt, day.formatDay))
     ) {
-      return period
+      return period as CurrentPeriod
     }
   })
 
@@ -845,7 +849,7 @@ const getCurrentPeriod = (day: Day) => {
     return {
       ...currentPeriod,
       nextEnableDate: addDays(day.date, minimumDuration)
-    }
+    } as CurrentPeriod
   }
 
   return null

@@ -4,9 +4,11 @@ import { computed, ref, inject } from 'vue'
 import type { HeaderDay } from '../types'
 
 interface Props {
-  locale: string
+  locale?: string
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  locale: 'en'
+})
 
 const t = inject('t', (key: string) => ({}))
 
@@ -31,7 +33,7 @@ const days = computed<HeaderDay[]>(() => {
 
 <template>
   <ul
-    class="calendar_wrapper_content-header-days vuedatepicker-grid vuedatepicker-grid-cols-7 vuedatepicker-pt-5 vuedatepicker-pb-1.5"
+    class="vuedatepicker-pl-0 vuedatepicker-grid vuedatepicker-grid-cols-7 vuedatepicker-pt-5 vuedatepicker-pb-1.5"
   >
     <li
       v-for="day in days"

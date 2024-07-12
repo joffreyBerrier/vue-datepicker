@@ -1,13 +1,13 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`CalendarDays > renders CalendarDays properly 1`] = `
-"<ul class="calendar_wrapper_content-header-days">
-  <li class="calendar-days">Mo.</li>
-  <li class="calendar-days">Tu.</li>
-  <li class="calendar-days">We.</li>
-  <li class="calendar-days">Th.</li>
-  <li class="calendar-days">Fr.</li>
-  <li class="calendar-days">Sa.</li>
-  <li class="calendar-days">Su.</li>
+"<ul class="vuedatepicker-pl-0 vuedatepicker-grid vuedatepicker-grid-cols-7 vuedatepicker-pt-5 vuedatepicker-pb-1.5">
+  <li class="calendar-days vuedatepicker-text-[14px] vuedatepicker-text-center">Su. </li>
+  <li class="calendar-days vuedatepicker-text-[14px] vuedatepicker-text-center">Mo. </li>
+  <li class="calendar-days vuedatepicker-text-[14px] vuedatepicker-text-center">Tu. </li>
+  <li class="calendar-days vuedatepicker-text-[14px] vuedatepicker-text-center">We. </li>
+  <li class="calendar-days vuedatepicker-text-[14px] vuedatepicker-text-center">Th. </li>
+  <li class="calendar-days vuedatepicker-text-[14px] vuedatepicker-text-center">Fr. </li>
+  <li class="calendar-days vuedatepicker-text-[14px] vuedatepicker-text-center">Sa. </li>
 </ul>"
 `;

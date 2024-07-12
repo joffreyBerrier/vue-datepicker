@@ -8,7 +8,11 @@ let wrapper: any
 beforeEach(() => {
   expect(BaseIcon).toBeTruthy()
 
-  wrapper = mount(BaseIcon)
+  wrapper = mount(BaseIcon, {
+    props: {
+      name: 'calendar'
+    }
+  })
 })
 
 describe('BaseIcon', () => {

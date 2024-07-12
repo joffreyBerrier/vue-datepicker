@@ -24,13 +24,13 @@
   "types": "./types/main.d.ts",
   "scripts": {
     "dev": "cd ./example && pnpm run dev",
-    "build": "run-p type-check \"build-only {@}\" --",
     "build:library": "vite build",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "test": "vitest --environment jsdom",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lintfix": "eslint . --fix && prettier --write --list-different .",
     "format": "prettier --write src/"
   },
   "peerDependencies": {
@@ -65,5 +65,6 @@
   "dependencies": {
     "@types/vue": "^2.0.0",
     "rollup-plugin-typescript2": "^0.36.0"
-  }
+  },
+  "packageManager": "pnpm@9.4.0"
 }

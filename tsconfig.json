@@ -8,6 +8,7 @@
     "outDir": "dist",
     "declarationDir": "dist",
     "baseUrl": ".",
+    "downlevelIteration": true,
     "paths": {
       "@/*": ["./src/*"]
     }
