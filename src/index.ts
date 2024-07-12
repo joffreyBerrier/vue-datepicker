@@ -1,1 +1,1 @@
-export { default as Calendar } from "./components/Calendar.vue";
+export { default as DatePicker } from './components/DatePicker.vue'

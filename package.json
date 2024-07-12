@@ -5,17 +5,6 @@
   "funding": "https://github.com/sponsors/joffreyBerrier",
   "author": "Joffrey Berrier <joffrey.berrier@gmail.com>",
   "license": "MIT",
-  "scripts": {
-    "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "build:library": "vite build",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build --force",
-    "test": "vitest --environment jsdom",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
-  },
   "type": "module",
   "main": "./dist/vue-calendar-3.umd.cjs",
   "module": "./dist/vue-calendar-3.js",
@@ -33,32 +22,49 @@
     "types/*"
   ],
   "types": "./types/main.d.ts",
+  "scripts": {
+    "dev": "cd ./example && pnpm run dev",
+    "build:library": "vite build",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build --force",
+    "test": "vitest --environment jsdom",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lintfix": "eslint . --fix && prettier --write --list-different .",
+    "format": "prettier --write src/"
+  },
   "peerDependencies": {
-    "vue": "^3.2.37"
+    "vue": "^3.4.21"
   },
   "devDependencies": {
-    "@rushstack/eslint-patch": "^1.7.2",
+    "@rushstack/eslint-patch": "^1.8.0",
+    "@tsconfig/node20": "^20.1.4",
     "@types/jsdom": "^21.1.6",
-    "@types/node": "^20.11.13",
-    "@vitejs/plugin-vue": "^5.0.3",
+    "@types/node": "^20.12.12",
+    "@vitejs/plugin-vue": "^5.0.4",
     "@vue/eslint-config-prettier": "^9.0.0",
-    "@vue/eslint-config-typescript": "^12.0.0",
-    "@vue/test-utils": "^2.4.4",
+    "@vue/eslint-config-typescript": "^13.0.0",
+    "@vue/test-utils": "^2.4.5",
     "@vue/tsconfig": "^0.5.1",
-    "autoprefixer": "^10.4.17",
-    "c8": "^9.1.0",
-    "dayjs": "^1.11.10",
-    "eslint": "^8.56.0",
-    "eslint-plugin-vue": "^9.21.0",
+    "autoprefixer": "^10.4.19",
+    "dayjs": "^1.11.11",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.23.0",
     "jsdom": "^24.0.0",
-    "npm-run-all": "^4.1.5",
-    "postcss": "^8.4.33",
-    "prettier": "^3.2.4",
-    "tailwindcss": "^3.4.1",
-    "typescript": "~5.3.3",
-    "vite": "^5.0.12",
-    "vite-plugin-dts": "^3.7.2",
-    "vitest": "^1.2.2",
-    "vue-tsc": "^1.8.27"
-  }
+    "npm-run-all2": "^6.1.2",
+    "postcss": "^8.4.38",
+    "prettier": "^3.2.5",
+    "tailwindcss": "^3.4.3",
+    "typescript": "~5.4.0",
+    "vite": "^5.2.8",
+    "vite-plugin-dts": "^3.9.1",
+    "vitest": "^1.4.0",
+    "vue": "^3.4.27",
+    "vue-tsc": "^2.0.11"
+  },
+  "dependencies": {
+    "@types/vue": "^2.0.0",
+    "rollup-plugin-typescript2": "^0.36.0"
+  },
+  "packageManager": "pnpm@9.4.0"
 }

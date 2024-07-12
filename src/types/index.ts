@@ -1,71 +1,103 @@
 // Calendar
-import type { ComputedRef } from "vue";
+import type { ComputedRef } from 'vue'
 
 export interface Booking {
-  1?: { id: string; type: string };
-  2?: { id: string; type: string };
-  checkInDate: string;
-  checkOutDate: string;
-  id?: string;
-  type?: string;
+  1?: { id: string; type: string }
+  2?: { id: string; type: string }
+  checkInDate: string
+  checkOutDate: string
+  id?: string
+  type?: string
 }
 export interface BookingColor {
-  [key: string]: string;
+  [key: string]: string
 }
 export interface HeaderDay {
-  key: number;
-  name: string;
+  key: number
+  name: string
 }
 export interface CheckInCheckOutHalfDay {
   [key: string]: {
-    checkOut?: boolean;
-    checkIn?: boolean;
-  };
+    checkOut?: boolean
+    checkIn?: boolean
+  }
 }
 export interface FlatBooking {
-  color: string;
-  key: string;
-  value: string[];
+  color: string
+  key: string
+  value: string[]
 }
 export interface Day {
-  belongsToThisMonth: boolean;
-  date: Date;
-  dayIndex: number;
-  dayNumber: string;
-  formatDay: string;
+  belongsToThisMonth: boolean
+  date: Date
+  dayIndex: number
+  dayNumber: string
+  formatDay: string
   style: {
-    [key: string]: string;
-  };
+    [key: string]: string
+  }
 }
 export interface Month {
-  days: Day[];
-  monthKey: number;
-  monthName: string;
-  yearKey: number;
+  days: Day[]
+  monthKey: number
+  monthName: string
+  yearKey: number
 }
 
 export interface Placeholder {
-  checkIn: string | ComputedRef<string>;
-  checkOut: string | ComputedRef<string>;
+  checkIn: string | ComputedRef<string>
+  checkOut: string | ComputedRef<string>
 }
 
 // BaseIcon
 export interface Icon {
-  [key: string]: string;
+  [key: string]: string
 }
 
 export interface Period {
-  startAt: string;
-  endAt: string;
-  minimumDuration: number;
-  minimumDurationNights: number;
-  periodType: string;
+  startAt: string
+  endAt: string
+  minimumDuration: number
+  minimumDurationNights?: number
+  periodType: string
 }
 export interface CurrentPeriod {
-  startAt: string;
-  endAt: string;
-  minimumDuration: number;
-  minimumDurationNights: number;
-  periodType: string;
-  nextEnableDate: Date;
+  startAt: string
+  endAt: string
+  minimumDuration: number
+  minimumDurationNights: number
+  periodType: string
+  nextEnableDate: Date
+}
+
+// Translations
+interface Days {
+  monday: string
+  tuesday: string
+  wednesday: string
+  thursday: string
+  friday: string
+  saturday: string
+  sunday: string
+}
+interface PeriodType {
+  weeklyBySaturday: string
+  weeklyBySunday: string
+  weeklyByMonday: string
+  nightly: string
+}
+interface HalfDay {
+  checkIn: string
+  checkOut: string
+}
+export interface LanguageTranslations {
+  clearDates: string
+  close: string
+  days: Days
+  today: string
+  periodType: PeriodType
+  halfDay: HalfDay
+}
+export interface Translations {
+  [key: string]: LanguageTranslations
 }

@@ -1,84 +1,62 @@
-<script lang="ts">
-export default {
-  name: "CalendarHalfDay",
-};
-</script>
-
 <script setup lang="ts">
-import type { PropType } from "vue";
-import type { Day } from "../types";
+import type { Day } from '../types'
 
-const props = defineProps({
-  bookingStyle: {
-    type: Object as PropType<
-      Record<string, string | { checkIn: string; checkOut: string }>
-    >,
-    default: null,
-  },
-  day: {
-    type: Object as PropType<Day>,
-    required: true,
-  },
-  isCheckIn: {
-    type: Boolean,
-    required: true,
-  },
-  isCheckOut: {
-    type: Boolean,
-    required: true,
-  },
-});
+interface Props {
+  bookingStyle?: Record<string, string | { checkIn: string; checkOut: string }>
+  day: Day
+  isCheckIn?: boolean
+  isCheckOut?: boolean
+}
+const props = withDefaults(defineProps<Props>(), {
+  isCheckIn: true,
+  isCheckOut: true
+})
 
-const setHalfDayStyle = (
-  formatDay: string,
-): { background: string; border: string } => {
-  const key = props.isCheckIn ? "checkIn" : "checkOut";
+const setHalfDayStyle = (formatDay: string): { background: string; border: string } => {
+  const key = props.isCheckIn ? 'checkIn' : 'checkOut'
 
   if (props.bookingStyle) {
-    const bookingColor = props.bookingStyle[formatDay];
+    const bookingColor = props.bookingStyle[formatDay]
 
     if (
       bookingColor &&
-      typeof bookingColor === "object" &&
+      typeof bookingColor === 'object' &&
       (bookingColor.checkIn || bookingColor.checkOut)
     ) {
       return {
         background: bookingColor[key],
-        border: "1px solid white",
-      };
-    } else if (typeof bookingColor === "string") {
+        border: '1px solid white'
+      }
+    } else if (typeof bookingColor === 'string') {
       return {
         background: bookingColor,
-        border: "",
-      };
+        border: ''
+      }
     }
   }
 
   return {
-    background: "",
-    border: "",
-  };
-};
+    background: '',
+    border: ''
+  }
+}
 </script>
 
 <template>
   <i
     :style="setHalfDayStyle(day.formatDay)"
     :class="[
-      'calendar_day_haldDay',
+      'calendar_day_haldDay vuedatepicker-w-[200%] vuedatepicker-h-[200%] vuedatepicker-absolute vuedatepicker-transform vuedatepicker-rotate-45',
       {
         'calendar_day_haldDay--checkIn': isCheckIn,
-        'calendar_day_haldDay--checkOut': isCheckOut,
-      },
+        'calendar_day_haldDay--checkOut': isCheckOut
+      }
     ]"
   />
 </template>
 
 <style scoped>
 /* Half day */
-.vue-calendar .calendar_day_haldDay {
-  @apply w-[200%] h-[200%] absolute transform rotate-45;
-}
 .vue-calendar .calendar_day_haldDay--checkIn {
   top: 0px;
   right: -140%;
