@@ -1,6 +1,6 @@
 # vue-datepicker 2.6.3
 
-👊 An easier datePicker in Vue.js 👊
+👊 An easy-to-use datePicker in Vue.js 👊
 
 https://github.com/joffreyBerrier/vue-datepicker/projects/1
 
